@@ -1,7 +1,7 @@
 -- Copyright 1986-2014 Xilinx, Inc. All Rights Reserved.
 -- --------------------------------------------------------------------------------
 -- Tool Version: Vivado v.2014.3 (lin64) Build 1034051 Fri Oct  3 16:31:15 MDT 2014
--- Date        : Fri Oct 17 21:54:20 2014
+-- Date        : Tue Oct 21 23:43:58 2014
 -- Host        : edinburgh running 64-bit Ubuntu 14.04.1 LTS
 -- Command     : write_vhdl -force -mode funcsim
 --               /media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.srcs/sources_1/ip/clk_gen/clk_gen_funcsim.vhdl
@@ -18,7 +18,7 @@ entity clk_gen_clk_gen_clk_wiz is
   port (
     clk125 : in STD_LOGIC;
     clk : out STD_LOGIC;
-    locked : out STD_LOGIC
+    clk_locked : out STD_LOGIC
   );
   attribute ORIG_REF_NAME : string;
   attribute ORIG_REF_NAME of clk_gen_clk_gen_clk_wiz : entity is "clk_gen_clk_wiz";
@@ -167,7 +167,7 @@ mmcm_adv_inst: unisim.vcomponents.MMCME2_ADV
       DO(15 downto 0) => NLW_mmcm_adv_inst_DO_UNCONNECTED(15 downto 0),
       DRDY => NLW_mmcm_adv_inst_DRDY_UNCONNECTED,
       DWE => '0',
-      LOCKED => locked,
+      LOCKED => clk_locked,
       PSCLK => '0',
       PSDONE => NLW_mmcm_adv_inst_PSDONE_UNCONNECTED,
       PSEN => '0',
@@ -184,7 +184,7 @@ entity clk_gen is
   port (
     clk125 : in STD_LOGIC;
     clk : out STD_LOGIC;
-    locked : out STD_LOGIC
+    clk_locked : out STD_LOGIC
   );
   attribute NotValidForBitStream : boolean;
   attribute NotValidForBitStream of clk_gen : entity is true;
@@ -198,6 +198,6 @@ inst: entity work.clk_gen_clk_gen_clk_wiz
     port map (
       clk => clk,
       clk125 => clk125,
-      locked => locked
+      clk_locked => clk_locked
     );
 end STRUCTURE;

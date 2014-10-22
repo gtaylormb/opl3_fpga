@@ -16,16 +16,22 @@
 RTL_SRC = \
 	top_level/src/top_level.sv \
 	modules/clks/src/clk_div.sv \
+	modules/i2c/src/i2c_master_byte_ctrl.v \
+	modules/i2c/src/i2c_master_bit_ctrl.v \
 	modules/i2s/src/i2s.sv \
 	modules/misc/src/edge_detector.sv \
 	modules/oscillators/src/nco_control.sv \
 	modules/oscillators/src/nco.sv \
 	modules/oscillators/src/rand_num_4bit.sv \
-	modules/oscillators/src/sine_lut.sv
+	modules/oscillators/src/sine_lut.sv \
+	modules/ssm2603/src/ssm2603_init.sv
 	
 SIM_SRC = \
 	top_level/sim/top_level_tb.sv \
-	modules/clks/src/clk_gen/clk_gen_funcsim.v
+	modules/clks/src/clk_gen/clk_gen_funcsim.v \
+	modules/i2c/sim/i2c_slave_model.v \
+	modules/i2s/src/sample_fifo/sample_fifo_funcsim.v \
+	modules/oscillators/sim/save_dac_input.sv
 	
 SIM_LIB = \
 	sim_lib_vivado_2014.3/unisims/*.v

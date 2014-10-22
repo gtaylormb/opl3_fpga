@@ -1,0 +1,648 @@
+
+*** Running vivado
+    with args -log top_level.vds -m64 -mode batch -messageDb vivado.pb -source top_level.tcl
+
+
+****** Vivado v2014.3 (64-bit)
+  **** SW Build 1034051 on Fri Oct  3 16:31:15 MDT 2014
+  **** IP Build 1028902 on Fri Sep 26 17:35:13 MDT 2014
+    ** Copyright 1986-2014 Xilinx, Inc. All Rights Reserved.
+
+source top_level.tcl
+# set_param gui.test TreeTableDev
+# set_param xicom.use_bs_reader 1
+# debug::add_scope template.lib 1
+# set_msg_config -id {HDL 9-1061} -limit 100000
+# set_msg_config -id {HDL 9-1654} -limit 100000
+# create_project -in_memory -part xc7z010clg400-1
+# set_param project.compositeFile.enableAutoGeneration 0
+# set_param synth.vivado.isSynthRun true
+# set_property webtalk.parent_dir /media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.cache/wt [current_project]
+# set_property parent.project_path /media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.xpr [current_project]
+# set_property default_lib xil_defaultlib [current_project]
+# set_property target_language Verilog [current_project]
+# set_property include_dirs /media/sf_D_DRIVE/Users/Greg/workspace/OPL3 [current_fileset]
+# add_files -quiet /media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.runs/clk_gen_synth_1/clk_gen.dcp
+# set_property used_in_implementation false [get_files /media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.runs/clk_gen_synth_1/clk_gen.dcp]
+# read_verilog -library xil_defaultlib -sv {
+#   /media/sf_D_DRIVE/Users/Greg/workspace/OPL3/top_level/src/top_level.sv
+#   /media/sf_D_DRIVE/Users/Greg/workspace/OPL3/modules/oscillators/src/rand_num_4bit.sv
+#   /media/sf_D_DRIVE/Users/Greg/workspace/OPL3/modules/oscillators/src/sine_lut.sv
+#   /media/sf_D_DRIVE/Users/Greg/workspace/OPL3/modules/oscillators/src/nco.sv
+#   /media/sf_D_DRIVE/Users/Greg/workspace/OPL3/modules/oscillators/src/nco_control.sv
+#   /media/sf_D_DRIVE/Users/Greg/workspace/OPL3/modules/clks/src/clk_div.sv
+#   /media/sf_D_DRIVE/Users/Greg/workspace/OPL3/modules/misc/src/edge_detector.sv
+#   /media/sf_D_DRIVE/Users/Greg/workspace/OPL3/modules/i2s/src/i2s.sv
+#   /media/sf_D_DRIVE/Users/Greg/workspace/OPL3/modules/ssm2603/src/ssm2603_init.sv
+# }
+# read_verilog -library xil_defaultlib {
+#   /media/sf_D_DRIVE/Users/Greg/workspace/OPL3/modules/i2c/src/i2c_master_bit_ctrl.v
+#   /media/sf_D_DRIVE/Users/Greg/workspace/OPL3/modules/i2c/src/i2c_master_byte_ctrl.v
+# }
+# read_xdc /media/sf_D_DRIVE/Users/Greg/workspace/OPL3/top_level/constraints/ZYBO_Master.xdc
+# set_property used_in_implementation false [get_files /media/sf_D_DRIVE/Users/Greg/workspace/OPL3/top_level/constraints/ZYBO_Master.xdc]
+# catch { write_hwdef -file top_level.hwdef }
+INFO: [Vivado_Tcl 4-279] hardware handoff file cannot be generated as there is no block diagram instance in the design
+# synth_design -top top_level -part xc7z010clg400-1
+Command: synth_design -top top_level -part xc7z010clg400-1
+Starting synth_design
+Attempting to get a license for feature 'Synthesis' and/or device 'xc7z010'
+INFO: [Common 17-349] Got license for feature 'Synthesis' and/or device 'xc7z010'
+---------------------------------------------------------------------------------
+Starting RTL Elaboration : Time (s): cpu = 00:00:02 ; elapsed = 00:00:03 . Memory (MB): peak = 890.359 ; gain = 134.285 ; free physical = 4164 ; free virtual = 9854
+---------------------------------------------------------------------------------
+INFO: [Synth 8-638] synthesizing module 'top_level' [/media/sf_D_DRIVE/Users/Greg/workspace/OPL3/top_level/src/top_level.sv:22]
+	Parameter CLK_COUNT bound to: 12723200 - type: integer 
+WARNING: [Synth 8-4446] all outputs are unconnected for this instance and logic may be removed [/media/sf_D_DRIVE/Users/Greg/workspace/OPL3/top_level/src/top_level.sv:59]
+INFO: [Synth 8-638] synthesizing module 'clk_gen' [/media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.runs/synth_1/.Xil/Vivado-14671-edinburgh/realtime/clk_gen_stub.v:6]
+INFO: [Synth 8-256] done synthesizing module 'clk_gen' (1#1) [/media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.runs/synth_1/.Xil/Vivado-14671-edinburgh/realtime/clk_gen_stub.v:6]
+INFO: [Synth 8-638] synthesizing module 'clk_div' [/media/sf_D_DRIVE/Users/Greg/workspace/OPL3/modules/clks/src/clk_div.sv:21]
+	Parameter INPUT_CLK_FREQ bound to: 12723200.000000 - type: float 
+	Parameter OUTPUT_CLK_EN_FREQ bound to: 49700.000000 - type: float 
+	Parameter CLK_DIV_COUNT bound to: 256 - type: integer 
+INFO: [Synth 8-256] done synthesizing module 'clk_div' (2#1) [/media/sf_D_DRIVE/Users/Greg/workspace/OPL3/modules/clks/src/clk_div.sv:21]
+INFO: [Synth 8-638] synthesizing module 'nco_control' [/media/sf_D_DRIVE/Users/Greg/workspace/OPL3/modules/oscillators/src/nco_control.sv:21]
+	Parameter CLK_FREQ bound to: 49700.000000 - type: float 
+	Parameter FREQ_RES bound to: 0.047398 - type: float 
+	Parameter PHASE_ACC_WIDTH bound to: 20 - type: integer 
+	Parameter ACTUAL_FREQ_RES bound to: 0.047398 - type: float 
+	Parameter OUTPUT_WIDTH bound to: 16 - type: integer 
+WARNING: [Synth 8-4446] all outputs are unconnected for this instance and logic may be removed [/media/sf_D_DRIVE/Users/Greg/workspace/OPL3/modules/oscillators/src/nco_control.sv:70]
+INFO: [Synth 8-638] synthesizing module 'nco' [/media/sf_D_DRIVE/Users/Greg/workspace/OPL3/modules/oscillators/src/nco.sv:22]
+	Parameter CLK_FREQ bound to: 49700.000000 - type: float 
+	Parameter FREQ_RES bound to: 0.047398 - type: float 
+	Parameter PHASE_ACC_WIDTH bound to: 20 - type: integer 
+	Parameter OUTPUT_WIDTH bound to: 16 - type: integer 
+	Parameter LUT_INPUT_WIDTH bound to: 10 - type: integer 
+	Parameter DITHER bound to: 1 - type: integer 
+	Parameter DITHER_LEVEL bound to: 6 - type: integer 
+	Parameter DITHER_WIDTH bound to: 4 - type: integer 
+INFO: [Synth 8-638] synthesizing module 'rand_num_4bit' [/media/sf_D_DRIVE/Users/Greg/workspace/OPL3/modules/oscillators/src/rand_num_4bit.sv:20]
+INFO: [Synth 8-256] done synthesizing module 'rand_num_4bit' (3#1) [/media/sf_D_DRIVE/Users/Greg/workspace/OPL3/modules/oscillators/src/rand_num_4bit.sv:20]
+WARNING: [Synth 8-4446] all outputs are unconnected for this instance and logic may be removed [/media/sf_D_DRIVE/Users/Greg/workspace/OPL3/modules/oscillators/src/nco.sv:63]
+INFO: [Synth 8-638] synthesizing module 'sine_lut' [/media/sf_D_DRIVE/Users/Greg/workspace/OPL3/modules/oscillators/src/sine_lut.sv:24]
+INFO: [Synth 8-294] found qualifier unique on case statement: implementing as parallel_case [/media/sf_D_DRIVE/Users/Greg/workspace/OPL3/modules/oscillators/src/sine_lut.sv:47]
+INFO: [Synth 8-256] done synthesizing module 'sine_lut' (4#1) [/media/sf_D_DRIVE/Users/Greg/workspace/OPL3/modules/oscillators/src/sine_lut.sv:24]
+INFO: [Synth 8-256] done synthesizing module 'nco' (5#1) [/media/sf_D_DRIVE/Users/Greg/workspace/OPL3/modules/oscillators/src/nco.sv:22]
+INFO: [Synth 8-294] found qualifier unique on case statement: implementing as parallel_case [/media/sf_D_DRIVE/Users/Greg/workspace/OPL3/modules/oscillators/src/nco_control.sv:43]
+INFO: [Synth 8-256] done synthesizing module 'nco_control' (6#1) [/media/sf_D_DRIVE/Users/Greg/workspace/OPL3/modules/oscillators/src/nco_control.sv:21]
+WARNING: [Synth 8-4446] all outputs are unconnected for this instance and logic may be removed [/media/sf_D_DRIVE/Users/Greg/workspace/OPL3/top_level/src/top_level.sv:89]
+INFO: [Synth 8-638] synthesizing module 'i2s' [/media/sf_D_DRIVE/Users/Greg/workspace/OPL3/modules/i2s/src/i2s.sv:21]
+	Parameter BITS_PER_FRAME bound to: 64 - type: integer 
+	Parameter SCLK_FREQ bound to: 3180800.000000 - type: float 
+	Parameter SCLK_DIV bound to: 2 - type: integer 
+INFO: [Synth 8-294] found qualifier unique on case statement: implementing as parallel_case [/media/sf_D_DRIVE/Users/Greg/workspace/OPL3/modules/i2s/src/i2s.sv:82]
+INFO: [Synth 8-256] done synthesizing module 'i2s' (7#1) [/media/sf_D_DRIVE/Users/Greg/workspace/OPL3/modules/i2s/src/i2s.sv:21]
+WARNING: [Synth 8-4446] all outputs are unconnected for this instance and logic may be removed [/media/sf_D_DRIVE/Users/Greg/workspace/OPL3/top_level/src/top_level.sv:95]
+INFO: [Synth 8-638] synthesizing module 'ssm2603_init' [/media/sf_D_DRIVE/Users/Greg/workspace/OPL3/modules/ssm2603/src/ssm2603_init.sv:21]
+	Parameter I2C_FREQ bound to: 50000.000000 - type: float 
+	Parameter DEV_ADDR bound to: 8'b00011010 
+	Parameter CAP_CHARGE_DELAY bound to: 0.071400 - type: float 
+	Parameter I2C_PRESCALE_REG bound to: 16'b0000000000110010 
+	Parameter DELAY_COUNT bound to: 908436 - type: integer 
+WARNING: [Synth 8-4446] all outputs are unconnected for this instance and logic may be removed [/media/sf_D_DRIVE/Users/Greg/workspace/OPL3/modules/ssm2603/src/ssm2603_init.sv:181]
+INFO: [Synth 8-638] synthesizing module 'i2c_master_byte_ctrl' [/media/sf_D_DRIVE/Users/Greg/workspace/OPL3/modules/i2c/src/i2c_master_byte_ctrl.v:75]
+	Parameter ST_IDLE bound to: 5'b00000 
+	Parameter ST_START bound to: 5'b00001 
+	Parameter ST_READ bound to: 5'b00010 
+	Parameter ST_WRITE bound to: 5'b00100 
+	Parameter ST_ACK bound to: 5'b01000 
+	Parameter ST_STOP bound to: 5'b10000 
+INFO: [Synth 8-638] synthesizing module 'i2c_master_bit_ctrl' [/media/sf_D_DRIVE/Users/Greg/workspace/OPL3/modules/i2c/src/i2c_master_bit_ctrl.v:143]
+	Parameter idle bound to: 18'b000000000000000000 
+	Parameter start_a bound to: 18'b000000000000000001 
+	Parameter start_b bound to: 18'b000000000000000010 
+	Parameter start_c bound to: 18'b000000000000000100 
+	Parameter start_d bound to: 18'b000000000000001000 
+	Parameter start_e bound to: 18'b000000000000010000 
+	Parameter stop_a bound to: 18'b000000000000100000 
+	Parameter stop_b bound to: 18'b000000000001000000 
+	Parameter stop_c bound to: 18'b000000000010000000 
+	Parameter stop_d bound to: 18'b000000000100000000 
+	Parameter rd_a bound to: 18'b000000001000000000 
+	Parameter rd_b bound to: 18'b000000010000000000 
+	Parameter rd_c bound to: 18'b000000100000000000 
+	Parameter rd_d bound to: 18'b000001000000000000 
+	Parameter wr_a bound to: 18'b000010000000000000 
+	Parameter wr_b bound to: 18'b000100000000000000 
+	Parameter wr_c bound to: 18'b001000000000000000 
+	Parameter wr_d bound to: 18'b010000000000000000 
+INFO: [Synth 8-3536] HDL ADVISOR - Pragma parallel_case detected. Simulation mismatch may occur [/media/sf_D_DRIVE/Users/Greg/workspace/OPL3/modules/i2c/src/i2c_master_bit_ctrl.v:406]
+INFO: [Synth 8-3536] HDL ADVISOR - Pragma full_case detected. Simulation mismatch may occur [/media/sf_D_DRIVE/Users/Greg/workspace/OPL3/modules/i2c/src/i2c_master_bit_ctrl.v:406]
+INFO: [Synth 8-3536] HDL ADVISOR - Pragma parallel_case detected. Simulation mismatch may occur [/media/sf_D_DRIVE/Users/Greg/workspace/OPL3/modules/i2c/src/i2c_master_bit_ctrl.v:410]
+INFO: [Synth 8-3536] HDL ADVISOR - Pragma full_case detected. Simulation mismatch may occur [/media/sf_D_DRIVE/Users/Greg/workspace/OPL3/modules/i2c/src/i2c_master_bit_ctrl.v:410]
+INFO: [Synth 8-256] done synthesizing module 'i2c_master_bit_ctrl' (8#1) [/media/sf_D_DRIVE/Users/Greg/workspace/OPL3/modules/i2c/src/i2c_master_bit_ctrl.v:143]
+INFO: [Synth 8-3536] HDL ADVISOR - Pragma parallel_case detected. Simulation mismatch may occur [/media/sf_D_DRIVE/Users/Greg/workspace/OPL3/modules/i2c/src/i2c_master_byte_ctrl.v:230]
+INFO: [Synth 8-3536] HDL ADVISOR - Pragma full_case detected. Simulation mismatch may occur [/media/sf_D_DRIVE/Users/Greg/workspace/OPL3/modules/i2c/src/i2c_master_byte_ctrl.v:230]
+INFO: [Synth 8-256] done synthesizing module 'i2c_master_byte_ctrl' (9#1) [/media/sf_D_DRIVE/Users/Greg/workspace/OPL3/modules/i2c/src/i2c_master_byte_ctrl.v:75]
+INFO: [Synth 8-294] found qualifier unique on case statement: implementing as parallel_case [/media/sf_D_DRIVE/Users/Greg/workspace/OPL3/modules/ssm2603/src/ssm2603_init.sv:92]
+INFO: [Synth 8-294] found qualifier unique on case statement: implementing as parallel_case [/media/sf_D_DRIVE/Users/Greg/workspace/OPL3/modules/ssm2603/src/ssm2603_init.sv:150]
+INFO: [Synth 8-256] done synthesizing module 'ssm2603_init' (10#1) [/media/sf_D_DRIVE/Users/Greg/workspace/OPL3/modules/ssm2603/src/ssm2603_init.sv:21]
+INFO: [Synth 8-256] done synthesizing module 'top_level' (11#1) [/media/sf_D_DRIVE/Users/Greg/workspace/OPL3/top_level/src/top_level.sv:22]
+WARNING: [Synth 8-3917] design top_level has port led[3] driven by constant 1
+WARNING: [Synth 8-3917] design top_level has port led[2] driven by constant 1
+WARNING: [Synth 8-3917] design top_level has port led[1] driven by constant 1
+---------------------------------------------------------------------------------
+Finished RTL Elaboration : Time (s): cpu = 00:00:03 ; elapsed = 00:00:04 . Memory (MB): peak = 924.602 ; gain = 168.527 ; free physical = 4129 ; free virtual = 9819
+---------------------------------------------------------------------------------
+
+Report Check Netlist: 
++------+------------------+-------+---------+-------+------------------+
+|      |Item              |Errors |Warnings |Status |Description       |
++------+------------------+-------+---------+-------+------------------+
+|1     |multi_driven_nets |      0|        0|Passed |Multi driven nets |
++------+------------------+-------+---------+-------+------------------+
+---------------------------------------------------------------------------------
+Finished RTL Optimization Phase 1 : Time (s): cpu = 00:00:03 ; elapsed = 00:00:04 . Memory (MB): peak = 924.602 ; gain = 168.527 ; free physical = 4128 ; free virtual = 9819
+---------------------------------------------------------------------------------
+Loading clock regions from /opt/Xilinx/Vivado/2014.3/data/parts/xilinx/zynq/zynq/xc7z010/ClockRegion.xml
+Loading clock buffers from /opt/Xilinx/Vivado/2014.3/data/parts/xilinx/zynq/zynq/xc7z010/ClockBuffers.xml
+Loading clock placement rules from /opt/Xilinx/Vivado/2014.3/data/parts/xilinx/zynq/ClockPlacerRules.xml
+Loading package pin functions from /opt/Xilinx/Vivado/2014.3/data/parts/xilinx/zynq/PinFunctions.xml...
+Loading package from /opt/Xilinx/Vivado/2014.3/data/parts/xilinx/zynq/zynq/xc7z010/clg400/Package.xml
+Loading io standards from /opt/Xilinx/Vivado/2014.3/data/./parts/xilinx/zynq/IOStandards.xml
+INFO: [Project 1-570] Preparing netlist for logic optimization
+
+Processing XDC Constraints
+Initializing timing engine
+Parsing XDC File [/media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.runs/synth_1/.Xil/Vivado-14671-edinburgh/dcp/clk_gen_in_context.xdc] for cell 'clk_gen_inst'
+Finished Parsing XDC File [/media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.runs/synth_1/.Xil/Vivado-14671-edinburgh/dcp/clk_gen_in_context.xdc] for cell 'clk_gen_inst'
+Parsing XDC File [/media/sf_D_DRIVE/Users/Greg/workspace/OPL3/top_level/constraints/ZYBO_Master.xdc]
+Finished Parsing XDC File [/media/sf_D_DRIVE/Users/Greg/workspace/OPL3/top_level/constraints/ZYBO_Master.xdc]
+Completed Processing XDC Constraints
+
+INFO: [Project 1-111] Unisim Transformation Summary:
+No Unisim elements were transformed.
+
+Constraint Validation Runtime : Time (s): cpu = 00:00:00.01 ; elapsed = 00:00:00.01 . Memory (MB): peak = 1242.934 ; gain = 0.000 ; free physical = 3844 ; free virtual = 9535
+---------------------------------------------------------------------------------
+Finished Constraint Validation : Time (s): cpu = 00:00:07 ; elapsed = 00:00:10 . Memory (MB): peak = 1242.934 ; gain = 486.859 ; free physical = 3842 ; free virtual = 9535
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Loading Part and Timing Information
+---------------------------------------------------------------------------------
+Loading part: xc7z010clg400-1
+---------------------------------------------------------------------------------
+Finished Loading Part and Timing Information : Time (s): cpu = 00:00:07 ; elapsed = 00:00:10 . Memory (MB): peak = 1242.934 ; gain = 486.859 ; free physical = 3842 ; free virtual = 9535
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Applying 'set_property' XDC Constraints
+---------------------------------------------------------------------------------
+Applied set_property IO_BUFFER_TYPE = NONE for clk125. (constraint file  /media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.runs/synth_1/.Xil/Vivado-14671-edinburgh/dcp/clk_gen_in_context.xdc, line 3).
+---------------------------------------------------------------------------------
+Finished applying 'set_property' XDC Constraints : Time (s): cpu = 00:00:07 ; elapsed = 00:00:10 . Memory (MB): peak = 1242.934 ; gain = 486.859 ; free physical = 3842 ; free virtual = 9535
+---------------------------------------------------------------------------------
+INFO: [Synth 8-3537] HDL ADVISOR - The operator resource <multiplier> is shared. To prevent sharing consider applying a KEEP on the inputs of the operator [/media/sf_D_DRIVE/Users/Greg/workspace/OPL3/modules/oscillators/src/nco_control.sv:43]
+INFO: [Synth 8-802] inferred FSM for state register 'c_state_reg' in module 'i2c_master_bit_ctrl'
+INFO: [Synth 8-802] inferred FSM for state register 'c_state_reg' in module 'i2c_master_byte_ctrl'
+INFO: [Synth 8-802] inferred FSM for state register 'state_reg' in module 'ssm2603_init'
+INFO: [Synth 8-3354] encoded FSM with state register 'c_state_reg' using encoding 'sequential' in module 'i2c_master_bit_ctrl'
+INFO: [Synth 8-3354] encoded FSM with state register 'c_state_reg' using encoding 'sequential' in module 'i2c_master_byte_ctrl'
+INFO: [Synth 8-3354] encoded FSM with state register 'state_reg' using encoding 'sequential' in module 'ssm2603_init'
+---------------------------------------------------------------------------------
+Finished RTL Optimization Phase 2 : Time (s): cpu = 00:00:09 ; elapsed = 00:00:12 . Memory (MB): peak = 1242.934 ; gain = 486.859 ; free physical = 3841 ; free virtual = 9534
+---------------------------------------------------------------------------------
+
+Report RTL Partitions: 
++-+--------------+------------+----------+
+| |RTL Partition |Replication |Instances |
++-+--------------+------------+----------+
++-+--------------+------------+----------+
+---------------------------------------------------------------------------------
+Start RTL Component Statistics 
+---------------------------------------------------------------------------------
+Detailed RTL Component Info : 
++---Adders : 
+	   2 Input     24 Bit       Adders := 1     
+	   2 Input     20 Bit       Adders := 1     
+	   2 Input     14 Bit       Adders := 1     
+	   2 Input      8 Bit       Adders := 1     
+	   2 Input      6 Bit       Adders := 1     
+	   2 Input      3 Bit       Adders := 2     
+	   2 Input      1 Bit       Adders := 1     
++---XORs : 
+	   4 Input      1 Bit         XORs := 2     
+	   2 Input      1 Bit         XORs := 1     
+	   6 Input      1 Bit         XORs := 1     
++---Registers : 
+	               44 Bit    Registers := 1     
+	               43 Bit    Registers := 1     
+	               42 Bit    Registers := 1     
+	               41 Bit    Registers := 1     
+	               24 Bit    Registers := 1     
+	               20 Bit    Registers := 5     
+	               16 Bit    Registers := 6     
+	               14 Bit    Registers := 1     
+	                8 Bit    Registers := 4     
+	                6 Bit    Registers := 1     
+	                4 Bit    Registers := 1     
+	                3 Bit    Registers := 4     
+	                2 Bit    Registers := 2     
+	                1 Bit    Registers := 33    
++---ROMs : 
+	                              ROMs := 1     
++---Muxes : 
+	   2 Input     24 Bit        Muxes := 1     
+	  16 Input     20 Bit        Muxes := 1     
+	  18 Input     18 Bit        Muxes := 1     
+	   2 Input     16 Bit        Muxes := 1     
+	   2 Input     14 Bit        Muxes := 2     
+	   2 Input      8 Bit        Muxes := 4     
+	  22 Input      7 Bit        Muxes := 1     
+	  24 Input      7 Bit        Muxes := 17    
+	   2 Input      6 Bit        Muxes := 70    
+	  23 Input      5 Bit        Muxes := 1     
+	   2 Input      5 Bit        Muxes := 68    
+	  16 Input      4 Bit        Muxes := 1     
+	   2 Input      4 Bit        Muxes := 40    
+	   7 Input      4 Bit        Muxes := 1     
+	   2 Input      3 Bit        Muxes := 5     
+	  14 Input      3 Bit        Muxes := 1     
+	   2 Input      2 Bit        Muxes := 2     
+	   2 Input      1 Bit        Muxes := 23    
+	  19 Input      1 Bit        Muxes := 6     
+	   7 Input      1 Bit        Muxes := 6     
+---------------------------------------------------------------------------------
+Finished RTL Component Statistics 
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start RTL Hierarchical Component Statistics 
+---------------------------------------------------------------------------------
+Hierarchical RTL Component report 
+Module top_level 
+Detailed RTL Component Info : 
++---Adders : 
+	   2 Input     24 Bit       Adders := 1     
+	   2 Input      3 Bit       Adders := 1     
++---Registers : 
+	               24 Bit    Registers := 1     
+	                3 Bit    Registers := 1     
++---Muxes : 
+	   2 Input     24 Bit        Muxes := 1     
+	   2 Input      1 Bit        Muxes := 1     
+Module clk_div 
+Detailed RTL Component Info : 
++---Adders : 
+	   2 Input      8 Bit       Adders := 1     
++---Registers : 
+	                8 Bit    Registers := 1     
+	                1 Bit    Registers := 1     
++---Muxes : 
+	   2 Input      8 Bit        Muxes := 1     
+	   2 Input      1 Bit        Muxes := 1     
+Module rand_num_4bit 
+Detailed RTL Component Info : 
++---XORs : 
+	   4 Input      1 Bit         XORs := 2     
+	   2 Input      1 Bit         XORs := 1     
+	   6 Input      1 Bit         XORs := 1     
++---Registers : 
+	               44 Bit    Registers := 1     
+	               43 Bit    Registers := 1     
+	               42 Bit    Registers := 1     
+	               41 Bit    Registers := 1     
+Module sine_lut 
+Detailed RTL Component Info : 
++---Registers : 
+	               16 Bit    Registers := 2     
+	                8 Bit    Registers := 1     
+	                1 Bit    Registers := 2     
++---ROMs : 
+	                              ROMs := 1     
++---Muxes : 
+	   2 Input     16 Bit        Muxes := 1     
+	   2 Input      8 Bit        Muxes := 1     
+Module nco 
+Detailed RTL Component Info : 
++---Adders : 
+	   2 Input     20 Bit       Adders := 1     
++---Registers : 
+	               20 Bit    Registers := 1     
+Module nco_control 
+Detailed RTL Component Info : 
++---Registers : 
+	               20 Bit    Registers := 4     
++---Muxes : 
+	  16 Input     20 Bit        Muxes := 1     
+	  16 Input      4 Bit        Muxes := 1     
+Module i2s 
+Detailed RTL Component Info : 
++---Adders : 
+	   2 Input      6 Bit       Adders := 1     
+	   2 Input      1 Bit       Adders := 1     
++---Registers : 
+	               16 Bit    Registers := 4     
+	                6 Bit    Registers := 1     
+	                1 Bit    Registers := 5     
++---Muxes : 
+	   2 Input      6 Bit        Muxes := 1     
+	   2 Input      1 Bit        Muxes := 1     
+Module i2c_master_bit_ctrl 
+Detailed RTL Component Info : 
++---Adders : 
+	   2 Input     14 Bit       Adders := 1     
++---Registers : 
+	               14 Bit    Registers := 1     
+	                3 Bit    Registers := 2     
+	                2 Bit    Registers := 2     
+	                1 Bit    Registers := 17    
++---Muxes : 
+	  18 Input     18 Bit        Muxes := 1     
+	   2 Input     14 Bit        Muxes := 2     
+	  23 Input      5 Bit        Muxes := 1     
+	   2 Input      3 Bit        Muxes := 2     
+	   2 Input      2 Bit        Muxes := 2     
+	   2 Input      1 Bit        Muxes := 13    
+	  19 Input      1 Bit        Muxes := 6     
+Module i2c_master_byte_ctrl 
+Detailed RTL Component Info : 
++---Adders : 
+	   2 Input      3 Bit       Adders := 1     
++---Registers : 
+	                8 Bit    Registers := 1     
+	                4 Bit    Registers := 1     
+	                3 Bit    Registers := 1     
+	                1 Bit    Registers := 5     
++---Muxes : 
+	   2 Input      8 Bit        Muxes := 2     
+	   2 Input      4 Bit        Muxes := 6     
+	   7 Input      4 Bit        Muxes := 1     
+	   2 Input      3 Bit        Muxes := 3     
+	  14 Input      3 Bit        Muxes := 1     
+	   2 Input      1 Bit        Muxes := 6     
+	   7 Input      1 Bit        Muxes := 6     
+Module ssm2603_init 
+Detailed RTL Component Info : 
++---Registers : 
+	                8 Bit    Registers := 1     
+	                1 Bit    Registers := 3     
++---Muxes : 
+	  22 Input      7 Bit        Muxes := 1     
+	  24 Input      7 Bit        Muxes := 17    
+	   2 Input      6 Bit        Muxes := 69    
+	   2 Input      5 Bit        Muxes := 68    
+	   2 Input      4 Bit        Muxes := 34    
+	   2 Input      1 Bit        Muxes := 1     
+---------------------------------------------------------------------------------
+Finished RTL Hierarchical Component Statistics
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Part Resource Summary
+---------------------------------------------------------------------------------
+Part Resources:
+DSPs: 80 (col length:40)
+BRAMs: 120 (col length: RAMB18 40 RAMB36 20)
+---------------------------------------------------------------------------------
+Finished Part Resource Summary
+---------------------------------------------------------------------------------
+Start Parallel Synthesis Optimization  : Time (s): cpu = 00:00:09 ; elapsed = 00:00:12 . Memory (MB): peak = 1242.934 ; gain = 486.859 ; free physical = 3841 ; free virtual = 9534
+---------------------------------------------------------------------------------
+Start Cross Boundary Optimization
+---------------------------------------------------------------------------------
+INFO: [Synth 8-4471] merging register 'phase_gen_inst/pre_mult_reg[19:0]' into 'phase_gen_inst/pre_mult_reg[19:0]' [/media/sf_D_DRIVE/Users/Greg/workspace/OPL3/modules/oscillators/src/nco_control.sv:40]
+INFO: [Synth 8-4471] merging register 'i2s_inst/right_channel_r_reg[0][15:0]' into 'i2s_inst/left_channel_r_reg[0][15:0]' [/media/sf_D_DRIVE/Users/Greg/workspace/OPL3/modules/i2s/src/i2s.sv:45]
+INFO: [Synth 8-4471] merging register 'i2s_inst/right_channel_r_reg[1][15:0]' into 'i2s_inst/left_channel_r_reg[1][15:0]' [/media/sf_D_DRIVE/Users/Greg/workspace/OPL3/modules/i2s/src/i2s.sv:45]
+WARNING: [Synth 8-3917] design top_level has port led[3] driven by constant 1
+WARNING: [Synth 8-3917] design top_level has port led[2] driven by constant 1
+WARNING: [Synth 8-3917] design top_level has port led[1] driven by constant 1
+---------------------------------------------------------------------------------
+Finished Cross Boundary Optimization : Time (s): cpu = 00:00:09 ; elapsed = 00:00:12 . Memory (MB): peak = 1242.934 ; gain = 486.859 ; free physical = 3841 ; free virtual = 9534
+---------------------------------------------------------------------------------
+Finished Parallel Reinference  : Time (s): cpu = 00:00:09 ; elapsed = 00:00:12 . Memory (MB): peak = 1242.934 ; gain = 486.859 ; free physical = 3841 ; free virtual = 9534
+
+Report RTL Partitions: 
++-+--------------+------------+----------+
+| |RTL Partition |Replication |Instances |
++-+--------------+------------+----------+
++-+--------------+------------+----------+
+---------------------------------------------------------------------------------
+Start RAM, DSP and Shift Register Reporting
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished RAM, DSP and Shift Register Reporting
+---------------------------------------------------------------------------------
+INFO: [Synth 8-3333] propagating constant 0 across sequential element (\ssm2603_inst/din_reg[7] )
+INFO: [Synth 8-3333] propagating constant 0 across sequential element (\i2s_inst/left_channel_r_reg[0][15] )
+INFO: [Synth 8-3333] propagating constant 0 across sequential element (\phase_gen_inst/post_mult_reg[19] )
+INFO: [Synth 8-3333] propagating constant 0 across sequential element (\i2s_inst/left_channel_r_reg[1][15] )
+INFO: [Synth 8-3333] propagating constant 0 across sequential element (\phase_gen_inst/post_mult_reg[19] )
+WARNING: [Synth 8-3332] Sequential element (\phase_gen_inst/pre_mult_reg[18] ) is unused and will be removed from module top_level.
+WARNING: [Synth 8-3332] Sequential element (\phase_gen_inst/pre_mult_reg[17] ) is unused and will be removed from module top_level.
+WARNING: [Synth 8-3332] Sequential element (\phase_gen_inst/pre_mult_reg[8] ) is unused and will be removed from module top_level.
+WARNING: [Synth 8-3332] Sequential element (\phase_gen_inst/pre_mult_reg[7] ) is unused and will be removed from module top_level.
+WARNING: [Synth 8-3332] Sequential element (\phase_gen_inst/post_mult_reg[18] ) is unused and will be removed from module top_level.
+WARNING: [Synth 8-3332] Sequential element (\phase_gen_inst/post_mult_reg[17] ) is unused and will be removed from module top_level.
+WARNING: [Synth 8-3332] Sequential element (\phase_gen_inst/post_mult_reg[8] ) is unused and will be removed from module top_level.
+WARNING: [Synth 8-3332] Sequential element (\phase_gen_inst/post_mult_reg[7] ) is unused and will be removed from module top_level.
+WARNING: [Synth 8-3332] Sequential element (\phase_gen_inst/phase_inc_reg[18] ) is unused and will be removed from module top_level.
+WARNING: [Synth 8-3332] Sequential element (\phase_gen_inst/phase_inc_reg[17] ) is unused and will be removed from module top_level.
+WARNING: [Synth 8-3332] Sequential element (\phase_gen_inst/phase_inc_reg[8] ) is unused and will be removed from module top_level.
+WARNING: [Synth 8-3332] Sequential element (\phase_gen_inst/phase_inc_reg[7] ) is unused and will be removed from module top_level.
+WARNING: [Synth 8-3332] Sequential element (\phase_gen_inst/nco_inst/dither_reg[9] ) is unused and will be removed from module top_level.
+WARNING: [Synth 8-3332] Sequential element (\phase_gen_inst/nco_inst/dither_reg[8] ) is unused and will be removed from module top_level.
+WARNING: [Synth 8-3332] Sequential element (\phase_gen_inst/nco_inst/dither_reg[7] ) is unused and will be removed from module top_level.
+WARNING: [Synth 8-3332] Sequential element (\phase_gen_inst/nco_inst/dither_reg[6] ) is unused and will be removed from module top_level.
+WARNING: [Synth 8-3332] Sequential element (\phase_gen_inst/nco_inst/dither_reg[5] ) is unused and will be removed from module top_level.
+WARNING: [Synth 8-3332] Sequential element (\phase_gen_inst/nco_inst/dither_reg[4] ) is unused and will be removed from module top_level.
+WARNING: [Synth 8-3332] Sequential element (\phase_gen_inst/nco_inst/dither_reg[3] ) is unused and will be removed from module top_level.
+WARNING: [Synth 8-3332] Sequential element (\phase_gen_inst/nco_inst/dither_reg[2] ) is unused and will be removed from module top_level.
+WARNING: [Synth 8-3332] Sequential element (\phase_gen_inst/nco_inst/dither_reg[1] ) is unused and will be removed from module top_level.
+WARNING: [Synth 8-3332] Sequential element (\phase_gen_inst/nco_inst/dither_reg[0] ) is unused and will be removed from module top_level.
+WARNING: [Synth 8-3332] Sequential element (\phase_gen_inst/nco_inst/sine_lut_inst/out_reg[0] ) is unused and will be removed from module top_level.
+WARNING: [Synth 8-3332] Sequential element (\i2s_inst/left_channel_r_reg[0][15] ) is unused and will be removed from module top_level.
+WARNING: [Synth 8-3332] Sequential element (\i2s_inst/left_channel_r_reg[1][15] ) is unused and will be removed from module top_level.
+WARNING: [Synth 8-3332] Sequential element (\ssm2603_inst/i2c_controller_inst/bit_controller/sta_condition_reg ) is unused and will be removed from module top_level.
+WARNING: [Synth 8-3332] Sequential element (\ssm2603_inst/i2c_controller_inst/bit_controller/busy_reg ) is unused and will be removed from module top_level.
+WARNING: [Synth 8-3332] Sequential element (\ssm2603_inst/din_reg[7] ) is unused and will be removed from module top_level.
+WARNING: [Synth 8-3332] Sequential element (\phase_gen_inst/pre_mult_reg[19] ) is unused and will be removed from module top_level.
+WARNING: [Synth 8-3332] Sequential element (\phase_gen_inst/post_mult_reg[19] ) is unused and will be removed from module top_level.
+WARNING: [Synth 8-3332] Sequential element (\phase_gen_inst/phase_inc_reg[19] ) is unused and will be removed from module top_level.
+---------------------------------------------------------------------------------
+Start Area Optimization
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Area Optimization : Time (s): cpu = 00:00:10 ; elapsed = 00:00:13 . Memory (MB): peak = 1242.938 ; gain = 486.863 ; free physical = 3841 ; free virtual = 9534
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Area Optimization : Time (s): cpu = 00:00:10 ; elapsed = 00:00:13 . Memory (MB): peak = 1242.938 ; gain = 486.863 ; free physical = 3841 ; free virtual = 9534
+---------------------------------------------------------------------------------
+Finished Parallel Area Optimization  : Time (s): cpu = 00:00:10 ; elapsed = 00:00:13 . Memory (MB): peak = 1242.938 ; gain = 486.863 ; free physical = 3841 ; free virtual = 9534
+
+Report RTL Partitions: 
++-+--------------+------------+----------+
+| |RTL Partition |Replication |Instances |
++-+--------------+------------+----------+
++-+--------------+------------+----------+
+Finished Parallel Synthesis Optimization  : Time (s): cpu = 00:00:10 ; elapsed = 00:00:13 . Memory (MB): peak = 1242.938 ; gain = 486.863 ; free physical = 3841 ; free virtual = 9534
+---------------------------------------------------------------------------------
+Start Timing Optimization
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Applying XDC Timing Constraints
+---------------------------------------------------------------------------------
+INFO: Moved 1 constraints on hierarchical pins to their respective driving/loading pins
+---------------------------------------------------------------------------------
+Finished Applying XDC Timing Constraints : Time (s): cpu = 00:00:15 ; elapsed = 00:00:18 . Memory (MB): peak = 1242.938 ; gain = 486.863 ; free physical = 3840 ; free virtual = 9533
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Timing Optimization : Time (s): cpu = 00:00:15 ; elapsed = 00:00:19 . Memory (MB): peak = 1242.938 ; gain = 486.863 ; free physical = 3840 ; free virtual = 9533
+---------------------------------------------------------------------------------
+
+Report RTL Partitions: 
++-+--------------+------------+----------+
+| |RTL Partition |Replication |Instances |
++-+--------------+------------+----------+
++-+--------------+------------+----------+
+---------------------------------------------------------------------------------
+Start Technology Mapping
+---------------------------------------------------------------------------------
+INFO: [Synth 8-4480] The timing for the instance \phase_gen_inst/nco_inst/sine_lut_inst/sine_reg  (implemented as a block RAM) might be sub-optimal as no optional output register could be merged into the block ram. Providing additional output register may help in improving timing.
+---------------------------------------------------------------------------------
+Finished Technology Mapping : Time (s): cpu = 00:00:15 ; elapsed = 00:00:19 . Memory (MB): peak = 1242.938 ; gain = 486.863 ; free physical = 3841 ; free virtual = 9534
+---------------------------------------------------------------------------------
+
+Report RTL Partitions: 
++-+--------------+------------+----------+
+| |RTL Partition |Replication |Instances |
++-+--------------+------------+----------+
++-+--------------+------------+----------+
+---------------------------------------------------------------------------------
+Start IO Insertion
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Flattening Before IO Insertion
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Flattening Before IO Insertion
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Final Netlist Cleanup
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Final Netlist Cleanup
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished IO Insertion : Time (s): cpu = 00:00:15 ; elapsed = 00:00:19 . Memory (MB): peak = 1242.938 ; gain = 486.863 ; free physical = 3841 ; free virtual = 9534
+---------------------------------------------------------------------------------
+
+Report Check Netlist: 
++------+------------------+-------+---------+-------+------------------+
+|      |Item              |Errors |Warnings |Status |Description       |
++------+------------------+-------+---------+-------+------------------+
+|1     |multi_driven_nets |      0|        0|Passed |Multi driven nets |
++------+------------------+-------+---------+-------+------------------+
+---------------------------------------------------------------------------------
+Start Renaming Generated Instances
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Renaming Generated Instances : Time (s): cpu = 00:00:15 ; elapsed = 00:00:19 . Memory (MB): peak = 1242.938 ; gain = 486.863 ; free physical = 3841 ; free virtual = 9534
+---------------------------------------------------------------------------------
+
+Report RTL Partitions: 
++-+--------------+------------+----------+
+| |RTL Partition |Replication |Instances |
++-+--------------+------------+----------+
++-+--------------+------------+----------+
+---------------------------------------------------------------------------------
+Start Rebuilding User Hierarchy
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Rebuilding User Hierarchy : Time (s): cpu = 00:00:15 ; elapsed = 00:00:19 . Memory (MB): peak = 1242.938 ; gain = 486.863 ; free physical = 3841 ; free virtual = 9534
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start RAM, DSP and Shift Register Reporting
+---------------------------------------------------------------------------------
+
+Static Shift Register:
++------------+-----------------------------------------------------+--------+-------+--------------+--------------------+-------------------+--------+---------+
+|Module Name | RTL Name                                            | Length | Width | Reset Signal | Pull out first Reg | Pull out last Reg | SRL16E | SRLC32E | 
++------------+-----------------------------------------------------+--------+-------+--------------+--------------------+-------------------+--------+---------+
+|top_level   | phase_gen_inst/nco_inst/rand_num_inst/lfsr0_reg[40] | 35     | 1     | NO           | NO                 | YES               | 0      | 2       | 
+|top_level   | phase_gen_inst/nco_inst/rand_num_inst/lfsr0_reg[3]  | 3      | 1     | NO           | NO                 | YES               | 1      | 0       | 
+|top_level   | phase_gen_inst/nco_inst/rand_num_inst/lfsr1_reg[41] | 38     | 1     | NO           | NO                 | YES               | 0      | 2       | 
+|top_level   | phase_gen_inst/nco_inst/rand_num_inst/lfsr1_reg[3]  | 3      | 1     | NO           | NO                 | YES               | 1      | 0       | 
+|top_level   | phase_gen_inst/nco_inst/rand_num_inst/lfsr2_reg[42] | 37     | 1     | NO           | NO                 | YES               | 0      | 2       | 
+|top_level   | phase_gen_inst/nco_inst/rand_num_inst/lfsr3_reg[43] | 37     | 1     | NO           | NO                 | YES               | 0      | 2       | 
+|top_level   | phase_gen_inst/nco_inst/rand_num_inst/lfsr3_reg[3]  | 3      | 1     | NO           | NO                 | YES               | 1      | 0       | 
+|top_level   | phase_gen_inst/phase_inc_reg[16]                    | 3      | 15    | NO           | NO                 | YES               | 15     | 0       | 
++------------+-----------------------------------------------------+--------+-------+--------------+--------------------+-------------------+--------+---------+
+
+---------------------------------------------------------------------------------
+Finished RAM, DSP and Shift Register Reporting
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Writing Synthesis Report
+---------------------------------------------------------------------------------
+
+Report BlackBoxes: 
++------+--------------+----------+
+|      |BlackBox name |Instances |
++------+--------------+----------+
+|1     |clk_gen       |         1|
++------+--------------+----------+
+
+Report Cell Usage: 
++------+---------+------+
+|      |Cell     |Count |
++------+---------+------+
+|1     |clk_gen  |     1|
+|2     |CARRY4   |    32|
+|3     |INV      |     2|
+|4     |LUT1     |    98|
+|5     |LUT2     |    50|
+|6     |LUT3     |    48|
+|7     |LUT4     |    16|
+|8     |LUT5     |    30|
+|9     |LUT6     |    85|
+|10    |MUXF7    |     1|
+|11    |RAMB18E1 |     1|
+|12    |SRL16E   |    18|
+|13    |SRLC32E  |     8|
+|14    |FDRE     |   280|
+|15    |FDSE     |     6|
+|16    |IOBUF    |     2|
+|17    |OBUF     |     9|
++------+---------+------+
+
+Report Instance Areas: 
++------+------------------------+---------------------+------+
+|      |Instance                |Module               |Cells |
++------+------------------------+---------------------+------+
+|1     |top                     |                     |   688|
+|2     |  i2s_inst              |i2s                  |    59|
+|3     |  phase_gen_inst        |nco_control          |   222|
+|4     |    nco_inst            |nco                  |   179|
+|5     |      rand_num_inst     |rand_num_4bit        |    36|
+|6     |      sine_lut_inst     |sine_lut             |    69|
+|7     |  sample_clk_gen_inst   |clk_div              |    20|
+|8     |  ssm2603_inst          |ssm2603_init         |   305|
+|9     |    i2c_controller_inst |i2c_master_byte_ctrl |   232|
+|10    |      bit_controller    |i2c_master_bit_ctrl  |   175|
++------+------------------------+---------------------+------+
+---------------------------------------------------------------------------------
+Finished Writing Synthesis Report : Time (s): cpu = 00:00:15 ; elapsed = 00:00:19 . Memory (MB): peak = 1242.938 ; gain = 486.863 ; free physical = 3841 ; free virtual = 9534
+---------------------------------------------------------------------------------
+Synthesis finished with 0 errors, 0 critical warnings and 34 warnings.
+Synthesis Optimization Runtime : Time (s): cpu = 00:00:11 ; elapsed = 00:00:14 . Memory (MB): peak = 1242.938 ; gain = 75.242 ; free physical = 3841 ; free virtual = 9534
+Synthesis Optimization Complete : Time (s): cpu = 00:00:15 ; elapsed = 00:00:19 . Memory (MB): peak = 1242.938 ; gain = 486.863 ; free physical = 3841 ; free virtual = 9534
+INFO: [Project 1-571] Translating synthesized netlist
+INFO: [Netlist 29-17] Analyzing 35 Unisim elements for replacement
+INFO: [Netlist 29-28] Unisim Transformation completed in 0 CPU seconds
+INFO: [Project 1-570] Preparing netlist for logic optimization
+INFO: [Opt 31-140] Inserted 0 IBUFs to IO ports without IO buffers.
+INFO: [Opt 31-141] Inserted 0 OBUFs to IO ports without IO buffers.
+INFO: [Opt 31-138] Pushed 0 inverter(s) to 0 load pin(s).
+INFO: [Project 1-111] Unisim Transformation Summary:
+  A total of 8 instances were transformed.
+  INV => LUT1: 2 instances
+  IOBUF => IOBUF (IBUF, OBUFT): 2 instances
+  SRLC32E => SRL16E: 4 instances
+
+INFO: [Common 17-83] Releasing license: Synthesis
+61 Infos, 43 Warnings, 0 Critical Warnings and 0 Errors encountered.
+synth_design completed successfully
+synth_design: Time (s): cpu = 00:00:15 ; elapsed = 00:00:19 . Memory (MB): peak = 1242.938 ; gain = 397.574 ; free physical = 3838 ; free virtual = 9531
+# write_checkpoint top_level.dcp
+# catch { report_utilization -file top_level_utilization_synth.rpt -pb top_level_utilization_synth.pb }
+report_utilization: Time (s): cpu = 00:00:00.05 ; elapsed = 00:00:00.09 . Memory (MB): peak = 1242.938 ; gain = 0.000 ; free physical = 3832 ; free virtual = 9526
+INFO: [Common 17-206] Exiting Vivado at Wed Oct 22 00:02:50 2014...

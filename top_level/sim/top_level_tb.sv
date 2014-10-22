@@ -26,6 +26,13 @@ module top_level_tb;
     wire i2s_ws;
     wire i2s_sd;
     wire ac_mclk;
+    wire ac_mute_n;
+    wire i2c_scl;
+    wire i2c_sda;
+    wire [3:0] led;
+    
+    pullup(i2c_scl);
+    pullup(i2c_sda);
     
     always begin
         #CLK_HALF_PERIOD clk125 = 0;
@@ -36,12 +43,17 @@ module top_level_tb;
         .*
     );
     
+    i2c_slave_model i2c_slave_model_inst (
+        .scl(i2c_scl),
+        .sda(i2c_sda)
+    );
+    
     program top_level_testbench;
 		default clocking clk @(posedge clk125);
 		endclocking      
 		
         initial begin
-        	##100000;
+        	@(posedge ac_mute_n);
         end
     endprogram
 endmodule
