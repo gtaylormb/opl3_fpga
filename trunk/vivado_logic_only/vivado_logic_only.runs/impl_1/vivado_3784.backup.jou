@@ -1,0 +1,10 @@
+#-----------------------------------------------------------
+# Vivado v2014.3 (64-bit)
+# SW Build 1034051 on Fri Oct  3 16:31:15 MDT 2014
+# IP Build 1028902 on Fri Sep 26 17:35:13 MDT 2014
+# Start of session at: Mon Oct 20 08:18:18 2014
+# Process ID: 2962
+# Log file: /media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.runs/impl_1/top_level.vdi
+# Journal file: /media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.runs/impl_1/vivado.jou
+#-----------------------------------------------------------
+source top_level.tcl -notrace

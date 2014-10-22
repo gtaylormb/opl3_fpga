@@ -912,7 +912,7 @@
         <spirit:parameters>
           <spirit:parameter>
             <spirit:name>customizationCRC</spirit:name>
-            <spirit:value>0a220b09</spirit:value>
+            <spirit:value>c055149e</spirit:value>
           </spirit:parameter>
           <spirit:parameter>
             <spirit:name>customizationCRCversion</spirit:name>
@@ -3335,7 +3335,7 @@
       </spirit:modelParameter>
       <spirit:modelParameter spirit:dataType="STRING">
         <spirit:name>C_LOCKED_PORT</spirit:name>
-        <spirit:value spirit:format="string" spirit:resolve="generated" spirit:id="MODELPARAM_VALUE.C_LOCKED_PORT" spirit:order="378">locked</spirit:value>
+        <spirit:value spirit:format="string" spirit:resolve="generated" spirit:id="MODELPARAM_VALUE.C_LOCKED_PORT" spirit:order="378">clk_locked</spirit:value>
       </spirit:modelParameter>
       <spirit:modelParameter spirit:dataType="STRING">
         <spirit:name>C_CLKFB_IN_PORT</spirit:name>
@@ -4165,7 +4165,7 @@
     </spirit:parameter>
     <spirit:parameter>
       <spirit:name>LOCKED_PORT</spirit:name>
-      <spirit:value spirit:resolve="user" spirit:id="PARAM_VALUE.LOCKED_PORT" spirit:order="113" spirit:configGroups="0 NoDisplay">locked</spirit:value>
+      <spirit:value spirit:resolve="user" spirit:id="PARAM_VALUE.LOCKED_PORT" spirit:order="113" spirit:configGroups="0 NoDisplay">clk_locked</spirit:value>
     </spirit:parameter>
     <spirit:parameter>
       <spirit:name>POWER_DOWN_PORT</spirit:name>

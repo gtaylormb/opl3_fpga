@@ -24,7 +24,11 @@ module top_level (
     output wire i2s_sclk,
     output wire i2s_ws,
     output wire i2s_sd,
-    output logic ac_mclk
+    output logic ac_mclk,
+    output wire ac_mute_n,
+    inout wire i2c_scl,
+    inout wire i2c_sda,
+    output logic [3:0] led
 );
     logic reset;
     wire clk_locked;
@@ -33,12 +37,25 @@ module top_level (
     
     logic [REG_FNUM_WIDTH-1:0] fnum = 1023;
     logic [REG_MULT_WIDTH-1:0] mult = 1;
-    logic [REG_BLOCK_WIDTH-1:0] block = 4;
+    logic [REG_BLOCK_WIDTH-1:0] block = 0;
+    
+    localparam int CLK_COUNT = CLK_FREQ;
+    
+    logic [$clog2(CLK_COUNT)-1:0] counter = 0;
+    
+    always_ff @(posedge clk)    
+        if (counter == CLK_COUNT - 1)
+            counter <= 0;
+        else
+            counter <= counter + 1;
+        
+    always_ff @(posedge clk)
+        if (counter == CLK_COUNT -1)
+            block <= block + 1;
 
     wire [SAMPLE_WIDTH-1:0] sample;
       
     clk_gen clk_gen_inst(
-        .locked(clk_locked),
         .*
     );
     always_comb reset = !clk_locked;
@@ -73,6 +90,25 @@ module top_level (
         .right_channel(sample),
         .*
     );
+    
+    ssm2603_init ssm2603_inst (
+        .*
+    );       
+    
+    always_comb led[0] = ac_mute_n;
+    always_comb led[1] = 1;
+    always_comb led[2] = 1;
+    always_comb led[3] = 1;
+    
+    /*
+    save_dac_input #(
+        .DAC_WIDTH(SAMPLE_WIDTH)
+    ) save_dac_input_inst (
+        .dac_input(sample),
+        .clk_en(sample_clk_en),
+        .*
+    );   */ 
+    
     
 endmodule
 `default_nettype wire  // re-enable implicit net type declarations

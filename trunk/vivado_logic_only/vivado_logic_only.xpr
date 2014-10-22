@@ -73,6 +73,34 @@
           <Attr Name="UsedIn" Val="simulation"/>
         </FileInfo>
       </File>
+      <File Path="$PPRDIR/../modules/i2c/src/i2c_master_bit_ctrl.v">
+        <FileInfo>
+          <Attr Name="UsedIn" Val="synthesis"/>
+          <Attr Name="UsedIn" Val="implementation"/>
+          <Attr Name="UsedIn" Val="simulation"/>
+        </FileInfo>
+      </File>
+      <File Path="$PPRDIR/../modules/i2c/src/i2c_master_byte_ctrl.v">
+        <FileInfo>
+          <Attr Name="UsedIn" Val="synthesis"/>
+          <Attr Name="UsedIn" Val="implementation"/>
+          <Attr Name="UsedIn" Val="simulation"/>
+        </FileInfo>
+      </File>
+      <File Path="$PPRDIR/../modules/ssm2603/src/ssm2603_init.sv">
+        <FileInfo>
+          <Attr Name="UsedIn" Val="synthesis"/>
+          <Attr Name="UsedIn" Val="implementation"/>
+          <Attr Name="UsedIn" Val="simulation"/>
+        </FileInfo>
+      </File>
+      <File Path="$PSRCDIR/sources_1/bd/design_1/design_1.bd">
+        <FileInfo>
+          <Attr Name="UsedIn" Val="synthesis"/>
+          <Attr Name="UsedIn" Val="implementation"/>
+          <Attr Name="UsedIn" Val="simulation"/>
+        </FileInfo>
+      </File>
       <Config>
         <Option Name="DesignMode" Val="RTL"/>
         <Option Name="TopModule" Val="top_level"/>
@@ -109,19 +137,6 @@
           <Attr Name="UsedIn" Val="implementation"/>
           <Attr Name="UsedIn" Val="simulation"/>
         </FileInfo>
-        <CompFileExtendedInfo CompFileName="clk_gen.xci" FileRelPathName="clk_gen_board.xdc"/>
-        <CompFileExtendedInfo CompFileName="clk_gen.xci" FileRelPathName="clk_gen_ooc.xdc"/>
-        <CompFileExtendedInfo CompFileName="clk_gen.xci" FileRelPathName="clk_gen.xdc"/>
-        <CompFileExtendedInfo CompFileName="clk_gen.xci" FileRelPathName="clk_gen.v"/>
-        <CompFileExtendedInfo CompFileName="clk_gen.xci" FileRelPathName="clk_gen_clk_wiz.v"/>
-        <CompFileExtendedInfo CompFileName="clk_gen.xci" FileRelPathName="doc/clk_wiz_v5_1_changelog.txt"/>
-        <CompFileExtendedInfo CompFileName="clk_gen.xci" FileRelPathName="clk_gen_funcsim.vhdl"/>
-        <CompFileExtendedInfo CompFileName="clk_gen.xci" FileRelPathName="clk_gen_funcsim.v"/>
-        <CompFileExtendedInfo CompFileName="clk_gen.xci" FileRelPathName="clk_gen_stub.vhdl"/>
-        <CompFileExtendedInfo CompFileName="clk_gen.xci" FileRelPathName="clk_gen.dcp"/>
-        <CompFileExtendedInfo CompFileName="clk_gen.xci" FileRelPathName="clk_gen_stub.v"/>
-        <CompFileExtendedInfo CompFileName="clk_gen.xci" FileRelPathName="clk_gen.xml"/>
-        <CompFileExtendedInfo CompFileName="clk_gen.xci" FileRelPathName="clk_gen.veo"/>
       </File>
       <Config>
         <Option Name="TopModule" Val="clk_gen"/>
@@ -152,9 +167,7 @@
     </Run>
     <Run Id="clk_gen_synth_1" Type="Ft3:Synth" SrcSet="clk_gen" Part="xc7z010clg400-1" ConstrsSet="clk_gen" Description="Vivado Synthesis Defaults">
       <Strategy Version="1" Minor="2">
-        <StratHandle Name="Vivado Synthesis Defaults" Flow="Vivado Synthesis 2014">
-          <Desc>Vivado Synthesis Defaults</Desc>
-        </StratHandle>
+        <StratHandle Name="Vivado Synthesis Defaults" Flow="Vivado Synthesis 2014"/>
         <Step Id="synth_design"/>
       </Strategy>
     </Run>
@@ -174,9 +187,7 @@
     </Run>
     <Run Id="clk_gen_impl_1" Type="Ft2:EntireDesign" Part="xc7z010clg400-1" ConstrsSet="clk_gen" Description="Vivado Implementation Defaults" SynthRun="clk_gen_synth_1">
       <Strategy Version="1" Minor="2">
-        <StratHandle Name="Vivado Implementation Defaults" Flow="Vivado Implementation 2014">
-          <Desc>Vivado Implementation Defaults</Desc>
-        </StratHandle>
+        <StratHandle Name="Vivado Implementation Defaults" Flow="Vivado Implementation 2014"/>
         <Step Id="init_design"/>
         <Step Id="opt_design"/>
         <Step Id="power_opt_design"/>
