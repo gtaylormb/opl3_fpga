@@ -51,7 +51,7 @@ module save_dac_input #(
     		while (num_samples < NUM_SAMPLES) begin
     			##1 
                 if (dac_clk.clk_en) begin
-                    $fwrite(fd, "%x\n", dac_clk.dac_input);
+                $fwrite(fd, "%x\n", dac_clk.dac_input);
                     num_samples++;
                 end
             end       

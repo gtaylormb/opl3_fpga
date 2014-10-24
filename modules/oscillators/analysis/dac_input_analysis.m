@@ -25,6 +25,8 @@
     if (max(code)>2^numbit-1) | (min(code)<0)
     disp('Warning: ADC may be clipping!!!');
     end
+    
+    code = typecast(uint16(code), 'int16');
 
     %Plot results in the time domain
     figure;
