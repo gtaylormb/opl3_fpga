@@ -31,6 +31,28 @@ module top_level_tb;
     wire i2c_sda;
     wire [3:0] led;
     
+    wire [53:0]MIO;
+    wire DDR_CAS_n;
+    wire DDR_CKE;
+    wire DDR_Clk_n;
+    wire DDR_Clk;
+    wire DDR_CS_n;
+    wire DDR_DRSTB;
+    wire DDR_ODT;
+    wire DDR_RAS_n;
+    wire DDR_WEB;
+    wire [2:0]DDR_BankAddr;
+    wire [14:0]DDR_Addr;
+    wire DDR_VRN;
+    wire DDR_VRP;
+    wire [3:0]DDR_DM;
+    wire [31:0]DDR_DQ;
+    wire [3:0]DDR_DQS_n;
+    wire [3:0]DDR_DQS;
+    wire PS_SRSTB;
+    wire PS_CLK;
+    wire PS_PORB;    
+    
     pullup(i2c_scl);
     pullup(i2c_sda);
     
@@ -41,11 +63,6 @@ module top_level_tb;
     
     top_level top_level_inst (
         .*
-    );
-    
-    i2c_slave_model i2c_slave_model_inst (
-        .scl(i2c_scl),
-        .sda(i2c_sda)
     );
     
     program top_level_testbench;
