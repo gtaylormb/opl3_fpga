@@ -1164,6 +1164,7 @@ class PhaseGenerator {
     public String toString() {
          return String.format("Operator frequency: %f Hz.\n", OPL3Data.sampleRate*phaseIncrement);
     }
+    
 }
 
 
@@ -1384,25 +1385,25 @@ class OPL3Data {
         // According to the YMF278B manual, it is 6.0 Hz. 
         // The information that the vibrato table has 8 levels standing 1024 samples each
         // was taken from the emulator by Jarek Burczynski and Tatsuyuki Satoh,
-        // with a frequency of 6,06689453125 Hz, what  makes sense with the difference 
+        // with a frequency of 6.06689453125 Hz, what  makes sense with the difference 
         // in the information on the datasheets.
         
         // The first array is used when DVB=0 and the second array is used when DVB=1.
         vibratoTable = new double[2][8192];
         
-        final double semitone = Math.pow(2,1/12d);
+        final double semitone = Math.pow(2,1/12d); //1.0594630943592952645618252949463
         // A cent is 1/100 of a semitone:
-        final double cent = Math.pow(semitone, 1/100d);
+        final double cent = Math.pow(semitone, 1/100d); // 1.0005777895065548592967925757932
         
         // When dvb=0, the depth is 7 cents, when it is 1, the depth is 14 cents.
-        final double DVB0 = Math.pow(cent,7);
-        final double DVB1 = Math.pow(cent,14);        
+        final double DVB0 = Math.pow(cent,7); //1.0040515439559158344851126218208
+        final double DVB1 = Math.pow(cent,14);  //1.0081195029202583870995949595553      
         int i;
         for(i = 0; i<1024; i++) 
             vibratoTable[0][i] = vibratoTable[1][i] = 1;        
         for(;i<2048; i++) {
-            vibratoTable[0][i] = Math.sqrt(DVB0);
-            vibratoTable[1][i] = Math.sqrt(DVB1);
+            vibratoTable[0][i] = Math.sqrt(DVB0); // 1.0020237242480418609447952836294 // b1.0000000010
+            vibratoTable[1][i] = Math.sqrt(DVB1); // 1.0040515439559158344851126218208 // b1.0000000100
         }
         for(;i<3072; i++) {
             vibratoTable[0][i] = DVB0;

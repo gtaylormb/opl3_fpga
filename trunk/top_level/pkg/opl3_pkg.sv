@@ -24,6 +24,7 @@ package opl3_pkg;
     parameter REG_MULT_WIDTH = 4;
     parameter REG_FNUM_WIDTH = 10;
     parameter REG_BLOCK_WIDTH = 3;
+    parameter REG_WS_WIDTH = 3;
     
     parameter SAMPLE_WIDTH = 16;
 

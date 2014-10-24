@@ -122,7 +122,8 @@ module top_level (
     
     logic [REG_FNUM_WIDTH-1:0] fnum = 1023;
     logic [REG_MULT_WIDTH-1:0] mult = 1;
-    logic [REG_BLOCK_WIDTH-1:0] block = 0;
+    logic [REG_BLOCK_WIDTH-1:0] block = 4;
+    logic [REG_WS_WIDTH-1:0] ws = 0;
     
     localparam int CLK_COUNT = CLK_FREQ;
     
@@ -181,14 +182,15 @@ module top_level (
     always_comb led[2] = 1;
     always_comb led[3] = 1;
     
-    /*
+    
     save_dac_input #(
-        .DAC_WIDTH(SAMPLE_WIDTH)
+        .DAC_WIDTH(SAMPLE_WIDTH),
+        .NUM_SAMPLES(128)
     ) save_dac_input_inst (
         .dac_input(sample),
         .clk_en(sample_clk_en),
         .*
-    );   */ 
+    );  
     
     processing_system7_0 cpu_inst (
         .*
