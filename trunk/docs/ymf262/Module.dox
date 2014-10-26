@@ -1,0 +1,10 @@
+/**
+ * @defgroup Opl YMF262 (OPL-3) Emulator
+ * @brief OPL-3 Emulator Code
+ */
+
+/**
+ * @namespace opl
+ * @ingroup Opl
+ * @brief OPL-3 emulator code
+ */

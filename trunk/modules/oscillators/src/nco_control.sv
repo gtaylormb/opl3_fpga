@@ -31,16 +31,25 @@ module nco_control #(
     input wire [REG_MULT_WIDTH-1:0] mult,
     input wire [REG_BLOCK_WIDTH-1:0] block,
     input wire [REG_WS_WIDTH-1:0] ws,
+    input wire vib,
+    input wire dvb,
 	output logic signed [OUTPUT_WIDTH-1:0] out
 );
+    localparam VIBRATO_INDEX_WIDTH = 13;
+    
+    logic [PHASE_ACC_WIDTH-1:0] phase_inc_p0 = 0;
     logic [PHASE_ACC_WIDTH-1:0] phase_inc = 0;
     logic [PHASE_ACC_WIDTH-1:0] pre_mult = 0;
     logic [PHASE_ACC_WIDTH-1:0] post_mult = 0;
     
-    wire signed [OUTPUT_WIDTH-1:0] nco_out;
+    logic [VIBRATO_INDEX_WIDTH-1:0] vibrato_index = 0;
+    logic [REG_FNUM_WIDTH-1:0] delta0 = 0;
+    logic [REG_FNUM_WIDTH-1:0] delta1 = 0;
+    logic [REG_FNUM_WIDTH-1:0] delta2 = 0;
+    logic [REG_FNUM_WIDTH-1:0] delta3 = 0;
     
     always_ff @(posedge clk)
-        pre_mult <= fnum << block;
+        pre_mult <= fnum << block; // might be - 1 here;
     
 	always_ff @(posedge clk)
 		unique case (mult)
@@ -61,30 +70,29 @@ module nco_control #(
         'hE: post_mult <= pre_mult*15;
         'hF: post_mult <= pre_mult*15;
         endcase
-            
-    always_ff @(posedge clk)
-        phase_inc <= post_mult;
     
     /*
-     * Select waveform
+     * Pipeline output of multipliers a bit just for good form
      */
     always_ff @(posedge clk)
-        unique case (ws)
-        0: out <= nco_out;
-        1: out <= nco_out < 0 ? 0 : nco_out;
-        2: begin
-            out[OUTPUT_WIDTH-1] <= 0;
-            out[OUTPUT_WIDTH-2:0] <= nco_out[OUTPUT_WIDTH-2:0];
-        end
-        3: begin
-            out[OUTPUT_WIDTH-1] <= 0;
-            out[OUTPUT_WIDTH-2] <= nco_out[OUTPUT_WIDTH-2] == 1'b1 ? 0 : nco_out[OUTPUT_WIDTH-2];
-        end
-        4: out <= nco_out; // TODO
-        5: out <= nco_out; // TODO
-        6: out <= nco_out[OUTPUT_WIDTH-1] == 1'b1 ? {1{OUTPUT_WIDTH}} : {0,{1{OUTPUT_WIDTH-1}}};
-        7: out <= nco_out; // TODO
-        endcase    
+        phase_inc_p0 <= post_mult;
+    
+    always_ff @(posedge clk)
+        if (vib)
+            phase_inc <= phase_inc_p0 + delta3;
+        else
+            phase_inc <= phase_inc_p0;
+        
+    always_ff @(posedge clk)
+        if (en)
+            vibrato_index <= vibrato_index + 1;        
+        
+    always_comb delta0 = fnum >> 7;
+    always_comb delta1 = ((vibrato_index >> 10) & 3) == 3 ? delta0 >> 1 : delta0;
+    always_comb delta2 = !dvb ? delta1 >> 1 : delta1;
+    
+    always_ff @(posedge clk)
+        delta3 <= ((vibrato_index >> 10) & 4) != 0 ? ~delta2 : delta2;
     
     nco #(
     	.CLK_FREQ(CLK_FREQ),
@@ -92,7 +100,6 @@ module nco_control #(
     	.PHASE_ACC_WIDTH(PHASE_ACC_WIDTH),
     	.OUTPUT_WIDTH(OUTPUT_WIDTH)
     ) nco_inst (
-        .out(nco_out),
         .*
     );
 endmodule

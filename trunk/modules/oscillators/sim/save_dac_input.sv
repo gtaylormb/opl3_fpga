@@ -20,7 +20,7 @@ module save_dac_input #(
    parameter DAC_WIDTH = 0,
    parameter NUM_SAMPLES = 16384, // the number of samples to save to disk
    parameter FILENAME = "dac_data.bin",
-   parameter CLKS_TO_SKIP = 10000 // the number of clocks to skip at the beginning of sim
+   parameter CLKS_TO_SKIP = 5000 // the number of clocks to skip at the beginning of sim
 )(
 	input wire clk,
     input wire clk_en,

@@ -1,7 +1,7 @@
 // Copyright 1986-2014 Xilinx, Inc. All Rights Reserved.
 // --------------------------------------------------------------------------------
 // Tool Version: Vivado v.2014.3 (lin64) Build 1034051 Fri Oct  3 16:31:15 MDT 2014
-// Date        : Wed Oct 22 18:04:55 2014
+// Date        : Sat Oct 25 18:01:22 2014
 // Host        : edinburgh running 64-bit Ubuntu 14.04.1 LTS
 // Command     : write_verilog -force -mode funcsim
 //               /media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.srcs/sources_1/ip/processing_system7_0/processing_system7_0_funcsim.v

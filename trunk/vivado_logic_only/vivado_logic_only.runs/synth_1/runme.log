@@ -52,52 +52,52 @@ Starting synth_design
 Attempting to get a license for feature 'Synthesis' and/or device 'xc7z010'
 INFO: [Common 17-349] Got license for feature 'Synthesis' and/or device 'xc7z010'
 ---------------------------------------------------------------------------------
-Starting RTL Elaboration : Time (s): cpu = 00:00:03 ; elapsed = 00:00:04 . Memory (MB): peak = 890.355 ; gain = 134.285 ; free physical = 4459 ; free virtual = 9661
+Starting RTL Elaboration : Time (s): cpu = 00:00:03 ; elapsed = 00:00:04 . Memory (MB): peak = 890.355 ; gain = 134.285 ; free physical = 4022 ; free virtual = 9709
 ---------------------------------------------------------------------------------
 INFO: [Synth 8-638] synthesizing module 'top_level' [/media/sf_D_DRIVE/Users/Greg/workspace/OPL3/top_level/src/top_level.sv:22]
-	Parameter CLK_COUNT bound to: 12723200 - type: integer 
-WARNING: [Synth 8-4446] all outputs are unconnected for this instance and logic may be removed [/media/sf_D_DRIVE/Users/Greg/workspace/OPL3/top_level/src/top_level.sv:143]
-INFO: [Synth 8-638] synthesizing module 'clk_gen' [/media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.runs/synth_1/.Xil/Vivado-4409-edinburgh/realtime/clk_gen_stub.v:6]
-INFO: [Synth 8-256] done synthesizing module 'clk_gen' (1#1) [/media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.runs/synth_1/.Xil/Vivado-4409-edinburgh/realtime/clk_gen_stub.v:6]
+	Parameter CLK_COUNT bound to: 12727000 - type: integer 
+WARNING: [Synth 8-4446] all outputs are unconnected for this instance and logic may be removed [/media/sf_D_DRIVE/Users/Greg/workspace/OPL3/top_level/src/top_level.sv:146]
+INFO: [Synth 8-638] synthesizing module 'clk_gen' [/media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.runs/synth_1/.Xil/Vivado-28684-edinburgh/realtime/clk_gen_stub.v:6]
+INFO: [Synth 8-256] done synthesizing module 'clk_gen' (1#1) [/media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.runs/synth_1/.Xil/Vivado-28684-edinburgh/realtime/clk_gen_stub.v:6]
 INFO: [Synth 8-638] synthesizing module 'clk_div' [/media/sf_D_DRIVE/Users/Greg/workspace/OPL3/modules/clks/src/clk_div.sv:21]
-	Parameter INPUT_CLK_FREQ bound to: 12723200.000000 - type: float 
-	Parameter OUTPUT_CLK_EN_FREQ bound to: 49700.000000 - type: float 
+	Parameter INPUT_CLK_FREQ bound to: 12727000.000000 - type: float 
+	Parameter OUTPUT_CLK_EN_FREQ bound to: 49714.843750 - type: float 
 	Parameter CLK_DIV_COUNT bound to: 256 - type: integer 
 INFO: [Synth 8-256] done synthesizing module 'clk_div' (2#1) [/media/sf_D_DRIVE/Users/Greg/workspace/OPL3/modules/clks/src/clk_div.sv:21]
 INFO: [Synth 8-638] synthesizing module 'nco_control' [/media/sf_D_DRIVE/Users/Greg/workspace/OPL3/modules/oscillators/src/nco_control.sv:21]
-	Parameter CLK_FREQ bound to: 49700.000000 - type: float 
+	Parameter CLK_FREQ bound to: 49714.843750 - type: float 
 	Parameter FREQ_RES bound to: 0.047398 - type: float 
 	Parameter PHASE_ACC_WIDTH bound to: 20 - type: integer 
-	Parameter ACTUAL_FREQ_RES bound to: 0.047398 - type: float 
+	Parameter ACTUAL_FREQ_RES bound to: 0.047412 - type: float 
 	Parameter OUTPUT_WIDTH bound to: 16 - type: integer 
-WARNING: [Synth 8-4446] all outputs are unconnected for this instance and logic may be removed [/media/sf_D_DRIVE/Users/Greg/workspace/OPL3/modules/oscillators/src/nco_control.sv:70]
-INFO: [Synth 8-638] synthesizing module 'nco' [/media/sf_D_DRIVE/Users/Greg/workspace/OPL3/modules/oscillators/src/nco.sv:22]
-	Parameter CLK_FREQ bound to: 49700.000000 - type: float 
+	Parameter VIBRATO_INDEX_WIDTH bound to: 13 - type: integer 
+WARNING: [Synth 8-4446] all outputs are unconnected for this instance and logic may be removed [/media/sf_D_DRIVE/Users/Greg/workspace/OPL3/modules/oscillators/src/nco_control.sv:102]
+INFO: [Synth 8-638] synthesizing module 'nco' [/media/sf_D_DRIVE/Users/Greg/workspace/OPL3/modules/oscillators/src/nco.sv:27]
+	Parameter CLK_FREQ bound to: 49714.843750 - type: float 
 	Parameter FREQ_RES bound to: 0.047398 - type: float 
 	Parameter PHASE_ACC_WIDTH bound to: 20 - type: integer 
 	Parameter OUTPUT_WIDTH bound to: 16 - type: integer 
 	Parameter LUT_INPUT_WIDTH bound to: 10 - type: integer 
-	Parameter DITHER bound to: 1 - type: integer 
-	Parameter DITHER_LEVEL bound to: 6 - type: integer 
-	Parameter DITHER_WIDTH bound to: 4 - type: integer 
-INFO: [Synth 8-638] synthesizing module 'rand_num_4bit' [/media/sf_D_DRIVE/Users/Greg/workspace/OPL3/modules/oscillators/src/rand_num_4bit.sv:20]
-INFO: [Synth 8-256] done synthesizing module 'rand_num_4bit' (3#1) [/media/sf_D_DRIVE/Users/Greg/workspace/OPL3/modules/oscillators/src/rand_num_4bit.sv:20]
-WARNING: [Synth 8-4446] all outputs are unconnected for this instance and logic may be removed [/media/sf_D_DRIVE/Users/Greg/workspace/OPL3/modules/oscillators/src/nco.sv:63]
+INFO: [Synth 8-638] synthesizing module 'edge_detector' [/media/sf_D_DRIVE/Users/Greg/workspace/OPL3/modules/misc/src/edge_detector.sv:25]
+	Parameter EDGE_LEVEL bound to: 0 - type: integer 
+	Parameter CLK_DLY bound to: 0 - type: integer 
+INFO: [Synth 8-256] done synthesizing module 'edge_detector' (3#1) [/media/sf_D_DRIVE/Users/Greg/workspace/OPL3/modules/misc/src/edge_detector.sv:25]
 INFO: [Synth 8-638] synthesizing module 'sine_lut' [/media/sf_D_DRIVE/Users/Greg/workspace/OPL3/modules/oscillators/src/sine_lut.sv:24]
 INFO: [Synth 8-294] found qualifier unique on case statement: implementing as parallel_case [/media/sf_D_DRIVE/Users/Greg/workspace/OPL3/modules/oscillators/src/sine_lut.sv:47]
 INFO: [Synth 8-256] done synthesizing module 'sine_lut' (4#1) [/media/sf_D_DRIVE/Users/Greg/workspace/OPL3/modules/oscillators/src/sine_lut.sv:24]
-INFO: [Synth 8-256] done synthesizing module 'nco' (5#1) [/media/sf_D_DRIVE/Users/Greg/workspace/OPL3/modules/oscillators/src/nco.sv:22]
-INFO: [Synth 8-294] found qualifier unique on case statement: implementing as parallel_case [/media/sf_D_DRIVE/Users/Greg/workspace/OPL3/modules/oscillators/src/nco_control.sv:43]
+INFO: [Synth 8-294] found qualifier unique on case statement: implementing as parallel_case [/media/sf_D_DRIVE/Users/Greg/workspace/OPL3/modules/oscillators/src/nco.sv:77]
+INFO: [Synth 8-256] done synthesizing module 'nco' (5#1) [/media/sf_D_DRIVE/Users/Greg/workspace/OPL3/modules/oscillators/src/nco.sv:27]
+INFO: [Synth 8-294] found qualifier unique on case statement: implementing as parallel_case [/media/sf_D_DRIVE/Users/Greg/workspace/OPL3/modules/oscillators/src/nco_control.sv:55]
 INFO: [Synth 8-256] done synthesizing module 'nco_control' (6#1) [/media/sf_D_DRIVE/Users/Greg/workspace/OPL3/modules/oscillators/src/nco_control.sv:21]
-WARNING: [Synth 8-4446] all outputs are unconnected for this instance and logic may be removed [/media/sf_D_DRIVE/Users/Greg/workspace/OPL3/top_level/src/top_level.sv:173]
+WARNING: [Synth 8-4446] all outputs are unconnected for this instance and logic may be removed [/media/sf_D_DRIVE/Users/Greg/workspace/OPL3/top_level/src/top_level.sv:176]
 INFO: [Synth 8-638] synthesizing module 'i2s' [/media/sf_D_DRIVE/Users/Greg/workspace/OPL3/modules/i2s/src/i2s.sv:21]
 	Parameter BITS_PER_FRAME bound to: 64 - type: integer 
-	Parameter SCLK_FREQ bound to: 3180800.000000 - type: float 
+	Parameter SCLK_FREQ bound to: 3181750.000000 - type: float 
 	Parameter SCLK_DIV bound to: 2 - type: integer 
 INFO: [Synth 8-294] found qualifier unique on case statement: implementing as parallel_case [/media/sf_D_DRIVE/Users/Greg/workspace/OPL3/modules/i2s/src/i2s.sv:82]
 INFO: [Synth 8-256] done synthesizing module 'i2s' (7#1) [/media/sf_D_DRIVE/Users/Greg/workspace/OPL3/modules/i2s/src/i2s.sv:21]
-INFO: [Synth 8-638] synthesizing module 'processing_system7_0' [/media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.runs/synth_1/.Xil/Vivado-4409-edinburgh/realtime/processing_system7_0_stub.v:7]
-INFO: [Synth 8-256] done synthesizing module 'processing_system7_0' (8#1) [/media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.runs/synth_1/.Xil/Vivado-4409-edinburgh/realtime/processing_system7_0_stub.v:7]
+INFO: [Synth 8-638] synthesizing module 'processing_system7_0' [/media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.runs/synth_1/.Xil/Vivado-28684-edinburgh/realtime/processing_system7_0_stub.v:7]
+INFO: [Synth 8-256] done synthesizing module 'processing_system7_0' (8#1) [/media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.runs/synth_1/.Xil/Vivado-28684-edinburgh/realtime/processing_system7_0_stub.v:7]
 WARNING: [Synth 8-3848] Net SDIO0_WP in module/entity top_level does not have driver. [/media/sf_D_DRIVE/Users/Greg/workspace/OPL3/top_level/src/top_level.sv:118]
 WARNING: [Synth 8-3848] Net USB0_VBUS_PWRFAULT in module/entity top_level does not have driver. [/media/sf_D_DRIVE/Users/Greg/workspace/OPL3/top_level/src/top_level.sv:121]
 WARNING: [Synth 8-3848] Net M_AXI_GP0_ACLK in module/entity top_level does not have driver. [/media/sf_D_DRIVE/Users/Greg/workspace/OPL3/top_level/src/top_level.sv:94]
@@ -119,7 +119,7 @@ WARNING: [Synth 8-3917] design top_level has port led[2] driven by constant 1
 WARNING: [Synth 8-3917] design top_level has port led[1] driven by constant 1
 WARNING: [Synth 8-3917] design top_level has port led[0] driven by constant 1
 ---------------------------------------------------------------------------------
-Finished RTL Elaboration : Time (s): cpu = 00:00:03 ; elapsed = 00:00:05 . Memory (MB): peak = 925.598 ; gain = 169.527 ; free physical = 4418 ; free virtual = 9625
+Finished RTL Elaboration : Time (s): cpu = 00:00:03 ; elapsed = 00:00:04 . Memory (MB): peak = 925.598 ; gain = 169.527 ; free physical = 3986 ; free virtual = 9673
 ---------------------------------------------------------------------------------
 
 Report Check Netlist: 
@@ -129,7 +129,7 @@ Report Check Netlist:
 |1     |multi_driven_nets |      0|        0|Passed |Multi driven nets |
 +------+------------------+-------+---------+-------+------------------+
 ---------------------------------------------------------------------------------
-Finished RTL Optimization Phase 1 : Time (s): cpu = 00:00:03 ; elapsed = 00:00:05 . Memory (MB): peak = 925.598 ; gain = 169.527 ; free physical = 4417 ; free virtual = 9625
+Finished RTL Optimization Phase 1 : Time (s): cpu = 00:00:03 ; elapsed = 00:00:05 . Memory (MB): peak = 925.598 ; gain = 169.527 ; free physical = 3985 ; free virtual = 9673
 ---------------------------------------------------------------------------------
 Loading clock regions from /opt/Xilinx/Vivado/2014.3/data/parts/xilinx/zynq/zynq/xc7z010/ClockRegion.xml
 Loading clock buffers from /opt/Xilinx/Vivado/2014.3/data/parts/xilinx/zynq/zynq/xc7z010/ClockBuffers.xml
@@ -141,10 +141,10 @@ INFO: [Project 1-570] Preparing netlist for logic optimization
 
 Processing XDC Constraints
 Initializing timing engine
-Parsing XDC File [/media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.runs/synth_1/.Xil/Vivado-4409-edinburgh/dcp/clk_gen_in_context.xdc] for cell 'clk_gen_inst'
-Finished Parsing XDC File [/media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.runs/synth_1/.Xil/Vivado-4409-edinburgh/dcp/clk_gen_in_context.xdc] for cell 'clk_gen_inst'
-Parsing XDC File [/media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.runs/synth_1/.Xil/Vivado-4409-edinburgh/dcp_2/processing_system7_0_in_context.xdc] for cell 'cpu_inst'
-Finished Parsing XDC File [/media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.runs/synth_1/.Xil/Vivado-4409-edinburgh/dcp_2/processing_system7_0_in_context.xdc] for cell 'cpu_inst'
+Parsing XDC File [/media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.runs/synth_1/.Xil/Vivado-28684-edinburgh/dcp/clk_gen_in_context.xdc] for cell 'clk_gen_inst'
+Finished Parsing XDC File [/media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.runs/synth_1/.Xil/Vivado-28684-edinburgh/dcp/clk_gen_in_context.xdc] for cell 'clk_gen_inst'
+Parsing XDC File [/media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.runs/synth_1/.Xil/Vivado-28684-edinburgh/dcp_2/processing_system7_0_in_context.xdc] for cell 'cpu_inst'
+Finished Parsing XDC File [/media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.runs/synth_1/.Xil/Vivado-28684-edinburgh/dcp_2/processing_system7_0_in_context.xdc] for cell 'cpu_inst'
 Parsing XDC File [/media/sf_D_DRIVE/Users/Greg/workspace/OPL3/top_level/constraints/ZYBO_Master.xdc]
 Finished Parsing XDC File [/media/sf_D_DRIVE/Users/Greg/workspace/OPL3/top_level/constraints/ZYBO_Master.xdc]
 Completed Processing XDC Constraints
@@ -152,155 +152,155 @@ Completed Processing XDC Constraints
 INFO: [Project 1-111] Unisim Transformation Summary:
 No Unisim elements were transformed.
 
-Constraint Validation Runtime : Time (s): cpu = 00:00:00.01 ; elapsed = 00:00:00.02 . Memory (MB): peak = 1238.930 ; gain = 0.000 ; free physical = 4090 ; free virtual = 9346
+Constraint Validation Runtime : Time (s): cpu = 00:00:00 ; elapsed = 00:00:00.01 . Memory (MB): peak = 1239.930 ; gain = 0.000 ; free physical = 3778 ; free virtual = 9468
 ---------------------------------------------------------------------------------
-Finished Constraint Validation : Time (s): cpu = 00:00:08 ; elapsed = 00:00:10 . Memory (MB): peak = 1238.930 ; gain = 482.859 ; free physical = 4089 ; free virtual = 9346
+Finished Constraint Validation : Time (s): cpu = 00:00:07 ; elapsed = 00:00:10 . Memory (MB): peak = 1239.930 ; gain = 483.859 ; free physical = 3777 ; free virtual = 9467
 ---------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------
 Start Loading Part and Timing Information
 ---------------------------------------------------------------------------------
 Loading part: xc7z010clg400-1
 ---------------------------------------------------------------------------------
-Finished Loading Part and Timing Information : Time (s): cpu = 00:00:08 ; elapsed = 00:00:10 . Memory (MB): peak = 1238.930 ; gain = 482.859 ; free physical = 4089 ; free virtual = 9346
+Finished Loading Part and Timing Information : Time (s): cpu = 00:00:07 ; elapsed = 00:00:10 . Memory (MB): peak = 1239.930 ; gain = 483.859 ; free physical = 3777 ; free virtual = 9467
 ---------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------
 Start Applying 'set_property' XDC Constraints
 ---------------------------------------------------------------------------------
-Applied set_property IO_BUFFER_TYPE = NONE for clk125. (constraint file  /media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.runs/synth_1/.Xil/Vivado-4409-edinburgh/dcp/clk_gen_in_context.xdc, line 3).
-Applied set_property IO_BUFFER_TYPE = NONE for MIO[53]. (constraint file  /media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.runs/synth_1/.Xil/Vivado-4409-edinburgh/dcp_2/processing_system7_0_in_context.xdc, line 2).
-Applied set_property IO_BUFFER_TYPE = NONE for MIO[52]. (constraint file  /media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.runs/synth_1/.Xil/Vivado-4409-edinburgh/dcp_2/processing_system7_0_in_context.xdc, line 3).
-Applied set_property IO_BUFFER_TYPE = NONE for MIO[51]. (constraint file  /media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.runs/synth_1/.Xil/Vivado-4409-edinburgh/dcp_2/processing_system7_0_in_context.xdc, line 4).
-Applied set_property IO_BUFFER_TYPE = NONE for MIO[50]. (constraint file  /media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.runs/synth_1/.Xil/Vivado-4409-edinburgh/dcp_2/processing_system7_0_in_context.xdc, line 5).
-Applied set_property IO_BUFFER_TYPE = NONE for MIO[49]. (constraint file  /media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.runs/synth_1/.Xil/Vivado-4409-edinburgh/dcp_2/processing_system7_0_in_context.xdc, line 6).
-Applied set_property IO_BUFFER_TYPE = NONE for MIO[48]. (constraint file  /media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.runs/synth_1/.Xil/Vivado-4409-edinburgh/dcp_2/processing_system7_0_in_context.xdc, line 7).
-Applied set_property IO_BUFFER_TYPE = NONE for MIO[47]. (constraint file  /media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.runs/synth_1/.Xil/Vivado-4409-edinburgh/dcp_2/processing_system7_0_in_context.xdc, line 8).
-Applied set_property IO_BUFFER_TYPE = NONE for MIO[46]. (constraint file  /media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.runs/synth_1/.Xil/Vivado-4409-edinburgh/dcp_2/processing_system7_0_in_context.xdc, line 9).
-Applied set_property IO_BUFFER_TYPE = NONE for MIO[45]. (constraint file  /media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.runs/synth_1/.Xil/Vivado-4409-edinburgh/dcp_2/processing_system7_0_in_context.xdc, line 10).
-Applied set_property IO_BUFFER_TYPE = NONE for MIO[44]. (constraint file  /media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.runs/synth_1/.Xil/Vivado-4409-edinburgh/dcp_2/processing_system7_0_in_context.xdc, line 11).
-Applied set_property IO_BUFFER_TYPE = NONE for MIO[43]. (constraint file  /media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.runs/synth_1/.Xil/Vivado-4409-edinburgh/dcp_2/processing_system7_0_in_context.xdc, line 12).
-Applied set_property IO_BUFFER_TYPE = NONE for MIO[42]. (constraint file  /media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.runs/synth_1/.Xil/Vivado-4409-edinburgh/dcp_2/processing_system7_0_in_context.xdc, line 13).
-Applied set_property IO_BUFFER_TYPE = NONE for MIO[41]. (constraint file  /media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.runs/synth_1/.Xil/Vivado-4409-edinburgh/dcp_2/processing_system7_0_in_context.xdc, line 14).
-Applied set_property IO_BUFFER_TYPE = NONE for MIO[40]. (constraint file  /media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.runs/synth_1/.Xil/Vivado-4409-edinburgh/dcp_2/processing_system7_0_in_context.xdc, line 15).
-Applied set_property IO_BUFFER_TYPE = NONE for MIO[39]. (constraint file  /media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.runs/synth_1/.Xil/Vivado-4409-edinburgh/dcp_2/processing_system7_0_in_context.xdc, line 16).
-Applied set_property IO_BUFFER_TYPE = NONE for MIO[38]. (constraint file  /media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.runs/synth_1/.Xil/Vivado-4409-edinburgh/dcp_2/processing_system7_0_in_context.xdc, line 17).
-Applied set_property IO_BUFFER_TYPE = NONE for MIO[37]. (constraint file  /media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.runs/synth_1/.Xil/Vivado-4409-edinburgh/dcp_2/processing_system7_0_in_context.xdc, line 18).
-Applied set_property IO_BUFFER_TYPE = NONE for MIO[36]. (constraint file  /media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.runs/synth_1/.Xil/Vivado-4409-edinburgh/dcp_2/processing_system7_0_in_context.xdc, line 19).
-Applied set_property IO_BUFFER_TYPE = NONE for MIO[35]. (constraint file  /media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.runs/synth_1/.Xil/Vivado-4409-edinburgh/dcp_2/processing_system7_0_in_context.xdc, line 20).
-Applied set_property IO_BUFFER_TYPE = NONE for MIO[34]. (constraint file  /media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.runs/synth_1/.Xil/Vivado-4409-edinburgh/dcp_2/processing_system7_0_in_context.xdc, line 21).
-Applied set_property IO_BUFFER_TYPE = NONE for MIO[33]. (constraint file  /media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.runs/synth_1/.Xil/Vivado-4409-edinburgh/dcp_2/processing_system7_0_in_context.xdc, line 22).
-Applied set_property IO_BUFFER_TYPE = NONE for MIO[32]. (constraint file  /media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.runs/synth_1/.Xil/Vivado-4409-edinburgh/dcp_2/processing_system7_0_in_context.xdc, line 23).
-Applied set_property IO_BUFFER_TYPE = NONE for MIO[31]. (constraint file  /media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.runs/synth_1/.Xil/Vivado-4409-edinburgh/dcp_2/processing_system7_0_in_context.xdc, line 24).
-Applied set_property IO_BUFFER_TYPE = NONE for MIO[30]. (constraint file  /media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.runs/synth_1/.Xil/Vivado-4409-edinburgh/dcp_2/processing_system7_0_in_context.xdc, line 25).
-Applied set_property IO_BUFFER_TYPE = NONE for MIO[29]. (constraint file  /media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.runs/synth_1/.Xil/Vivado-4409-edinburgh/dcp_2/processing_system7_0_in_context.xdc, line 26).
-Applied set_property IO_BUFFER_TYPE = NONE for MIO[28]. (constraint file  /media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.runs/synth_1/.Xil/Vivado-4409-edinburgh/dcp_2/processing_system7_0_in_context.xdc, line 27).
-Applied set_property IO_BUFFER_TYPE = NONE for MIO[27]. (constraint file  /media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.runs/synth_1/.Xil/Vivado-4409-edinburgh/dcp_2/processing_system7_0_in_context.xdc, line 28).
-Applied set_property IO_BUFFER_TYPE = NONE for MIO[26]. (constraint file  /media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.runs/synth_1/.Xil/Vivado-4409-edinburgh/dcp_2/processing_system7_0_in_context.xdc, line 29).
-Applied set_property IO_BUFFER_TYPE = NONE for MIO[25]. (constraint file  /media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.runs/synth_1/.Xil/Vivado-4409-edinburgh/dcp_2/processing_system7_0_in_context.xdc, line 30).
-Applied set_property IO_BUFFER_TYPE = NONE for MIO[24]. (constraint file  /media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.runs/synth_1/.Xil/Vivado-4409-edinburgh/dcp_2/processing_system7_0_in_context.xdc, line 31).
-Applied set_property IO_BUFFER_TYPE = NONE for MIO[23]. (constraint file  /media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.runs/synth_1/.Xil/Vivado-4409-edinburgh/dcp_2/processing_system7_0_in_context.xdc, line 32).
-Applied set_property IO_BUFFER_TYPE = NONE for MIO[22]. (constraint file  /media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.runs/synth_1/.Xil/Vivado-4409-edinburgh/dcp_2/processing_system7_0_in_context.xdc, line 33).
-Applied set_property IO_BUFFER_TYPE = NONE for MIO[21]. (constraint file  /media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.runs/synth_1/.Xil/Vivado-4409-edinburgh/dcp_2/processing_system7_0_in_context.xdc, line 34).
-Applied set_property IO_BUFFER_TYPE = NONE for MIO[20]. (constraint file  /media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.runs/synth_1/.Xil/Vivado-4409-edinburgh/dcp_2/processing_system7_0_in_context.xdc, line 35).
-Applied set_property IO_BUFFER_TYPE = NONE for MIO[19]. (constraint file  /media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.runs/synth_1/.Xil/Vivado-4409-edinburgh/dcp_2/processing_system7_0_in_context.xdc, line 36).
-Applied set_property IO_BUFFER_TYPE = NONE for MIO[18]. (constraint file  /media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.runs/synth_1/.Xil/Vivado-4409-edinburgh/dcp_2/processing_system7_0_in_context.xdc, line 37).
-Applied set_property IO_BUFFER_TYPE = NONE for MIO[17]. (constraint file  /media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.runs/synth_1/.Xil/Vivado-4409-edinburgh/dcp_2/processing_system7_0_in_context.xdc, line 38).
-Applied set_property IO_BUFFER_TYPE = NONE for MIO[16]. (constraint file  /media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.runs/synth_1/.Xil/Vivado-4409-edinburgh/dcp_2/processing_system7_0_in_context.xdc, line 39).
-Applied set_property IO_BUFFER_TYPE = NONE for MIO[15]. (constraint file  /media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.runs/synth_1/.Xil/Vivado-4409-edinburgh/dcp_2/processing_system7_0_in_context.xdc, line 40).
-Applied set_property IO_BUFFER_TYPE = NONE for MIO[14]. (constraint file  /media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.runs/synth_1/.Xil/Vivado-4409-edinburgh/dcp_2/processing_system7_0_in_context.xdc, line 41).
-Applied set_property IO_BUFFER_TYPE = NONE for MIO[13]. (constraint file  /media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.runs/synth_1/.Xil/Vivado-4409-edinburgh/dcp_2/processing_system7_0_in_context.xdc, line 42).
-Applied set_property IO_BUFFER_TYPE = NONE for MIO[12]. (constraint file  /media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.runs/synth_1/.Xil/Vivado-4409-edinburgh/dcp_2/processing_system7_0_in_context.xdc, line 43).
-Applied set_property IO_BUFFER_TYPE = NONE for MIO[11]. (constraint file  /media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.runs/synth_1/.Xil/Vivado-4409-edinburgh/dcp_2/processing_system7_0_in_context.xdc, line 44).
-Applied set_property IO_BUFFER_TYPE = NONE for MIO[10]. (constraint file  /media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.runs/synth_1/.Xil/Vivado-4409-edinburgh/dcp_2/processing_system7_0_in_context.xdc, line 45).
-Applied set_property IO_BUFFER_TYPE = NONE for MIO[9]. (constraint file  /media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.runs/synth_1/.Xil/Vivado-4409-edinburgh/dcp_2/processing_system7_0_in_context.xdc, line 46).
-Applied set_property IO_BUFFER_TYPE = NONE for MIO[8]. (constraint file  /media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.runs/synth_1/.Xil/Vivado-4409-edinburgh/dcp_2/processing_system7_0_in_context.xdc, line 47).
-Applied set_property IO_BUFFER_TYPE = NONE for MIO[7]. (constraint file  /media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.runs/synth_1/.Xil/Vivado-4409-edinburgh/dcp_2/processing_system7_0_in_context.xdc, line 48).
-Applied set_property IO_BUFFER_TYPE = NONE for MIO[6]. (constraint file  /media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.runs/synth_1/.Xil/Vivado-4409-edinburgh/dcp_2/processing_system7_0_in_context.xdc, line 49).
-Applied set_property IO_BUFFER_TYPE = NONE for MIO[5]. (constraint file  /media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.runs/synth_1/.Xil/Vivado-4409-edinburgh/dcp_2/processing_system7_0_in_context.xdc, line 50).
-Applied set_property IO_BUFFER_TYPE = NONE for MIO[4]. (constraint file  /media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.runs/synth_1/.Xil/Vivado-4409-edinburgh/dcp_2/processing_system7_0_in_context.xdc, line 51).
-Applied set_property IO_BUFFER_TYPE = NONE for MIO[3]. (constraint file  /media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.runs/synth_1/.Xil/Vivado-4409-edinburgh/dcp_2/processing_system7_0_in_context.xdc, line 52).
-Applied set_property IO_BUFFER_TYPE = NONE for MIO[2]. (constraint file  /media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.runs/synth_1/.Xil/Vivado-4409-edinburgh/dcp_2/processing_system7_0_in_context.xdc, line 53).
-Applied set_property IO_BUFFER_TYPE = NONE for MIO[1]. (constraint file  /media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.runs/synth_1/.Xil/Vivado-4409-edinburgh/dcp_2/processing_system7_0_in_context.xdc, line 54).
-Applied set_property IO_BUFFER_TYPE = NONE for MIO[0]. (constraint file  /media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.runs/synth_1/.Xil/Vivado-4409-edinburgh/dcp_2/processing_system7_0_in_context.xdc, line 55).
-Applied set_property IO_BUFFER_TYPE = NONE for DDR_CAS_n. (constraint file  /media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.runs/synth_1/.Xil/Vivado-4409-edinburgh/dcp_2/processing_system7_0_in_context.xdc, line 56).
-Applied set_property IO_BUFFER_TYPE = NONE for DDR_CKE. (constraint file  /media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.runs/synth_1/.Xil/Vivado-4409-edinburgh/dcp_2/processing_system7_0_in_context.xdc, line 57).
-Applied set_property IO_BUFFER_TYPE = NONE for DDR_Clk_n. (constraint file  /media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.runs/synth_1/.Xil/Vivado-4409-edinburgh/dcp_2/processing_system7_0_in_context.xdc, line 58).
-Applied set_property IO_BUFFER_TYPE = NONE for DDR_Clk. (constraint file  /media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.runs/synth_1/.Xil/Vivado-4409-edinburgh/dcp_2/processing_system7_0_in_context.xdc, line 59).
-Applied set_property IO_BUFFER_TYPE = NONE for DDR_CS_n. (constraint file  /media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.runs/synth_1/.Xil/Vivado-4409-edinburgh/dcp_2/processing_system7_0_in_context.xdc, line 60).
-Applied set_property IO_BUFFER_TYPE = NONE for DDR_DRSTB. (constraint file  /media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.runs/synth_1/.Xil/Vivado-4409-edinburgh/dcp_2/processing_system7_0_in_context.xdc, line 61).
-Applied set_property IO_BUFFER_TYPE = NONE for DDR_ODT. (constraint file  /media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.runs/synth_1/.Xil/Vivado-4409-edinburgh/dcp_2/processing_system7_0_in_context.xdc, line 62).
-Applied set_property IO_BUFFER_TYPE = NONE for DDR_RAS_n. (constraint file  /media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.runs/synth_1/.Xil/Vivado-4409-edinburgh/dcp_2/processing_system7_0_in_context.xdc, line 63).
-Applied set_property IO_BUFFER_TYPE = NONE for DDR_WEB. (constraint file  /media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.runs/synth_1/.Xil/Vivado-4409-edinburgh/dcp_2/processing_system7_0_in_context.xdc, line 64).
-Applied set_property IO_BUFFER_TYPE = NONE for DDR_BankAddr[2]. (constraint file  /media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.runs/synth_1/.Xil/Vivado-4409-edinburgh/dcp_2/processing_system7_0_in_context.xdc, line 65).
-Applied set_property IO_BUFFER_TYPE = NONE for DDR_BankAddr[1]. (constraint file  /media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.runs/synth_1/.Xil/Vivado-4409-edinburgh/dcp_2/processing_system7_0_in_context.xdc, line 66).
-Applied set_property IO_BUFFER_TYPE = NONE for DDR_BankAddr[0]. (constraint file  /media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.runs/synth_1/.Xil/Vivado-4409-edinburgh/dcp_2/processing_system7_0_in_context.xdc, line 67).
-Applied set_property IO_BUFFER_TYPE = NONE for DDR_Addr[14]. (constraint file  /media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.runs/synth_1/.Xil/Vivado-4409-edinburgh/dcp_2/processing_system7_0_in_context.xdc, line 68).
-Applied set_property IO_BUFFER_TYPE = NONE for DDR_Addr[13]. (constraint file  /media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.runs/synth_1/.Xil/Vivado-4409-edinburgh/dcp_2/processing_system7_0_in_context.xdc, line 69).
-Applied set_property IO_BUFFER_TYPE = NONE for DDR_Addr[12]. (constraint file  /media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.runs/synth_1/.Xil/Vivado-4409-edinburgh/dcp_2/processing_system7_0_in_context.xdc, line 70).
-Applied set_property IO_BUFFER_TYPE = NONE for DDR_Addr[11]. (constraint file  /media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.runs/synth_1/.Xil/Vivado-4409-edinburgh/dcp_2/processing_system7_0_in_context.xdc, line 71).
-Applied set_property IO_BUFFER_TYPE = NONE for DDR_Addr[10]. (constraint file  /media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.runs/synth_1/.Xil/Vivado-4409-edinburgh/dcp_2/processing_system7_0_in_context.xdc, line 72).
-Applied set_property IO_BUFFER_TYPE = NONE for DDR_Addr[9]. (constraint file  /media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.runs/synth_1/.Xil/Vivado-4409-edinburgh/dcp_2/processing_system7_0_in_context.xdc, line 73).
-Applied set_property IO_BUFFER_TYPE = NONE for DDR_Addr[8]. (constraint file  /media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.runs/synth_1/.Xil/Vivado-4409-edinburgh/dcp_2/processing_system7_0_in_context.xdc, line 74).
-Applied set_property IO_BUFFER_TYPE = NONE for DDR_Addr[7]. (constraint file  /media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.runs/synth_1/.Xil/Vivado-4409-edinburgh/dcp_2/processing_system7_0_in_context.xdc, line 75).
-Applied set_property IO_BUFFER_TYPE = NONE for DDR_Addr[6]. (constraint file  /media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.runs/synth_1/.Xil/Vivado-4409-edinburgh/dcp_2/processing_system7_0_in_context.xdc, line 76).
-Applied set_property IO_BUFFER_TYPE = NONE for DDR_Addr[5]. (constraint file  /media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.runs/synth_1/.Xil/Vivado-4409-edinburgh/dcp_2/processing_system7_0_in_context.xdc, line 77).
-Applied set_property IO_BUFFER_TYPE = NONE for DDR_Addr[4]. (constraint file  /media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.runs/synth_1/.Xil/Vivado-4409-edinburgh/dcp_2/processing_system7_0_in_context.xdc, line 78).
-Applied set_property IO_BUFFER_TYPE = NONE for DDR_Addr[3]. (constraint file  /media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.runs/synth_1/.Xil/Vivado-4409-edinburgh/dcp_2/processing_system7_0_in_context.xdc, line 79).
-Applied set_property IO_BUFFER_TYPE = NONE for DDR_Addr[2]. (constraint file  /media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.runs/synth_1/.Xil/Vivado-4409-edinburgh/dcp_2/processing_system7_0_in_context.xdc, line 80).
-Applied set_property IO_BUFFER_TYPE = NONE for DDR_Addr[1]. (constraint file  /media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.runs/synth_1/.Xil/Vivado-4409-edinburgh/dcp_2/processing_system7_0_in_context.xdc, line 81).
-Applied set_property IO_BUFFER_TYPE = NONE for DDR_Addr[0]. (constraint file  /media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.runs/synth_1/.Xil/Vivado-4409-edinburgh/dcp_2/processing_system7_0_in_context.xdc, line 82).
-Applied set_property IO_BUFFER_TYPE = NONE for DDR_VRN. (constraint file  /media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.runs/synth_1/.Xil/Vivado-4409-edinburgh/dcp_2/processing_system7_0_in_context.xdc, line 83).
-Applied set_property IO_BUFFER_TYPE = NONE for DDR_VRP. (constraint file  /media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.runs/synth_1/.Xil/Vivado-4409-edinburgh/dcp_2/processing_system7_0_in_context.xdc, line 84).
-Applied set_property IO_BUFFER_TYPE = NONE for DDR_DM[3]. (constraint file  /media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.runs/synth_1/.Xil/Vivado-4409-edinburgh/dcp_2/processing_system7_0_in_context.xdc, line 85).
-Applied set_property IO_BUFFER_TYPE = NONE for DDR_DM[2]. (constraint file  /media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.runs/synth_1/.Xil/Vivado-4409-edinburgh/dcp_2/processing_system7_0_in_context.xdc, line 86).
-Applied set_property IO_BUFFER_TYPE = NONE for DDR_DM[1]. (constraint file  /media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.runs/synth_1/.Xil/Vivado-4409-edinburgh/dcp_2/processing_system7_0_in_context.xdc, line 87).
-Applied set_property IO_BUFFER_TYPE = NONE for DDR_DM[0]. (constraint file  /media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.runs/synth_1/.Xil/Vivado-4409-edinburgh/dcp_2/processing_system7_0_in_context.xdc, line 88).
-Applied set_property IO_BUFFER_TYPE = NONE for DDR_DQ[31]. (constraint file  /media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.runs/synth_1/.Xil/Vivado-4409-edinburgh/dcp_2/processing_system7_0_in_context.xdc, line 89).
-Applied set_property IO_BUFFER_TYPE = NONE for DDR_DQ[30]. (constraint file  /media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.runs/synth_1/.Xil/Vivado-4409-edinburgh/dcp_2/processing_system7_0_in_context.xdc, line 90).
-Applied set_property IO_BUFFER_TYPE = NONE for DDR_DQ[29]. (constraint file  /media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.runs/synth_1/.Xil/Vivado-4409-edinburgh/dcp_2/processing_system7_0_in_context.xdc, line 91).
-Applied set_property IO_BUFFER_TYPE = NONE for DDR_DQ[28]. (constraint file  /media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.runs/synth_1/.Xil/Vivado-4409-edinburgh/dcp_2/processing_system7_0_in_context.xdc, line 92).
-Applied set_property IO_BUFFER_TYPE = NONE for DDR_DQ[27]. (constraint file  /media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.runs/synth_1/.Xil/Vivado-4409-edinburgh/dcp_2/processing_system7_0_in_context.xdc, line 93).
-Applied set_property IO_BUFFER_TYPE = NONE for DDR_DQ[26]. (constraint file  /media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.runs/synth_1/.Xil/Vivado-4409-edinburgh/dcp_2/processing_system7_0_in_context.xdc, line 94).
-Applied set_property IO_BUFFER_TYPE = NONE for DDR_DQ[25]. (constraint file  /media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.runs/synth_1/.Xil/Vivado-4409-edinburgh/dcp_2/processing_system7_0_in_context.xdc, line 95).
-Applied set_property IO_BUFFER_TYPE = NONE for DDR_DQ[24]. (constraint file  /media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.runs/synth_1/.Xil/Vivado-4409-edinburgh/dcp_2/processing_system7_0_in_context.xdc, line 96).
-Applied set_property IO_BUFFER_TYPE = NONE for DDR_DQ[23]. (constraint file  /media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.runs/synth_1/.Xil/Vivado-4409-edinburgh/dcp_2/processing_system7_0_in_context.xdc, line 97).
-Applied set_property IO_BUFFER_TYPE = NONE for DDR_DQ[22]. (constraint file  /media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.runs/synth_1/.Xil/Vivado-4409-edinburgh/dcp_2/processing_system7_0_in_context.xdc, line 98).
-Applied set_property IO_BUFFER_TYPE = NONE for DDR_DQ[21]. (constraint file  /media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.runs/synth_1/.Xil/Vivado-4409-edinburgh/dcp_2/processing_system7_0_in_context.xdc, line 99).
-Applied set_property IO_BUFFER_TYPE = NONE for DDR_DQ[20]. (constraint file  /media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.runs/synth_1/.Xil/Vivado-4409-edinburgh/dcp_2/processing_system7_0_in_context.xdc, line 100).
-Applied set_property IO_BUFFER_TYPE = NONE for DDR_DQ[19]. (constraint file  /media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.runs/synth_1/.Xil/Vivado-4409-edinburgh/dcp_2/processing_system7_0_in_context.xdc, line 101).
-Applied set_property IO_BUFFER_TYPE = NONE for DDR_DQ[18]. (constraint file  /media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.runs/synth_1/.Xil/Vivado-4409-edinburgh/dcp_2/processing_system7_0_in_context.xdc, line 102).
-Applied set_property IO_BUFFER_TYPE = NONE for DDR_DQ[17]. (constraint file  /media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.runs/synth_1/.Xil/Vivado-4409-edinburgh/dcp_2/processing_system7_0_in_context.xdc, line 103).
-Applied set_property IO_BUFFER_TYPE = NONE for DDR_DQ[16]. (constraint file  /media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.runs/synth_1/.Xil/Vivado-4409-edinburgh/dcp_2/processing_system7_0_in_context.xdc, line 104).
-Applied set_property IO_BUFFER_TYPE = NONE for DDR_DQ[15]. (constraint file  /media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.runs/synth_1/.Xil/Vivado-4409-edinburgh/dcp_2/processing_system7_0_in_context.xdc, line 105).
-Applied set_property IO_BUFFER_TYPE = NONE for DDR_DQ[14]. (constraint file  /media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.runs/synth_1/.Xil/Vivado-4409-edinburgh/dcp_2/processing_system7_0_in_context.xdc, line 106).
-Applied set_property IO_BUFFER_TYPE = NONE for DDR_DQ[13]. (constraint file  /media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.runs/synth_1/.Xil/Vivado-4409-edinburgh/dcp_2/processing_system7_0_in_context.xdc, line 107).
-Applied set_property IO_BUFFER_TYPE = NONE for DDR_DQ[12]. (constraint file  /media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.runs/synth_1/.Xil/Vivado-4409-edinburgh/dcp_2/processing_system7_0_in_context.xdc, line 108).
-Applied set_property IO_BUFFER_TYPE = NONE for DDR_DQ[11]. (constraint file  /media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.runs/synth_1/.Xil/Vivado-4409-edinburgh/dcp_2/processing_system7_0_in_context.xdc, line 109).
-Applied set_property IO_BUFFER_TYPE = NONE for DDR_DQ[10]. (constraint file  /media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.runs/synth_1/.Xil/Vivado-4409-edinburgh/dcp_2/processing_system7_0_in_context.xdc, line 110).
-Applied set_property IO_BUFFER_TYPE = NONE for DDR_DQ[9]. (constraint file  /media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.runs/synth_1/.Xil/Vivado-4409-edinburgh/dcp_2/processing_system7_0_in_context.xdc, line 111).
-Applied set_property IO_BUFFER_TYPE = NONE for DDR_DQ[8]. (constraint file  /media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.runs/synth_1/.Xil/Vivado-4409-edinburgh/dcp_2/processing_system7_0_in_context.xdc, line 112).
-Applied set_property IO_BUFFER_TYPE = NONE for DDR_DQ[7]. (constraint file  /media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.runs/synth_1/.Xil/Vivado-4409-edinburgh/dcp_2/processing_system7_0_in_context.xdc, line 113).
-Applied set_property IO_BUFFER_TYPE = NONE for DDR_DQ[6]. (constraint file  /media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.runs/synth_1/.Xil/Vivado-4409-edinburgh/dcp_2/processing_system7_0_in_context.xdc, line 114).
-Applied set_property IO_BUFFER_TYPE = NONE for DDR_DQ[5]. (constraint file  /media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.runs/synth_1/.Xil/Vivado-4409-edinburgh/dcp_2/processing_system7_0_in_context.xdc, line 115).
-Applied set_property IO_BUFFER_TYPE = NONE for DDR_DQ[4]. (constraint file  /media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.runs/synth_1/.Xil/Vivado-4409-edinburgh/dcp_2/processing_system7_0_in_context.xdc, line 116).
-Applied set_property IO_BUFFER_TYPE = NONE for DDR_DQ[3]. (constraint file  /media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.runs/synth_1/.Xil/Vivado-4409-edinburgh/dcp_2/processing_system7_0_in_context.xdc, line 117).
-Applied set_property IO_BUFFER_TYPE = NONE for DDR_DQ[2]. (constraint file  /media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.runs/synth_1/.Xil/Vivado-4409-edinburgh/dcp_2/processing_system7_0_in_context.xdc, line 118).
-Applied set_property IO_BUFFER_TYPE = NONE for DDR_DQ[1]. (constraint file  /media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.runs/synth_1/.Xil/Vivado-4409-edinburgh/dcp_2/processing_system7_0_in_context.xdc, line 119).
-Applied set_property IO_BUFFER_TYPE = NONE for DDR_DQ[0]. (constraint file  /media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.runs/synth_1/.Xil/Vivado-4409-edinburgh/dcp_2/processing_system7_0_in_context.xdc, line 120).
-Applied set_property IO_BUFFER_TYPE = NONE for DDR_DQS_n[3]. (constraint file  /media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.runs/synth_1/.Xil/Vivado-4409-edinburgh/dcp_2/processing_system7_0_in_context.xdc, line 121).
-Applied set_property IO_BUFFER_TYPE = NONE for DDR_DQS_n[2]. (constraint file  /media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.runs/synth_1/.Xil/Vivado-4409-edinburgh/dcp_2/processing_system7_0_in_context.xdc, line 122).
-Applied set_property IO_BUFFER_TYPE = NONE for DDR_DQS_n[1]. (constraint file  /media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.runs/synth_1/.Xil/Vivado-4409-edinburgh/dcp_2/processing_system7_0_in_context.xdc, line 123).
-Applied set_property IO_BUFFER_TYPE = NONE for DDR_DQS_n[0]. (constraint file  /media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.runs/synth_1/.Xil/Vivado-4409-edinburgh/dcp_2/processing_system7_0_in_context.xdc, line 124).
-Applied set_property IO_BUFFER_TYPE = NONE for DDR_DQS[3]. (constraint file  /media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.runs/synth_1/.Xil/Vivado-4409-edinburgh/dcp_2/processing_system7_0_in_context.xdc, line 125).
-Applied set_property IO_BUFFER_TYPE = NONE for DDR_DQS[2]. (constraint file  /media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.runs/synth_1/.Xil/Vivado-4409-edinburgh/dcp_2/processing_system7_0_in_context.xdc, line 126).
-Applied set_property IO_BUFFER_TYPE = NONE for DDR_DQS[1]. (constraint file  /media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.runs/synth_1/.Xil/Vivado-4409-edinburgh/dcp_2/processing_system7_0_in_context.xdc, line 127).
-Applied set_property IO_BUFFER_TYPE = NONE for DDR_DQS[0]. (constraint file  /media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.runs/synth_1/.Xil/Vivado-4409-edinburgh/dcp_2/processing_system7_0_in_context.xdc, line 128).
-Applied set_property IO_BUFFER_TYPE = NONE for PS_SRSTB. (constraint file  /media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.runs/synth_1/.Xil/Vivado-4409-edinburgh/dcp_2/processing_system7_0_in_context.xdc, line 129).
-Applied set_property IO_BUFFER_TYPE = NONE for PS_CLK. (constraint file  /media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.runs/synth_1/.Xil/Vivado-4409-edinburgh/dcp_2/processing_system7_0_in_context.xdc, line 130).
-Applied set_property IO_BUFFER_TYPE = NONE for PS_PORB. (constraint file  /media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.runs/synth_1/.Xil/Vivado-4409-edinburgh/dcp_2/processing_system7_0_in_context.xdc, line 131).
+Applied set_property IO_BUFFER_TYPE = NONE for clk125. (constraint file  /media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.runs/synth_1/.Xil/Vivado-28684-edinburgh/dcp/clk_gen_in_context.xdc, line 3).
+Applied set_property IO_BUFFER_TYPE = NONE for MIO[53]. (constraint file  /media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.runs/synth_1/.Xil/Vivado-28684-edinburgh/dcp_2/processing_system7_0_in_context.xdc, line 2).
+Applied set_property IO_BUFFER_TYPE = NONE for MIO[52]. (constraint file  /media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.runs/synth_1/.Xil/Vivado-28684-edinburgh/dcp_2/processing_system7_0_in_context.xdc, line 3).
+Applied set_property IO_BUFFER_TYPE = NONE for MIO[51]. (constraint file  /media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.runs/synth_1/.Xil/Vivado-28684-edinburgh/dcp_2/processing_system7_0_in_context.xdc, line 4).
+Applied set_property IO_BUFFER_TYPE = NONE for MIO[50]. (constraint file  /media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.runs/synth_1/.Xil/Vivado-28684-edinburgh/dcp_2/processing_system7_0_in_context.xdc, line 5).
+Applied set_property IO_BUFFER_TYPE = NONE for MIO[49]. (constraint file  /media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.runs/synth_1/.Xil/Vivado-28684-edinburgh/dcp_2/processing_system7_0_in_context.xdc, line 6).
+Applied set_property IO_BUFFER_TYPE = NONE for MIO[48]. (constraint file  /media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.runs/synth_1/.Xil/Vivado-28684-edinburgh/dcp_2/processing_system7_0_in_context.xdc, line 7).
+Applied set_property IO_BUFFER_TYPE = NONE for MIO[47]. (constraint file  /media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.runs/synth_1/.Xil/Vivado-28684-edinburgh/dcp_2/processing_system7_0_in_context.xdc, line 8).
+Applied set_property IO_BUFFER_TYPE = NONE for MIO[46]. (constraint file  /media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.runs/synth_1/.Xil/Vivado-28684-edinburgh/dcp_2/processing_system7_0_in_context.xdc, line 9).
+Applied set_property IO_BUFFER_TYPE = NONE for MIO[45]. (constraint file  /media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.runs/synth_1/.Xil/Vivado-28684-edinburgh/dcp_2/processing_system7_0_in_context.xdc, line 10).
+Applied set_property IO_BUFFER_TYPE = NONE for MIO[44]. (constraint file  /media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.runs/synth_1/.Xil/Vivado-28684-edinburgh/dcp_2/processing_system7_0_in_context.xdc, line 11).
+Applied set_property IO_BUFFER_TYPE = NONE for MIO[43]. (constraint file  /media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.runs/synth_1/.Xil/Vivado-28684-edinburgh/dcp_2/processing_system7_0_in_context.xdc, line 12).
+Applied set_property IO_BUFFER_TYPE = NONE for MIO[42]. (constraint file  /media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.runs/synth_1/.Xil/Vivado-28684-edinburgh/dcp_2/processing_system7_0_in_context.xdc, line 13).
+Applied set_property IO_BUFFER_TYPE = NONE for MIO[41]. (constraint file  /media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.runs/synth_1/.Xil/Vivado-28684-edinburgh/dcp_2/processing_system7_0_in_context.xdc, line 14).
+Applied set_property IO_BUFFER_TYPE = NONE for MIO[40]. (constraint file  /media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.runs/synth_1/.Xil/Vivado-28684-edinburgh/dcp_2/processing_system7_0_in_context.xdc, line 15).
+Applied set_property IO_BUFFER_TYPE = NONE for MIO[39]. (constraint file  /media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.runs/synth_1/.Xil/Vivado-28684-edinburgh/dcp_2/processing_system7_0_in_context.xdc, line 16).
+Applied set_property IO_BUFFER_TYPE = NONE for MIO[38]. (constraint file  /media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.runs/synth_1/.Xil/Vivado-28684-edinburgh/dcp_2/processing_system7_0_in_context.xdc, line 17).
+Applied set_property IO_BUFFER_TYPE = NONE for MIO[37]. (constraint file  /media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.runs/synth_1/.Xil/Vivado-28684-edinburgh/dcp_2/processing_system7_0_in_context.xdc, line 18).
+Applied set_property IO_BUFFER_TYPE = NONE for MIO[36]. (constraint file  /media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.runs/synth_1/.Xil/Vivado-28684-edinburgh/dcp_2/processing_system7_0_in_context.xdc, line 19).
+Applied set_property IO_BUFFER_TYPE = NONE for MIO[35]. (constraint file  /media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.runs/synth_1/.Xil/Vivado-28684-edinburgh/dcp_2/processing_system7_0_in_context.xdc, line 20).
+Applied set_property IO_BUFFER_TYPE = NONE for MIO[34]. (constraint file  /media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.runs/synth_1/.Xil/Vivado-28684-edinburgh/dcp_2/processing_system7_0_in_context.xdc, line 21).
+Applied set_property IO_BUFFER_TYPE = NONE for MIO[33]. (constraint file  /media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.runs/synth_1/.Xil/Vivado-28684-edinburgh/dcp_2/processing_system7_0_in_context.xdc, line 22).
+Applied set_property IO_BUFFER_TYPE = NONE for MIO[32]. (constraint file  /media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.runs/synth_1/.Xil/Vivado-28684-edinburgh/dcp_2/processing_system7_0_in_context.xdc, line 23).
+Applied set_property IO_BUFFER_TYPE = NONE for MIO[31]. (constraint file  /media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.runs/synth_1/.Xil/Vivado-28684-edinburgh/dcp_2/processing_system7_0_in_context.xdc, line 24).
+Applied set_property IO_BUFFER_TYPE = NONE for MIO[30]. (constraint file  /media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.runs/synth_1/.Xil/Vivado-28684-edinburgh/dcp_2/processing_system7_0_in_context.xdc, line 25).
+Applied set_property IO_BUFFER_TYPE = NONE for MIO[29]. (constraint file  /media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.runs/synth_1/.Xil/Vivado-28684-edinburgh/dcp_2/processing_system7_0_in_context.xdc, line 26).
+Applied set_property IO_BUFFER_TYPE = NONE for MIO[28]. (constraint file  /media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.runs/synth_1/.Xil/Vivado-28684-edinburgh/dcp_2/processing_system7_0_in_context.xdc, line 27).
+Applied set_property IO_BUFFER_TYPE = NONE for MIO[27]. (constraint file  /media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.runs/synth_1/.Xil/Vivado-28684-edinburgh/dcp_2/processing_system7_0_in_context.xdc, line 28).
+Applied set_property IO_BUFFER_TYPE = NONE for MIO[26]. (constraint file  /media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.runs/synth_1/.Xil/Vivado-28684-edinburgh/dcp_2/processing_system7_0_in_context.xdc, line 29).
+Applied set_property IO_BUFFER_TYPE = NONE for MIO[25]. (constraint file  /media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.runs/synth_1/.Xil/Vivado-28684-edinburgh/dcp_2/processing_system7_0_in_context.xdc, line 30).
+Applied set_property IO_BUFFER_TYPE = NONE for MIO[24]. (constraint file  /media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.runs/synth_1/.Xil/Vivado-28684-edinburgh/dcp_2/processing_system7_0_in_context.xdc, line 31).
+Applied set_property IO_BUFFER_TYPE = NONE for MIO[23]. (constraint file  /media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.runs/synth_1/.Xil/Vivado-28684-edinburgh/dcp_2/processing_system7_0_in_context.xdc, line 32).
+Applied set_property IO_BUFFER_TYPE = NONE for MIO[22]. (constraint file  /media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.runs/synth_1/.Xil/Vivado-28684-edinburgh/dcp_2/processing_system7_0_in_context.xdc, line 33).
+Applied set_property IO_BUFFER_TYPE = NONE for MIO[21]. (constraint file  /media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.runs/synth_1/.Xil/Vivado-28684-edinburgh/dcp_2/processing_system7_0_in_context.xdc, line 34).
+Applied set_property IO_BUFFER_TYPE = NONE for MIO[20]. (constraint file  /media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.runs/synth_1/.Xil/Vivado-28684-edinburgh/dcp_2/processing_system7_0_in_context.xdc, line 35).
+Applied set_property IO_BUFFER_TYPE = NONE for MIO[19]. (constraint file  /media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.runs/synth_1/.Xil/Vivado-28684-edinburgh/dcp_2/processing_system7_0_in_context.xdc, line 36).
+Applied set_property IO_BUFFER_TYPE = NONE for MIO[18]. (constraint file  /media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.runs/synth_1/.Xil/Vivado-28684-edinburgh/dcp_2/processing_system7_0_in_context.xdc, line 37).
+Applied set_property IO_BUFFER_TYPE = NONE for MIO[17]. (constraint file  /media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.runs/synth_1/.Xil/Vivado-28684-edinburgh/dcp_2/processing_system7_0_in_context.xdc, line 38).
+Applied set_property IO_BUFFER_TYPE = NONE for MIO[16]. (constraint file  /media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.runs/synth_1/.Xil/Vivado-28684-edinburgh/dcp_2/processing_system7_0_in_context.xdc, line 39).
+Applied set_property IO_BUFFER_TYPE = NONE for MIO[15]. (constraint file  /media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.runs/synth_1/.Xil/Vivado-28684-edinburgh/dcp_2/processing_system7_0_in_context.xdc, line 40).
+Applied set_property IO_BUFFER_TYPE = NONE for MIO[14]. (constraint file  /media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.runs/synth_1/.Xil/Vivado-28684-edinburgh/dcp_2/processing_system7_0_in_context.xdc, line 41).
+Applied set_property IO_BUFFER_TYPE = NONE for MIO[13]. (constraint file  /media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.runs/synth_1/.Xil/Vivado-28684-edinburgh/dcp_2/processing_system7_0_in_context.xdc, line 42).
+Applied set_property IO_BUFFER_TYPE = NONE for MIO[12]. (constraint file  /media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.runs/synth_1/.Xil/Vivado-28684-edinburgh/dcp_2/processing_system7_0_in_context.xdc, line 43).
+Applied set_property IO_BUFFER_TYPE = NONE for MIO[11]. (constraint file  /media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.runs/synth_1/.Xil/Vivado-28684-edinburgh/dcp_2/processing_system7_0_in_context.xdc, line 44).
+Applied set_property IO_BUFFER_TYPE = NONE for MIO[10]. (constraint file  /media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.runs/synth_1/.Xil/Vivado-28684-edinburgh/dcp_2/processing_system7_0_in_context.xdc, line 45).
+Applied set_property IO_BUFFER_TYPE = NONE for MIO[9]. (constraint file  /media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.runs/synth_1/.Xil/Vivado-28684-edinburgh/dcp_2/processing_system7_0_in_context.xdc, line 46).
+Applied set_property IO_BUFFER_TYPE = NONE for MIO[8]. (constraint file  /media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.runs/synth_1/.Xil/Vivado-28684-edinburgh/dcp_2/processing_system7_0_in_context.xdc, line 47).
+Applied set_property IO_BUFFER_TYPE = NONE for MIO[7]. (constraint file  /media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.runs/synth_1/.Xil/Vivado-28684-edinburgh/dcp_2/processing_system7_0_in_context.xdc, line 48).
+Applied set_property IO_BUFFER_TYPE = NONE for MIO[6]. (constraint file  /media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.runs/synth_1/.Xil/Vivado-28684-edinburgh/dcp_2/processing_system7_0_in_context.xdc, line 49).
+Applied set_property IO_BUFFER_TYPE = NONE for MIO[5]. (constraint file  /media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.runs/synth_1/.Xil/Vivado-28684-edinburgh/dcp_2/processing_system7_0_in_context.xdc, line 50).
+Applied set_property IO_BUFFER_TYPE = NONE for MIO[4]. (constraint file  /media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.runs/synth_1/.Xil/Vivado-28684-edinburgh/dcp_2/processing_system7_0_in_context.xdc, line 51).
+Applied set_property IO_BUFFER_TYPE = NONE for MIO[3]. (constraint file  /media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.runs/synth_1/.Xil/Vivado-28684-edinburgh/dcp_2/processing_system7_0_in_context.xdc, line 52).
+Applied set_property IO_BUFFER_TYPE = NONE for MIO[2]. (constraint file  /media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.runs/synth_1/.Xil/Vivado-28684-edinburgh/dcp_2/processing_system7_0_in_context.xdc, line 53).
+Applied set_property IO_BUFFER_TYPE = NONE for MIO[1]. (constraint file  /media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.runs/synth_1/.Xil/Vivado-28684-edinburgh/dcp_2/processing_system7_0_in_context.xdc, line 54).
+Applied set_property IO_BUFFER_TYPE = NONE for MIO[0]. (constraint file  /media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.runs/synth_1/.Xil/Vivado-28684-edinburgh/dcp_2/processing_system7_0_in_context.xdc, line 55).
+Applied set_property IO_BUFFER_TYPE = NONE for DDR_CAS_n. (constraint file  /media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.runs/synth_1/.Xil/Vivado-28684-edinburgh/dcp_2/processing_system7_0_in_context.xdc, line 56).
+Applied set_property IO_BUFFER_TYPE = NONE for DDR_CKE. (constraint file  /media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.runs/synth_1/.Xil/Vivado-28684-edinburgh/dcp_2/processing_system7_0_in_context.xdc, line 57).
+Applied set_property IO_BUFFER_TYPE = NONE for DDR_Clk_n. (constraint file  /media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.runs/synth_1/.Xil/Vivado-28684-edinburgh/dcp_2/processing_system7_0_in_context.xdc, line 58).
+Applied set_property IO_BUFFER_TYPE = NONE for DDR_Clk. (constraint file  /media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.runs/synth_1/.Xil/Vivado-28684-edinburgh/dcp_2/processing_system7_0_in_context.xdc, line 59).
+Applied set_property IO_BUFFER_TYPE = NONE for DDR_CS_n. (constraint file  /media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.runs/synth_1/.Xil/Vivado-28684-edinburgh/dcp_2/processing_system7_0_in_context.xdc, line 60).
+Applied set_property IO_BUFFER_TYPE = NONE for DDR_DRSTB. (constraint file  /media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.runs/synth_1/.Xil/Vivado-28684-edinburgh/dcp_2/processing_system7_0_in_context.xdc, line 61).
+Applied set_property IO_BUFFER_TYPE = NONE for DDR_ODT. (constraint file  /media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.runs/synth_1/.Xil/Vivado-28684-edinburgh/dcp_2/processing_system7_0_in_context.xdc, line 62).
+Applied set_property IO_BUFFER_TYPE = NONE for DDR_RAS_n. (constraint file  /media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.runs/synth_1/.Xil/Vivado-28684-edinburgh/dcp_2/processing_system7_0_in_context.xdc, line 63).
+Applied set_property IO_BUFFER_TYPE = NONE for DDR_WEB. (constraint file  /media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.runs/synth_1/.Xil/Vivado-28684-edinburgh/dcp_2/processing_system7_0_in_context.xdc, line 64).
+Applied set_property IO_BUFFER_TYPE = NONE for DDR_BankAddr[2]. (constraint file  /media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.runs/synth_1/.Xil/Vivado-28684-edinburgh/dcp_2/processing_system7_0_in_context.xdc, line 65).
+Applied set_property IO_BUFFER_TYPE = NONE for DDR_BankAddr[1]. (constraint file  /media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.runs/synth_1/.Xil/Vivado-28684-edinburgh/dcp_2/processing_system7_0_in_context.xdc, line 66).
+Applied set_property IO_BUFFER_TYPE = NONE for DDR_BankAddr[0]. (constraint file  /media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.runs/synth_1/.Xil/Vivado-28684-edinburgh/dcp_2/processing_system7_0_in_context.xdc, line 67).
+Applied set_property IO_BUFFER_TYPE = NONE for DDR_Addr[14]. (constraint file  /media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.runs/synth_1/.Xil/Vivado-28684-edinburgh/dcp_2/processing_system7_0_in_context.xdc, line 68).
+Applied set_property IO_BUFFER_TYPE = NONE for DDR_Addr[13]. (constraint file  /media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.runs/synth_1/.Xil/Vivado-28684-edinburgh/dcp_2/processing_system7_0_in_context.xdc, line 69).
+Applied set_property IO_BUFFER_TYPE = NONE for DDR_Addr[12]. (constraint file  /media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.runs/synth_1/.Xil/Vivado-28684-edinburgh/dcp_2/processing_system7_0_in_context.xdc, line 70).
+Applied set_property IO_BUFFER_TYPE = NONE for DDR_Addr[11]. (constraint file  /media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.runs/synth_1/.Xil/Vivado-28684-edinburgh/dcp_2/processing_system7_0_in_context.xdc, line 71).
+Applied set_property IO_BUFFER_TYPE = NONE for DDR_Addr[10]. (constraint file  /media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.runs/synth_1/.Xil/Vivado-28684-edinburgh/dcp_2/processing_system7_0_in_context.xdc, line 72).
+Applied set_property IO_BUFFER_TYPE = NONE for DDR_Addr[9]. (constraint file  /media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.runs/synth_1/.Xil/Vivado-28684-edinburgh/dcp_2/processing_system7_0_in_context.xdc, line 73).
+Applied set_property IO_BUFFER_TYPE = NONE for DDR_Addr[8]. (constraint file  /media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.runs/synth_1/.Xil/Vivado-28684-edinburgh/dcp_2/processing_system7_0_in_context.xdc, line 74).
+Applied set_property IO_BUFFER_TYPE = NONE for DDR_Addr[7]. (constraint file  /media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.runs/synth_1/.Xil/Vivado-28684-edinburgh/dcp_2/processing_system7_0_in_context.xdc, line 75).
+Applied set_property IO_BUFFER_TYPE = NONE for DDR_Addr[6]. (constraint file  /media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.runs/synth_1/.Xil/Vivado-28684-edinburgh/dcp_2/processing_system7_0_in_context.xdc, line 76).
+Applied set_property IO_BUFFER_TYPE = NONE for DDR_Addr[5]. (constraint file  /media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.runs/synth_1/.Xil/Vivado-28684-edinburgh/dcp_2/processing_system7_0_in_context.xdc, line 77).
+Applied set_property IO_BUFFER_TYPE = NONE for DDR_Addr[4]. (constraint file  /media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.runs/synth_1/.Xil/Vivado-28684-edinburgh/dcp_2/processing_system7_0_in_context.xdc, line 78).
+Applied set_property IO_BUFFER_TYPE = NONE for DDR_Addr[3]. (constraint file  /media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.runs/synth_1/.Xil/Vivado-28684-edinburgh/dcp_2/processing_system7_0_in_context.xdc, line 79).
+Applied set_property IO_BUFFER_TYPE = NONE for DDR_Addr[2]. (constraint file  /media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.runs/synth_1/.Xil/Vivado-28684-edinburgh/dcp_2/processing_system7_0_in_context.xdc, line 80).
+Applied set_property IO_BUFFER_TYPE = NONE for DDR_Addr[1]. (constraint file  /media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.runs/synth_1/.Xil/Vivado-28684-edinburgh/dcp_2/processing_system7_0_in_context.xdc, line 81).
+Applied set_property IO_BUFFER_TYPE = NONE for DDR_Addr[0]. (constraint file  /media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.runs/synth_1/.Xil/Vivado-28684-edinburgh/dcp_2/processing_system7_0_in_context.xdc, line 82).
+Applied set_property IO_BUFFER_TYPE = NONE for DDR_VRN. (constraint file  /media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.runs/synth_1/.Xil/Vivado-28684-edinburgh/dcp_2/processing_system7_0_in_context.xdc, line 83).
+Applied set_property IO_BUFFER_TYPE = NONE for DDR_VRP. (constraint file  /media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.runs/synth_1/.Xil/Vivado-28684-edinburgh/dcp_2/processing_system7_0_in_context.xdc, line 84).
+Applied set_property IO_BUFFER_TYPE = NONE for DDR_DM[3]. (constraint file  /media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.runs/synth_1/.Xil/Vivado-28684-edinburgh/dcp_2/processing_system7_0_in_context.xdc, line 85).
+Applied set_property IO_BUFFER_TYPE = NONE for DDR_DM[2]. (constraint file  /media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.runs/synth_1/.Xil/Vivado-28684-edinburgh/dcp_2/processing_system7_0_in_context.xdc, line 86).
+Applied set_property IO_BUFFER_TYPE = NONE for DDR_DM[1]. (constraint file  /media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.runs/synth_1/.Xil/Vivado-28684-edinburgh/dcp_2/processing_system7_0_in_context.xdc, line 87).
+Applied set_property IO_BUFFER_TYPE = NONE for DDR_DM[0]. (constraint file  /media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.runs/synth_1/.Xil/Vivado-28684-edinburgh/dcp_2/processing_system7_0_in_context.xdc, line 88).
+Applied set_property IO_BUFFER_TYPE = NONE for DDR_DQ[31]. (constraint file  /media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.runs/synth_1/.Xil/Vivado-28684-edinburgh/dcp_2/processing_system7_0_in_context.xdc, line 89).
+Applied set_property IO_BUFFER_TYPE = NONE for DDR_DQ[30]. (constraint file  /media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.runs/synth_1/.Xil/Vivado-28684-edinburgh/dcp_2/processing_system7_0_in_context.xdc, line 90).
+Applied set_property IO_BUFFER_TYPE = NONE for DDR_DQ[29]. (constraint file  /media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.runs/synth_1/.Xil/Vivado-28684-edinburgh/dcp_2/processing_system7_0_in_context.xdc, line 91).
+Applied set_property IO_BUFFER_TYPE = NONE for DDR_DQ[28]. (constraint file  /media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.runs/synth_1/.Xil/Vivado-28684-edinburgh/dcp_2/processing_system7_0_in_context.xdc, line 92).
+Applied set_property IO_BUFFER_TYPE = NONE for DDR_DQ[27]. (constraint file  /media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.runs/synth_1/.Xil/Vivado-28684-edinburgh/dcp_2/processing_system7_0_in_context.xdc, line 93).
+Applied set_property IO_BUFFER_TYPE = NONE for DDR_DQ[26]. (constraint file  /media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.runs/synth_1/.Xil/Vivado-28684-edinburgh/dcp_2/processing_system7_0_in_context.xdc, line 94).
+Applied set_property IO_BUFFER_TYPE = NONE for DDR_DQ[25]. (constraint file  /media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.runs/synth_1/.Xil/Vivado-28684-edinburgh/dcp_2/processing_system7_0_in_context.xdc, line 95).
+Applied set_property IO_BUFFER_TYPE = NONE for DDR_DQ[24]. (constraint file  /media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.runs/synth_1/.Xil/Vivado-28684-edinburgh/dcp_2/processing_system7_0_in_context.xdc, line 96).
+Applied set_property IO_BUFFER_TYPE = NONE for DDR_DQ[23]. (constraint file  /media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.runs/synth_1/.Xil/Vivado-28684-edinburgh/dcp_2/processing_system7_0_in_context.xdc, line 97).
+Applied set_property IO_BUFFER_TYPE = NONE for DDR_DQ[22]. (constraint file  /media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.runs/synth_1/.Xil/Vivado-28684-edinburgh/dcp_2/processing_system7_0_in_context.xdc, line 98).
+Applied set_property IO_BUFFER_TYPE = NONE for DDR_DQ[21]. (constraint file  /media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.runs/synth_1/.Xil/Vivado-28684-edinburgh/dcp_2/processing_system7_0_in_context.xdc, line 99).
+Applied set_property IO_BUFFER_TYPE = NONE for DDR_DQ[20]. (constraint file  /media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.runs/synth_1/.Xil/Vivado-28684-edinburgh/dcp_2/processing_system7_0_in_context.xdc, line 100).
+Applied set_property IO_BUFFER_TYPE = NONE for DDR_DQ[19]. (constraint file  /media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.runs/synth_1/.Xil/Vivado-28684-edinburgh/dcp_2/processing_system7_0_in_context.xdc, line 101).
+Applied set_property IO_BUFFER_TYPE = NONE for DDR_DQ[18]. (constraint file  /media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.runs/synth_1/.Xil/Vivado-28684-edinburgh/dcp_2/processing_system7_0_in_context.xdc, line 102).
+Applied set_property IO_BUFFER_TYPE = NONE for DDR_DQ[17]. (constraint file  /media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.runs/synth_1/.Xil/Vivado-28684-edinburgh/dcp_2/processing_system7_0_in_context.xdc, line 103).
+Applied set_property IO_BUFFER_TYPE = NONE for DDR_DQ[16]. (constraint file  /media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.runs/synth_1/.Xil/Vivado-28684-edinburgh/dcp_2/processing_system7_0_in_context.xdc, line 104).
+Applied set_property IO_BUFFER_TYPE = NONE for DDR_DQ[15]. (constraint file  /media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.runs/synth_1/.Xil/Vivado-28684-edinburgh/dcp_2/processing_system7_0_in_context.xdc, line 105).
+Applied set_property IO_BUFFER_TYPE = NONE for DDR_DQ[14]. (constraint file  /media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.runs/synth_1/.Xil/Vivado-28684-edinburgh/dcp_2/processing_system7_0_in_context.xdc, line 106).
+Applied set_property IO_BUFFER_TYPE = NONE for DDR_DQ[13]. (constraint file  /media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.runs/synth_1/.Xil/Vivado-28684-edinburgh/dcp_2/processing_system7_0_in_context.xdc, line 107).
+Applied set_property IO_BUFFER_TYPE = NONE for DDR_DQ[12]. (constraint file  /media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.runs/synth_1/.Xil/Vivado-28684-edinburgh/dcp_2/processing_system7_0_in_context.xdc, line 108).
+Applied set_property IO_BUFFER_TYPE = NONE for DDR_DQ[11]. (constraint file  /media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.runs/synth_1/.Xil/Vivado-28684-edinburgh/dcp_2/processing_system7_0_in_context.xdc, line 109).
+Applied set_property IO_BUFFER_TYPE = NONE for DDR_DQ[10]. (constraint file  /media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.runs/synth_1/.Xil/Vivado-28684-edinburgh/dcp_2/processing_system7_0_in_context.xdc, line 110).
+Applied set_property IO_BUFFER_TYPE = NONE for DDR_DQ[9]. (constraint file  /media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.runs/synth_1/.Xil/Vivado-28684-edinburgh/dcp_2/processing_system7_0_in_context.xdc, line 111).
+Applied set_property IO_BUFFER_TYPE = NONE for DDR_DQ[8]. (constraint file  /media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.runs/synth_1/.Xil/Vivado-28684-edinburgh/dcp_2/processing_system7_0_in_context.xdc, line 112).
+Applied set_property IO_BUFFER_TYPE = NONE for DDR_DQ[7]. (constraint file  /media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.runs/synth_1/.Xil/Vivado-28684-edinburgh/dcp_2/processing_system7_0_in_context.xdc, line 113).
+Applied set_property IO_BUFFER_TYPE = NONE for DDR_DQ[6]. (constraint file  /media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.runs/synth_1/.Xil/Vivado-28684-edinburgh/dcp_2/processing_system7_0_in_context.xdc, line 114).
+Applied set_property IO_BUFFER_TYPE = NONE for DDR_DQ[5]. (constraint file  /media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.runs/synth_1/.Xil/Vivado-28684-edinburgh/dcp_2/processing_system7_0_in_context.xdc, line 115).
+Applied set_property IO_BUFFER_TYPE = NONE for DDR_DQ[4]. (constraint file  /media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.runs/synth_1/.Xil/Vivado-28684-edinburgh/dcp_2/processing_system7_0_in_context.xdc, line 116).
+Applied set_property IO_BUFFER_TYPE = NONE for DDR_DQ[3]. (constraint file  /media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.runs/synth_1/.Xil/Vivado-28684-edinburgh/dcp_2/processing_system7_0_in_context.xdc, line 117).
+Applied set_property IO_BUFFER_TYPE = NONE for DDR_DQ[2]. (constraint file  /media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.runs/synth_1/.Xil/Vivado-28684-edinburgh/dcp_2/processing_system7_0_in_context.xdc, line 118).
+Applied set_property IO_BUFFER_TYPE = NONE for DDR_DQ[1]. (constraint file  /media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.runs/synth_1/.Xil/Vivado-28684-edinburgh/dcp_2/processing_system7_0_in_context.xdc, line 119).
+Applied set_property IO_BUFFER_TYPE = NONE for DDR_DQ[0]. (constraint file  /media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.runs/synth_1/.Xil/Vivado-28684-edinburgh/dcp_2/processing_system7_0_in_context.xdc, line 120).
+Applied set_property IO_BUFFER_TYPE = NONE for DDR_DQS_n[3]. (constraint file  /media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.runs/synth_1/.Xil/Vivado-28684-edinburgh/dcp_2/processing_system7_0_in_context.xdc, line 121).
+Applied set_property IO_BUFFER_TYPE = NONE for DDR_DQS_n[2]. (constraint file  /media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.runs/synth_1/.Xil/Vivado-28684-edinburgh/dcp_2/processing_system7_0_in_context.xdc, line 122).
+Applied set_property IO_BUFFER_TYPE = NONE for DDR_DQS_n[1]. (constraint file  /media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.runs/synth_1/.Xil/Vivado-28684-edinburgh/dcp_2/processing_system7_0_in_context.xdc, line 123).
+Applied set_property IO_BUFFER_TYPE = NONE for DDR_DQS_n[0]. (constraint file  /media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.runs/synth_1/.Xil/Vivado-28684-edinburgh/dcp_2/processing_system7_0_in_context.xdc, line 124).
+Applied set_property IO_BUFFER_TYPE = NONE for DDR_DQS[3]. (constraint file  /media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.runs/synth_1/.Xil/Vivado-28684-edinburgh/dcp_2/processing_system7_0_in_context.xdc, line 125).
+Applied set_property IO_BUFFER_TYPE = NONE for DDR_DQS[2]. (constraint file  /media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.runs/synth_1/.Xil/Vivado-28684-edinburgh/dcp_2/processing_system7_0_in_context.xdc, line 126).
+Applied set_property IO_BUFFER_TYPE = NONE for DDR_DQS[1]. (constraint file  /media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.runs/synth_1/.Xil/Vivado-28684-edinburgh/dcp_2/processing_system7_0_in_context.xdc, line 127).
+Applied set_property IO_BUFFER_TYPE = NONE for DDR_DQS[0]. (constraint file  /media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.runs/synth_1/.Xil/Vivado-28684-edinburgh/dcp_2/processing_system7_0_in_context.xdc, line 128).
+Applied set_property IO_BUFFER_TYPE = NONE for PS_SRSTB. (constraint file  /media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.runs/synth_1/.Xil/Vivado-28684-edinburgh/dcp_2/processing_system7_0_in_context.xdc, line 129).
+Applied set_property IO_BUFFER_TYPE = NONE for PS_CLK. (constraint file  /media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.runs/synth_1/.Xil/Vivado-28684-edinburgh/dcp_2/processing_system7_0_in_context.xdc, line 130).
+Applied set_property IO_BUFFER_TYPE = NONE for PS_PORB. (constraint file  /media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.runs/synth_1/.Xil/Vivado-28684-edinburgh/dcp_2/processing_system7_0_in_context.xdc, line 131).
 ---------------------------------------------------------------------------------
-Finished applying 'set_property' XDC Constraints : Time (s): cpu = 00:00:08 ; elapsed = 00:00:11 . Memory (MB): peak = 1238.930 ; gain = 482.859 ; free physical = 4089 ; free virtual = 9346
+Finished applying 'set_property' XDC Constraints : Time (s): cpu = 00:00:08 ; elapsed = 00:00:10 . Memory (MB): peak = 1239.930 ; gain = 483.859 ; free physical = 3777 ; free virtual = 9467
 ---------------------------------------------------------------------------------
-INFO: [Synth 8-3537] HDL ADVISOR - The operator resource <multiplier> is shared. To prevent sharing consider applying a KEEP on the inputs of the operator [/media/sf_D_DRIVE/Users/Greg/workspace/OPL3/modules/oscillators/src/nco_control.sv:43]
+INFO: [Synth 8-3537] HDL ADVISOR - The operator resource <multiplier> is shared. To prevent sharing consider applying a KEEP on the inputs of the operator [/media/sf_D_DRIVE/Users/Greg/workspace/OPL3/modules/oscillators/src/nco_control.sv:55]
 WARNING: [Synth 8-3848] Net SDIO0_WP in module/entity top_level does not have driver. [/media/sf_D_DRIVE/Users/Greg/workspace/OPL3/top_level/src/top_level.sv:118]
 WARNING: [Synth 8-3848] Net USB0_VBUS_PWRFAULT in module/entity top_level does not have driver. [/media/sf_D_DRIVE/Users/Greg/workspace/OPL3/top_level/src/top_level.sv:121]
 WARNING: [Synth 8-3848] Net M_AXI_GP0_ACLK in module/entity top_level does not have driver. [/media/sf_D_DRIVE/Users/Greg/workspace/OPL3/top_level/src/top_level.sv:94]
@@ -316,7 +316,7 @@ WARNING: [Synth 8-3848] Net M_AXI_GP0_BRESP in module/entity top_level does not 
 WARNING: [Synth 8-3848] Net M_AXI_GP0_RRESP in module/entity top_level does not have driver. [/media/sf_D_DRIVE/Users/Greg/workspace/OPL3/top_level/src/top_level.sv:104]
 WARNING: [Synth 8-3848] Net M_AXI_GP0_RDATA in module/entity top_level does not have driver. [/media/sf_D_DRIVE/Users/Greg/workspace/OPL3/top_level/src/top_level.sv:105]
 ---------------------------------------------------------------------------------
-Finished RTL Optimization Phase 2 : Time (s): cpu = 00:00:08 ; elapsed = 00:00:11 . Memory (MB): peak = 1238.930 ; gain = 482.859 ; free physical = 4085 ; free virtual = 9344
+Finished RTL Optimization Phase 2 : Time (s): cpu = 00:00:08 ; elapsed = 00:00:11 . Memory (MB): peak = 1239.930 ; gain = 483.859 ; free physical = 3769 ; free virtual = 9459
 ---------------------------------------------------------------------------------
 
 Report RTL Partitions: 
@@ -329,34 +329,30 @@ Start RTL Component Statistics
 ---------------------------------------------------------------------------------
 Detailed RTL Component Info : 
 +---Adders : 
+	   2 Input     32 Bit       Adders := 1     
 	   2 Input     24 Bit       Adders := 1     
 	   2 Input     20 Bit       Adders := 1     
 	   2 Input      8 Bit       Adders := 1     
 	   2 Input      6 Bit       Adders := 1     
 	   2 Input      3 Bit       Adders := 1     
 	   2 Input      1 Bit       Adders := 1     
-+---XORs : 
-	   4 Input      1 Bit         XORs := 2     
-	   2 Input      1 Bit         XORs := 1     
-	   6 Input      1 Bit         XORs := 1     
 +---Registers : 
-	               44 Bit    Registers := 1     
-	               43 Bit    Registers := 1     
-	               42 Bit    Registers := 1     
-	               41 Bit    Registers := 1     
 	               24 Bit    Registers := 1     
 	               20 Bit    Registers := 5     
-	               16 Bit    Registers := 6     
+	               16 Bit    Registers := 7     
+	               10 Bit    Registers := 1     
 	                8 Bit    Registers := 2     
 	                6 Bit    Registers := 1     
 	                3 Bit    Registers := 1     
-	                1 Bit    Registers := 8     
+	                1 Bit    Registers := 10    
 +---ROMs : 
 	                              ROMs := 1     
 +---Muxes : 
 	   2 Input     24 Bit        Muxes := 1     
+	   2 Input     20 Bit        Muxes := 1     
 	  16 Input     20 Bit        Muxes := 1     
-	   2 Input     16 Bit        Muxes := 1     
+	   2 Input     16 Bit        Muxes := 6     
+	   2 Input     10 Bit        Muxes := 4     
 	   2 Input      8 Bit        Muxes := 2     
 	   2 Input      6 Bit        Muxes := 1     
 	  16 Input      4 Bit        Muxes := 1     
@@ -389,17 +385,10 @@ Detailed RTL Component Info :
 +---Muxes : 
 	   2 Input      8 Bit        Muxes := 1     
 	   2 Input      1 Bit        Muxes := 1     
-Module rand_num_4bit 
+Module edge_detector 
 Detailed RTL Component Info : 
-+---XORs : 
-	   4 Input      1 Bit         XORs := 2     
-	   2 Input      1 Bit         XORs := 1     
-	   6 Input      1 Bit         XORs := 1     
 +---Registers : 
-	               44 Bit    Registers := 1     
-	               43 Bit    Registers := 1     
-	               42 Bit    Registers := 1     
-	               41 Bit    Registers := 1     
+	                1 Bit    Registers := 1     
 Module sine_lut 
 Detailed RTL Component Info : 
 +---Registers : 
@@ -413,16 +402,23 @@ Detailed RTL Component Info :
 	   2 Input      8 Bit        Muxes := 1     
 Module nco 
 Detailed RTL Component Info : 
-+---Adders : 
-	   2 Input     20 Bit       Adders := 1     
 +---Registers : 
-	               20 Bit    Registers := 1     
+	               16 Bit    Registers := 1     
+	                1 Bit    Registers := 1     
++---Muxes : 
+	   2 Input     20 Bit        Muxes := 1     
+	   2 Input     16 Bit        Muxes := 5     
 Module nco_control 
 Detailed RTL Component Info : 
++---Adders : 
+	   2 Input     32 Bit       Adders := 1     
+	   2 Input     20 Bit       Adders := 1     
 +---Registers : 
-	               20 Bit    Registers := 4     
+	               20 Bit    Registers := 5     
+	               10 Bit    Registers := 1     
 +---Muxes : 
 	  16 Input     20 Bit        Muxes := 1     
+	   2 Input     10 Bit        Muxes := 4     
 	  16 Input      4 Bit        Muxes := 1     
 Module i2s 
 Detailed RTL Component Info : 
@@ -448,22 +444,22 @@ BRAMs: 120 (col length: RAMB18 40 RAMB36 20)
 ---------------------------------------------------------------------------------
 Finished Part Resource Summary
 ---------------------------------------------------------------------------------
-Start Parallel Synthesis Optimization  : Time (s): cpu = 00:00:08 ; elapsed = 00:00:11 . Memory (MB): peak = 1238.930 ; gain = 482.859 ; free physical = 4085 ; free virtual = 9344
+Start Parallel Synthesis Optimization  : Time (s): cpu = 00:00:08 ; elapsed = 00:00:11 . Memory (MB): peak = 1239.930 ; gain = 483.859 ; free physical = 3769 ; free virtual = 9459
 ---------------------------------------------------------------------------------
 Start Cross Boundary Optimization
 ---------------------------------------------------------------------------------
+INFO: [Synth 8-4471] merging register 'phase_gen_inst/pre_mult_reg[19:0]' into 'phase_gen_inst/pre_mult_reg[19:0]' [/media/sf_D_DRIVE/Users/Greg/workspace/OPL3/modules/oscillators/src/nco_control.sv:52]
 INFO: [Synth 8-4471] merging register 'i2s_inst/right_channel_r_reg[0][15:0]' into 'i2s_inst/left_channel_r_reg[0][15:0]' [/media/sf_D_DRIVE/Users/Greg/workspace/OPL3/modules/i2s/src/i2s.sv:45]
 INFO: [Synth 8-4471] merging register 'i2s_inst/right_channel_r_reg[1][15:0]' into 'i2s_inst/left_channel_r_reg[1][15:0]' [/media/sf_D_DRIVE/Users/Greg/workspace/OPL3/modules/i2s/src/i2s.sv:45]
-INFO: [Synth 8-4471] merging register 'phase_gen_inst/pre_mult_reg[19:0]' into 'phase_gen_inst/pre_mult_reg[19:0]' [/media/sf_D_DRIVE/Users/Greg/workspace/OPL3/modules/oscillators/src/nco_control.sv:40]
 WARNING: [Synth 8-3917] design top_level has port ac_mute_n driven by constant 1
 WARNING: [Synth 8-3917] design top_level has port led[3] driven by constant 1
 WARNING: [Synth 8-3917] design top_level has port led[2] driven by constant 1
 WARNING: [Synth 8-3917] design top_level has port led[1] driven by constant 1
 WARNING: [Synth 8-3917] design top_level has port led[0] driven by constant 1
 ---------------------------------------------------------------------------------
-Finished Cross Boundary Optimization : Time (s): cpu = 00:00:08 ; elapsed = 00:00:11 . Memory (MB): peak = 1238.930 ; gain = 482.859 ; free physical = 4085 ; free virtual = 9344
+Finished Cross Boundary Optimization : Time (s): cpu = 00:00:08 ; elapsed = 00:00:11 . Memory (MB): peak = 1239.930 ; gain = 483.859 ; free physical = 3769 ; free virtual = 9459
 ---------------------------------------------------------------------------------
-Finished Parallel Reinference  : Time (s): cpu = 00:00:08 ; elapsed = 00:00:11 . Memory (MB): peak = 1238.930 ; gain = 482.859 ; free physical = 4085 ; free virtual = 9344
+Finished Parallel Reinference  : Time (s): cpu = 00:00:08 ; elapsed = 00:00:11 . Memory (MB): peak = 1239.930 ; gain = 483.859 ; free physical = 3769 ; free virtual = 9459
 
 Report RTL Partitions: 
 +-+--------------+------------+----------+
@@ -476,51 +472,32 @@ Start RAM, DSP and Shift Register Reporting
 ---------------------------------------------------------------------------------
 Finished RAM, DSP and Shift Register Reporting
 ---------------------------------------------------------------------------------
-INFO: [Synth 8-3333] propagating constant 0 across sequential element (\phase_gen_inst/pre_mult_reg[19] )
-INFO: [Synth 8-3333] propagating constant 0 across sequential element (\phase_gen_inst/pre_mult_reg[19] )
-INFO: [Synth 8-3333] propagating constant 0 across sequential element (\phase_gen_inst/pre_mult_reg[19] )
-WARNING: [Synth 8-3332] Sequential element (\phase_gen_inst/pre_mult_reg[18] ) is unused and will be removed from module top_level.
-WARNING: [Synth 8-3332] Sequential element (\phase_gen_inst/pre_mult_reg[17] ) is unused and will be removed from module top_level.
-WARNING: [Synth 8-3332] Sequential element (\phase_gen_inst/pre_mult_reg[8] ) is unused and will be removed from module top_level.
-WARNING: [Synth 8-3332] Sequential element (\phase_gen_inst/pre_mult_reg[7] ) is unused and will be removed from module top_level.
-WARNING: [Synth 8-3332] Sequential element (\phase_gen_inst/post_mult_reg[18] ) is unused and will be removed from module top_level.
-WARNING: [Synth 8-3332] Sequential element (\phase_gen_inst/post_mult_reg[17] ) is unused and will be removed from module top_level.
-WARNING: [Synth 8-3332] Sequential element (\phase_gen_inst/post_mult_reg[8] ) is unused and will be removed from module top_level.
-WARNING: [Synth 8-3332] Sequential element (\phase_gen_inst/post_mult_reg[7] ) is unused and will be removed from module top_level.
-WARNING: [Synth 8-3332] Sequential element (\phase_gen_inst/phase_inc_reg[18] ) is unused and will be removed from module top_level.
-WARNING: [Synth 8-3332] Sequential element (\phase_gen_inst/phase_inc_reg[17] ) is unused and will be removed from module top_level.
-WARNING: [Synth 8-3332] Sequential element (\phase_gen_inst/phase_inc_reg[8] ) is unused and will be removed from module top_level.
-WARNING: [Synth 8-3332] Sequential element (\phase_gen_inst/phase_inc_reg[7] ) is unused and will be removed from module top_level.
-WARNING: [Synth 8-3332] Sequential element (\phase_gen_inst/nco_inst/dither_reg[9] ) is unused and will be removed from module top_level.
-WARNING: [Synth 8-3332] Sequential element (\phase_gen_inst/nco_inst/dither_reg[8] ) is unused and will be removed from module top_level.
-WARNING: [Synth 8-3332] Sequential element (\phase_gen_inst/nco_inst/dither_reg[7] ) is unused and will be removed from module top_level.
-WARNING: [Synth 8-3332] Sequential element (\phase_gen_inst/nco_inst/dither_reg[6] ) is unused and will be removed from module top_level.
-WARNING: [Synth 8-3332] Sequential element (\phase_gen_inst/nco_inst/dither_reg[5] ) is unused and will be removed from module top_level.
-WARNING: [Synth 8-3332] Sequential element (\phase_gen_inst/nco_inst/dither_reg[4] ) is unused and will be removed from module top_level.
-WARNING: [Synth 8-3332] Sequential element (\phase_gen_inst/nco_inst/dither_reg[3] ) is unused and will be removed from module top_level.
-WARNING: [Synth 8-3332] Sequential element (\phase_gen_inst/nco_inst/dither_reg[2] ) is unused and will be removed from module top_level.
-WARNING: [Synth 8-3332] Sequential element (\phase_gen_inst/nco_inst/dither_reg[1] ) is unused and will be removed from module top_level.
-WARNING: [Synth 8-3332] Sequential element (\phase_gen_inst/nco_inst/dither_reg[0] ) is unused and will be removed from module top_level.
-WARNING: [Synth 8-3332] Sequential element (\phase_gen_inst/pre_mult_reg[19] ) is unused and will be removed from module top_level.
-WARNING: [Synth 8-3332] Sequential element (\phase_gen_inst/post_mult_reg[19] ) is unused and will be removed from module top_level.
-WARNING: [Synth 8-3332] Sequential element (\phase_gen_inst/phase_inc_reg[19] ) is unused and will be removed from module top_level.
+WARNING: [Synth 8-3332] Sequential element (\phase_gen_inst/delta3_reg[8] ) is unused and will be removed from module top_level.
+WARNING: [Synth 8-3332] Sequential element (\phase_gen_inst/delta3_reg[7] ) is unused and will be removed from module top_level.
+WARNING: [Synth 8-3332] Sequential element (\phase_gen_inst/delta3_reg[6] ) is unused and will be removed from module top_level.
+WARNING: [Synth 8-3332] Sequential element (\phase_gen_inst/delta3_reg[5] ) is unused and will be removed from module top_level.
+WARNING: [Synth 8-3332] Sequential element (\phase_gen_inst/delta3_reg[4] ) is unused and will be removed from module top_level.
+WARNING: [Synth 8-3332] Sequential element (\phase_gen_inst/delta3_reg[3] ) is unused and will be removed from module top_level.
+WARNING: [Synth 8-3332] Sequential element (\phase_gen_inst/delta3_reg[2] ) is unused and will be removed from module top_level.
+WARNING: [Synth 8-3332] Sequential element (\phase_gen_inst/nco_inst/lut_msg_edge_detect_inst/in_r0_reg ) is unused and will be removed from module top_level.
+WARNING: [Synth 8-3332] Sequential element (\phase_gen_inst/nco_inst/is_odd_period_reg ) is unused and will be removed from module top_level.
 ---------------------------------------------------------------------------------
 Start Area Optimization
 ---------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------
-Finished Area Optimization : Time (s): cpu = 00:00:09 ; elapsed = 00:00:12 . Memory (MB): peak = 1238.934 ; gain = 482.863 ; free physical = 4082 ; free virtual = 9344
+Finished Area Optimization : Time (s): cpu = 00:00:08 ; elapsed = 00:00:11 . Memory (MB): peak = 1239.934 ; gain = 483.863 ; free physical = 3757 ; free virtual = 9448
 ---------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------
-Finished Area Optimization : Time (s): cpu = 00:00:09 ; elapsed = 00:00:12 . Memory (MB): peak = 1238.934 ; gain = 482.863 ; free physical = 4082 ; free virtual = 9344
+Finished Area Optimization : Time (s): cpu = 00:00:08 ; elapsed = 00:00:11 . Memory (MB): peak = 1239.934 ; gain = 483.863 ; free physical = 3757 ; free virtual = 9448
 ---------------------------------------------------------------------------------
-Finished Parallel Area Optimization  : Time (s): cpu = 00:00:09 ; elapsed = 00:00:12 . Memory (MB): peak = 1238.934 ; gain = 482.863 ; free physical = 4082 ; free virtual = 9344
+Finished Parallel Area Optimization  : Time (s): cpu = 00:00:08 ; elapsed = 00:00:11 . Memory (MB): peak = 1239.934 ; gain = 483.863 ; free physical = 3757 ; free virtual = 9448
 
 Report RTL Partitions: 
 +-+--------------+------------+----------+
 | |RTL Partition |Replication |Instances |
 +-+--------------+------------+----------+
 +-+--------------+------------+----------+
-Finished Parallel Synthesis Optimization  : Time (s): cpu = 00:00:09 ; elapsed = 00:00:12 . Memory (MB): peak = 1238.934 ; gain = 482.863 ; free physical = 4082 ; free virtual = 9344
+Finished Parallel Synthesis Optimization  : Time (s): cpu = 00:00:08 ; elapsed = 00:00:11 . Memory (MB): peak = 1239.934 ; gain = 483.863 ; free physical = 3757 ; free virtual = 9448
 ---------------------------------------------------------------------------------
 Start Timing Optimization
 ---------------------------------------------------------------------------------
@@ -529,10 +506,10 @@ Start Applying XDC Timing Constraints
 ---------------------------------------------------------------------------------
 INFO: Moved 2 constraints on hierarchical pins to their respective driving/loading pins
 ---------------------------------------------------------------------------------
-Finished Applying XDC Timing Constraints : Time (s): cpu = 00:00:14 ; elapsed = 00:00:18 . Memory (MB): peak = 1238.934 ; gain = 482.863 ; free physical = 4073 ; free virtual = 9343
+Finished Applying XDC Timing Constraints : Time (s): cpu = 00:00:14 ; elapsed = 00:00:17 . Memory (MB): peak = 1239.934 ; gain = 483.863 ; free physical = 3723 ; free virtual = 9413
 ---------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------
-Finished Timing Optimization : Time (s): cpu = 00:00:14 ; elapsed = 00:00:18 . Memory (MB): peak = 1238.934 ; gain = 482.863 ; free physical = 4073 ; free virtual = 9343
+Finished Timing Optimization : Time (s): cpu = 00:00:14 ; elapsed = 00:00:17 . Memory (MB): peak = 1239.934 ; gain = 483.863 ; free physical = 3723 ; free virtual = 9413
 ---------------------------------------------------------------------------------
 
 Report RTL Partitions: 
@@ -543,9 +520,32 @@ Report RTL Partitions:
 ---------------------------------------------------------------------------------
 Start Technology Mapping
 ---------------------------------------------------------------------------------
+INFO: [Synth 8-3333] propagating constant 0 across sequential element (\phase_gen_inst/pre_mult_reg[17] )
+INFO: [Synth 8-3333] propagating constant 0 across sequential element (\phase_gen_inst/post_mult_reg[17] )
+INFO: [Synth 8-3333] propagating constant 0 across sequential element (\phase_gen_inst/post_mult_reg[17] )
+INFO: [Synth 8-3333] propagating constant 0 across sequential element (\phase_gen_inst/post_mult_reg[17] )
+WARNING: [Synth 8-3332] Sequential element (\phase_gen_inst/pre_mult_reg[16] ) is unused and will be removed from module top_level.
+WARNING: [Synth 8-3332] Sequential element (\phase_gen_inst/pre_mult_reg[8] ) is unused and will be removed from module top_level.
+WARNING: [Synth 8-3332] Sequential element (\phase_gen_inst/pre_mult_reg[17] ) is unused and will be removed from module top_level.
+WARNING: [Synth 8-3332] Sequential element (\phase_gen_inst/post_mult_reg[18] ) is unused and will be removed from module top_level.
+WARNING: [Synth 8-3332] Sequential element (\phase_gen_inst/post_mult_reg[16] ) is unused and will be removed from module top_level.
+WARNING: [Synth 8-3332] Sequential element (\phase_gen_inst/post_mult_reg[8] ) is unused and will be removed from module top_level.
+WARNING: [Synth 8-3332] Sequential element (\phase_gen_inst/phase_inc_p0_reg[18] ) is unused and will be removed from module top_level.
+WARNING: [Synth 8-3332] Sequential element (\phase_gen_inst/phase_inc_p0_reg[16] ) is unused and will be removed from module top_level.
+WARNING: [Synth 8-3332] Sequential element (\phase_gen_inst/phase_inc_p0_reg[8] ) is unused and will be removed from module top_level.
+WARNING: [Synth 8-3332] Sequential element (\phase_gen_inst/post_mult_reg[17] ) is unused and will be removed from module top_level.
+WARNING: [Synth 8-3332] Sequential element (\phase_gen_inst/pre_mult_reg[18] ) is unused and will be removed from module top_level.
+WARNING: [Synth 8-3332] Sequential element (\phase_gen_inst/pre_mult_reg[19] ) is unused and will be removed from module top_level.
+WARNING: [Synth 8-3332] Sequential element (\phase_gen_inst/phase_inc_p0_reg[17] ) is unused and will be removed from module top_level.
+WARNING: [Synth 8-3332] Sequential element (\phase_gen_inst/post_mult_reg[19] ) is unused and will be removed from module top_level.
+WARNING: [Synth 8-3332] Sequential element (\phase_gen_inst/phase_inc_p0_reg[19] ) is unused and will be removed from module top_level.
+INFO: [Synth 8-3333] propagating constant 0 across sequential element (\phase_gen_inst/phase_inc_reg[18] )
+WARNING: [Synth 8-3332] Sequential element (\phase_gen_inst/phase_inc_reg[19] ) is unused and will be removed from module top_level.
+WARNING: [Synth 8-3332] Sequential element (\phase_gen_inst/phase_inc_reg[18] ) is unused and will be removed from module top_level.
+WARNING: [Synth 8-3332] Sequential element (\phase_gen_inst/phase_inc_reg[17] ) is unused and will be removed from module top_level.
 INFO: [Synth 8-4480] The timing for the instance \phase_gen_inst/nco_inst/sine_lut_inst/sine_reg  (implemented as a block RAM) might be sub-optimal as no optional output register could be merged into the block ram. Providing additional output register may help in improving timing.
 ---------------------------------------------------------------------------------
-Finished Technology Mapping : Time (s): cpu = 00:00:14 ; elapsed = 00:00:18 . Memory (MB): peak = 1238.934 ; gain = 482.863 ; free physical = 4073 ; free virtual = 9343
+Finished Technology Mapping : Time (s): cpu = 00:00:14 ; elapsed = 00:00:17 . Memory (MB): peak = 1239.934 ; gain = 483.863 ; free physical = 3716 ; free virtual = 9406
 ---------------------------------------------------------------------------------
 
 Report RTL Partitions: 
@@ -638,7 +638,7 @@ CRITICAL WARNING: [Synth 8-4442] BlackBox module cpu_inst has unconnected pin M_
 CRITICAL WARNING: [Synth 8-4442] BlackBox module cpu_inst has unconnected pin M_AXI_GP0_RDATA[1]
 CRITICAL WARNING: [Synth 8-4442] BlackBox module cpu_inst has unconnected pin M_AXI_GP0_RDATA[0]
 ---------------------------------------------------------------------------------
-Finished IO Insertion : Time (s): cpu = 00:00:14 ; elapsed = 00:00:18 . Memory (MB): peak = 1238.934 ; gain = 482.863 ; free physical = 4073 ; free virtual = 9343
+Finished IO Insertion : Time (s): cpu = 00:00:14 ; elapsed = 00:00:18 . Memory (MB): peak = 1239.934 ; gain = 483.863 ; free physical = 3716 ; free virtual = 9406
 ---------------------------------------------------------------------------------
 
 Report Check Netlist: 
@@ -651,7 +651,7 @@ Report Check Netlist:
 Start Renaming Generated Instances
 ---------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------
-Finished Renaming Generated Instances : Time (s): cpu = 00:00:14 ; elapsed = 00:00:18 . Memory (MB): peak = 1238.934 ; gain = 482.863 ; free physical = 4073 ; free virtual = 9343
+Finished Renaming Generated Instances : Time (s): cpu = 00:00:14 ; elapsed = 00:00:18 . Memory (MB): peak = 1239.934 ; gain = 483.863 ; free physical = 3716 ; free virtual = 9406
 ---------------------------------------------------------------------------------
 
 Report RTL Partitions: 
@@ -663,25 +663,18 @@ Report RTL Partitions:
 Start Rebuilding User Hierarchy
 ---------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------
-Finished Rebuilding User Hierarchy : Time (s): cpu = 00:00:14 ; elapsed = 00:00:18 . Memory (MB): peak = 1238.934 ; gain = 482.863 ; free physical = 4073 ; free virtual = 9343
+Finished Rebuilding User Hierarchy : Time (s): cpu = 00:00:14 ; elapsed = 00:00:18 . Memory (MB): peak = 1239.934 ; gain = 483.863 ; free physical = 3716 ; free virtual = 9406
 ---------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------
 Start RAM, DSP and Shift Register Reporting
 ---------------------------------------------------------------------------------
 
 Static Shift Register:
-+------------+-----------------------------------------------------+--------+-------+--------------+--------------------+-------------------+--------+---------+
-|Module Name | RTL Name                                            | Length | Width | Reset Signal | Pull out first Reg | Pull out last Reg | SRL16E | SRLC32E | 
-+------------+-----------------------------------------------------+--------+-------+--------------+--------------------+-------------------+--------+---------+
-|top_level   | phase_gen_inst/nco_inst/rand_num_inst/lfsr0_reg[40] | 35     | 1     | NO           | NO                 | YES               | 0      | 2       | 
-|top_level   | phase_gen_inst/nco_inst/rand_num_inst/lfsr0_reg[3]  | 3      | 1     | NO           | NO                 | YES               | 1      | 0       | 
-|top_level   | phase_gen_inst/nco_inst/rand_num_inst/lfsr1_reg[41] | 38     | 1     | NO           | NO                 | YES               | 0      | 2       | 
-|top_level   | phase_gen_inst/nco_inst/rand_num_inst/lfsr1_reg[3]  | 3      | 1     | NO           | NO                 | YES               | 1      | 0       | 
-|top_level   | phase_gen_inst/nco_inst/rand_num_inst/lfsr2_reg[42] | 37     | 1     | NO           | NO                 | YES               | 0      | 2       | 
-|top_level   | phase_gen_inst/nco_inst/rand_num_inst/lfsr3_reg[43] | 37     | 1     | NO           | NO                 | YES               | 0      | 2       | 
-|top_level   | phase_gen_inst/nco_inst/rand_num_inst/lfsr3_reg[3]  | 3      | 1     | NO           | NO                 | YES               | 1      | 0       | 
-|top_level   | phase_gen_inst/phase_inc_reg[16]                    | 3      | 15    | NO           | NO                 | YES               | 15     | 0       | 
-+------------+-----------------------------------------------------+--------+-------+--------------+--------------------+-------------------+--------+---------+
++------------+------------------------------------+--------+-------+--------------+--------------------+-------------------+--------+---------+
+|Module Name | RTL Name                           | Length | Width | Reset Signal | Pull out first Reg | Pull out last Reg | SRL16E | SRLC32E | 
++------------+------------------------------------+--------+-------+--------------+--------------------+-------------------+--------+---------+
+|top_level   | phase_gen_inst/phase_inc_p0_reg[7] | 3      | 1     | NO           | NO                 | YES               | 1      | 0       | 
++------------+------------------------------------+--------+-------+--------------+--------------------+-------------------+--------+---------+
 
 ---------------------------------------------------------------------------------
 Finished RAM, DSP and Shift Register Reporting
@@ -704,59 +697,56 @@ Report Cell Usage:
 +------+---------------------+------+
 |1     |clk_gen              |     1|
 |2     |processing_system7_0 |     1|
-|3     |CARRY4               |    19|
+|3     |CARRY4               |    23|
 |4     |INV                  |     2|
-|5     |LUT1                 |    61|
-|6     |LUT2                 |    40|
-|7     |LUT3                 |    28|
-|8     |LUT4                 |     5|
+|5     |LUT1                 |    69|
+|6     |LUT2                 |    42|
+|7     |LUT3                 |    34|
+|8     |LUT4                 |     3|
 |9     |LUT5                 |     5|
-|10    |LUT6                 |    16|
+|10    |LUT6                 |    15|
 |11    |MUXF7                |     1|
 |12    |RAMB18E1             |     1|
-|13    |SRL16E               |    18|
-|14    |SRLC32E              |     8|
-|15    |FDRE                 |   171|
-|16    |IOBUF                |     2|
-|17    |OBUF                 |     9|
+|13    |SRL16E               |     1|
+|14    |FDRE                 |   217|
+|15    |IOBUF                |     2|
+|16    |OBUF                 |     9|
 +------+---------------------+------+
 
 Report Instance Areas: 
-+------+----------------------+--------------+------+
-|      |Instance              |Module        |Cells |
-+------+----------------------+--------------+------+
-|1     |top                   |              |   593|
-|2     |  i2s_inst            |i2s           |    61|
-|3     |  phase_gen_inst      |nco_control   |   224|
-|4     |    nco_inst          |nco           |   181|
-|5     |      rand_num_inst   |rand_num_4bit |    36|
-|6     |      sine_lut_inst   |sine_lut      |    71|
-|7     |  sample_clk_gen_inst |clk_div       |    20|
-+------+----------------------+--------------+------+
++------+----------------------+------------+------+
+|      |Instance              |Module      |Cells |
++------+----------------------+------------+------+
+|1     |top                   |            |   631|
+|2     |  i2s_inst            |i2s         |    61|
+|3     |  phase_gen_inst      |nco_control |   262|
+|4     |    nco_inst          |nco         |   132|
+|5     |      sine_lut_inst   |sine_lut    |    71|
+|6     |  sample_clk_gen_inst |clk_div     |    20|
++------+----------------------+------------+------+
 ---------------------------------------------------------------------------------
-Finished Writing Synthesis Report : Time (s): cpu = 00:00:14 ; elapsed = 00:00:18 . Memory (MB): peak = 1238.934 ; gain = 482.863 ; free physical = 4073 ; free virtual = 9343
+Finished Writing Synthesis Report : Time (s): cpu = 00:00:14 ; elapsed = 00:00:18 . Memory (MB): peak = 1239.934 ; gain = 483.863 ; free physical = 3716 ; free virtual = 9406
 ---------------------------------------------------------------------------------
-Synthesis finished with 0 errors, 69 critical warnings and 44 warnings.
-Synthesis Optimization Runtime : Time (s): cpu = 00:00:10 ; elapsed = 00:00:12 . Memory (MB): peak = 1238.934 ; gain = 76.242 ; free physical = 4073 ; free virtual = 9343
-Synthesis Optimization Complete : Time (s): cpu = 00:00:14 ; elapsed = 00:00:18 . Memory (MB): peak = 1238.934 ; gain = 482.863 ; free physical = 4073 ; free virtual = 9343
+Synthesis finished with 0 errors, 69 critical warnings and 46 warnings.
+Synthesis Optimization Runtime : Time (s): cpu = 00:00:10 ; elapsed = 00:00:12 . Memory (MB): peak = 1239.934 ; gain = 76.242 ; free physical = 3716 ; free virtual = 9406
+Synthesis Optimization Complete : Time (s): cpu = 00:00:14 ; elapsed = 00:00:18 . Memory (MB): peak = 1239.934 ; gain = 483.863 ; free physical = 3716 ; free virtual = 9406
 INFO: [Project 1-571] Translating synthesized netlist
-INFO: [Netlist 29-17] Analyzing 22 Unisim elements for replacement
+INFO: [Netlist 29-17] Analyzing 26 Unisim elements for replacement
 INFO: [Netlist 29-28] Unisim Transformation completed in 0 CPU seconds
 INFO: [Project 1-570] Preparing netlist for logic optimization
 INFO: [Opt 31-140] Inserted 0 IBUFs to IO ports without IO buffers.
 INFO: [Opt 31-141] Inserted 0 OBUFs to IO ports without IO buffers.
 INFO: [Opt 31-138] Pushed 0 inverter(s) to 0 load pin(s).
 INFO: [Project 1-111] Unisim Transformation Summary:
-  A total of 8 instances were transformed.
+  A total of 4 instances were transformed.
   INV => LUT1: 2 instances
   IOBUF => IOBUF (IBUF, OBUFT): 2 instances
-  SRLC32E => SRL16E: 4 instances
 
 INFO: [Common 17-83] Releasing license: Synthesis
-41 Infos, 67 Warnings, 69 Critical Warnings and 0 Errors encountered.
+44 Infos, 68 Warnings, 69 Critical Warnings and 0 Errors encountered.
 synth_design completed successfully
-synth_design: Time (s): cpu = 00:00:14 ; elapsed = 00:00:18 . Memory (MB): peak = 1238.934 ; gain = 393.574 ; free physical = 4071 ; free virtual = 9343
+synth_design: Time (s): cpu = 00:00:14 ; elapsed = 00:00:17 . Memory (MB): peak = 1239.934 ; gain = 394.574 ; free physical = 3710 ; free virtual = 9400
 # write_checkpoint top_level.dcp
 # catch { report_utilization -file top_level_utilization_synth.rpt -pb top_level_utilization_synth.pb }
-report_utilization: Time (s): cpu = 00:00:00.05 ; elapsed = 00:00:00.10 . Memory (MB): peak = 1238.934 ; gain = 0.000 ; free physical = 4068 ; free virtual = 9340
-INFO: [Common 17-206] Exiting Vivado at Wed Oct 22 19:55:11 2014...
+report_utilization: Time (s): cpu = 00:00:00.05 ; elapsed = 00:00:00.08 . Memory (MB): peak = 1239.934 ; gain = 0.000 ; free physical = 3703 ; free virtual = 9394
+INFO: [Common 17-206] Exiting Vivado at Sat Oct 25 18:08:12 2014...

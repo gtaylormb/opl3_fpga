@@ -34,7 +34,7 @@ SIM_LIB = \
 	
 compile: compile_sim_lib
 	test -e work || vlib work
-	vlog -incr $(SIM_SRC) $(RTL_SRC)
+	vlog -incr $(SIM_SRC) $(RTL_SRC) +define+SIM
 	
 compile_sim_lib:
 	test -e sim_lib || (vlib sim_lib && vlog -work sim_lib -incr $(SIM_LIB))	
