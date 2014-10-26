@@ -1,7 +1,7 @@
 // Copyright 1986-2014 Xilinx, Inc. All Rights Reserved.
 // --------------------------------------------------------------------------------
 // Tool Version: Vivado v.2014.3 (lin64) Build 1034051 Fri Oct  3 16:31:15 MDT 2014
-// Date        : Tue Oct 21 23:43:58 2014
+// Date        : Sat Oct 25 18:00:55 2014
 // Host        : edinburgh running 64-bit Ubuntu 14.04.1 LTS
 // Command     : write_verilog -force -mode funcsim
 //               /media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.srcs/sources_1/ip/clk_gen/clk_gen_funcsim.v
@@ -80,12 +80,12 @@ module clk_gen_clk_gen_clk_wiz
 (* BOX_TYPE = "PRIMITIVE" *) 
    MMCME2_ADV #(
     .BANDWIDTH("HIGH"),
-    .CLKFBOUT_MULT_F(63.500000),
+    .CLKFBOUT_MULT_F(53.375000),
     .CLKFBOUT_PHASE(0.000000),
     .CLKFBOUT_USE_FINE_PS("FALSE"),
     .CLKIN1_PERIOD(8.000000),
     .CLKIN2_PERIOD(0.000000),
-    .CLKOUT0_DIVIDE_F(89.125000),
+    .CLKOUT0_DIVIDE_F(87.375000),
     .CLKOUT0_DUTY_CYCLE(0.500000),
     .CLKOUT0_PHASE(0.000000),
     .CLKOUT0_USE_FINE_PS("FALSE"),
@@ -115,7 +115,7 @@ module clk_gen_clk_gen_clk_wiz
     .CLKOUT6_PHASE(0.000000),
     .CLKOUT6_USE_FINE_PS("FALSE"),
     .COMPENSATION("INTERNAL"),
-    .DIVCLK_DIVIDE(7),
+    .DIVCLK_DIVIDE(6),
     .IS_CLKINSEL_INVERTED(1'b0),
     .IS_PSEN_INVERTED(1'b0),
     .IS_PSINCDEC_INVERTED(1'b0),

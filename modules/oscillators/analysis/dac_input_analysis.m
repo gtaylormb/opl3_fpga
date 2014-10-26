@@ -7,12 +7,14 @@
 
     %Start MAX1448 Dynamic Performance Test Routine
 
-    filename=input('Enter filename: ');
+ %   filename=input('Enter filename: ');
+    filename="dac_data.bin"
     if isempty(filename)
     filename = 'listing';
     end
     fid=fopen(filename,'r');
-    fclk=input('Sampling Frequency (KHz)? ');
+%    fclk=input('Sampling Frequency (KHz)? ');
+    fclk=49.7
 
     %16-bit data converter
     numbit=16;

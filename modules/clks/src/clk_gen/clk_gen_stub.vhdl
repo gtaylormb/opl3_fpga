@@ -1,7 +1,7 @@
 -- Copyright 1986-2014 Xilinx, Inc. All Rights Reserved.
 -- --------------------------------------------------------------------------------
 -- Tool Version: Vivado v.2014.3 (lin64) Build 1034051 Fri Oct  3 16:31:15 MDT 2014
--- Date        : Tue Oct 21 23:43:58 2014
+-- Date        : Sat Oct 25 16:33:42 2014
 -- Host        : edinburgh running 64-bit Ubuntu 14.04.1 LTS
 -- Command     : write_vhdl -force -mode synth_stub
 --               /media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.srcs/sources_1/ip/clk_gen/clk_gen_stub.vhdl

@@ -17,9 +17,17 @@
 #******************************************************************************/
 
 package opl3_pkg;
-    parameter SAMPLE_FREQ = 49.7e3;
+    /*
+     * Original chip used a 14.31818MHz master clock, divided by 288 giving a
+     * sample clock of 49.7159KHz. Since our SSM2603 DAC uses fixed 256
+     * oversampling, we'll use a 12.727MHz master clock which is the closest
+     * value we can generate using an MMCM and 125MHz input clock. This will
+     * give us a 49.7148KHz sample clock so we don't have to worry about clock
+     * domain crossings.
+     */
+    parameter CLK_FREQ = 12.727e6;
     parameter DAC_OVERSAMPLE = 256;
-    parameter CLK_FREQ = SAMPLE_FREQ*DAC_OVERSAMPLE;
+    parameter SAMPLE_FREQ = CLK_FREQ/DAC_OVERSAMPLE;
     
     parameter REG_MULT_WIDTH = 4;
     parameter REG_FNUM_WIDTH = 10;

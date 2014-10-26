@@ -124,6 +124,8 @@ module top_level (
     logic [REG_MULT_WIDTH-1:0] mult = 1;
     logic [REG_BLOCK_WIDTH-1:0] block = 4;
     logic [REG_WS_WIDTH-1:0] ws = 0;
+    logic vib = 1;
+    logic dvb = 0;
     
     localparam int CLK_COUNT = CLK_FREQ;
     
@@ -182,16 +184,21 @@ module top_level (
     always_comb led[2] = 1;
     always_comb led[3] = 1;
     
-    
+`ifdef SIM    
     save_dac_input #(
         .DAC_WIDTH(SAMPLE_WIDTH),
-        .NUM_SAMPLES(128)
+        .NUM_SAMPLES(128),
+        .FILENAME("modules/oscillators/analysis/dac_data.bin")
     ) save_dac_input_inst (
         .dac_input(sample),
         .clk_en(sample_clk_en),
         .*
-    );  
+    ); 
+`endif    
     
+    /*
+     * The Zynq CPU must be instantiated
+     */
     processing_system7_0 cpu_inst (
         .*
     );   
