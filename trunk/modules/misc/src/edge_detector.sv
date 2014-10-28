@@ -28,10 +28,10 @@ module edge_detector #(
 ) (
     input wire clk,
     input wire in, 
-    output reg edge_detected
+    output reg edge_detected = 0
 );
-    reg in_r0;
-    reg in_r1;
+    reg in_r0 = !EDGE_LEVEL;
+    reg in_r1 = !EDGE_LEVEL;
     
     always_ff @(posedge clk)
     	if (!CLK_DLY)

@@ -124,8 +124,9 @@ module top_level (
     logic [REG_MULT_WIDTH-1:0] mult = 1;
     logic [REG_BLOCK_WIDTH-1:0] block = 4;
     logic [REG_WS_WIDTH-1:0] ws = 0;
-    logic vib = 1;
+    logic vib = 0;
     logic dvb = 0;
+    logic [ENV_WIDTH-1:0] env = 25;
     
     localparam int CLK_COUNT = CLK_FREQ;
     
@@ -162,12 +163,7 @@ module top_level (
      * datasheet. Set F_NUM to 1, solve for frequency. This gives away the width
      * of the NCO
      */
-    nco_control #(
-        .CLK_FREQ(SAMPLE_FREQ),
-        .FREQ_RES(0.047397614),
-        .PHASE_ACC_WIDTH(20),
-        .OUTPUT_WIDTH(SAMPLE_WIDTH)
-    ) phase_gen_inst (
+    nco_control phase_gen_inst (
         .en(sample_clk_en),        
         .out(sample),
         .*
