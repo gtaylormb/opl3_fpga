@@ -5,6 +5,7 @@
 #   AUTHOR: Greg Taylor     CREATION DATE: 13 Oct 2014
 #
 #   DESCRIPTION:
+#   Prepare the phase increment for the NCO (calc multiplier and vibrato)
 #
 #   CHANGE HISTORY:
 #   13 Oct 2014    Greg Taylor
@@ -19,11 +20,7 @@
 import opl3_pkg::*;
 
 module nco_control #(
-	parameter real CLK_FREQ = 0,
-	parameter FREQ_RES = 0,
-	parameter PHASE_ACC_WIDTH = 0, //$ceil($ln(CLK_FREQ/FREQ_RES)/$ln(2)),
-	parameter ACTUAL_FREQ_RES = CLK_FREQ/2**PHASE_ACC_WIDTH,
-	parameter OUTPUT_WIDTH = 1	
+	parameter OUTPUT_WIDTH = 16
 )(
 	input wire clk,
 	input wire en,
@@ -33,9 +30,11 @@ module nco_control #(
     input wire [REG_WS_WIDTH-1:0] ws,
     input wire vib,
     input wire dvb,
+    input wire [ENV_WIDTH-1:0] env,
 	output logic signed [OUTPUT_WIDTH-1:0] out
 );
     localparam VIBRATO_INDEX_WIDTH = 13;
+    localparam PHASE_ACC_WIDTH = 20;
     
     logic [PHASE_ACC_WIDTH-1:0] phase_inc_p0 = 0;
     logic [PHASE_ACC_WIDTH-1:0] phase_inc = 0;
@@ -83,9 +82,12 @@ module nco_control #(
         else
             phase_inc <= phase_inc_p0;
         
+    /*
+     * LFO for vibrato, 6.06884765625Hz (Sample Freq/2**13)
+     */        
     always_ff @(posedge clk)
         if (en)
-            vibrato_index <= vibrato_index + 1;        
+            vibrato_index <= vibrato_index + 1;
         
     always_comb delta0 = fnum >> 7;
     always_comb delta1 = ((vibrato_index >> 10) & 3) == 3 ? delta0 >> 1 : delta0;
@@ -95,10 +97,7 @@ module nco_control #(
         delta3 <= ((vibrato_index >> 10) & 4) != 0 ? ~delta2 : delta2;
     
     nco #(
-    	.CLK_FREQ(CLK_FREQ),
-    	.FREQ_RES(FREQ_RES),
-    	.PHASE_ACC_WIDTH(PHASE_ACC_WIDTH),
-    	.OUTPUT_WIDTH(OUTPUT_WIDTH)
+    	.PHASE_ACC_WIDTH(PHASE_ACC_WIDTH)
     ) nco_inst (
         .*
     );

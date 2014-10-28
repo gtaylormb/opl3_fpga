@@ -21,7 +21,8 @@ RTL_SRC = \
 	modules/oscillators/src/nco_control.sv \
 	modules/oscillators/src/nco.sv \
 	modules/oscillators/src/rand_num_4bit.sv \
-	modules/oscillators/src/sine_lut.sv
+	modules/oscillators/src/opl3_log_sine_lut.sv \
+	modules/oscillators/src/opl3_exp_lut.sv
 	
 SIM_SRC = \
 	top_level/sim/top_level_tb.sv \
