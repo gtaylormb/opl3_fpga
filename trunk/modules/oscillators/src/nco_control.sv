@@ -31,7 +31,7 @@ module nco_control #(
     input wire vib,
     input wire dvb,
     input wire [ENV_WIDTH-1:0] env,
-	output logic signed [OUTPUT_WIDTH-1:0] out
+	output logic signed [OP_OUT_WIDTH-1:0] out
 );
     localparam VIBRATO_INDEX_WIDTH = 13;
     localparam PHASE_ACC_WIDTH = 20;

@@ -36,5 +36,6 @@ package opl3_pkg;
     
     parameter SAMPLE_WIDTH = 16;
     parameter ENV_WIDTH = 9;
+    parameter OP_OUT_WIDTH = 13;
 
 endpackage

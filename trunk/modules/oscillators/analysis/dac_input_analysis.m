@@ -1,12 +1,3 @@
-     %Example program routine to generate FFT plots and determine the dynamic performance of
-    %a high-speed dataconverter from the data records taken with a HP16500C Logic Analyzer
-    %System. Data was extracted through the HPIB interface and read into the following MATLAB
-    %program routine. The same data can be extracted from the controller interface of the LA
-    %and simply be copied to a floppy disk�a rather time-consuming way, but possible.
-
-
-    %Start MAX1448 Dynamic Performance Test Routine
-
  %   filename=input('Enter filename: ');
     filename="dac_data.bin"
     if isempty(filename)
