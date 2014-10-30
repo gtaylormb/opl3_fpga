@@ -23,6 +23,7 @@ module save_dac_input #(
    parameter CLKS_TO_SKIP = 5000 // the number of clocks to skip at the beginning of sim
 )(
 	input wire clk,
+    input wire reset,
     input wire clk_en,
 	input wire [DAC_WIDTH-1:0] dac_input
 );
@@ -48,6 +49,7 @@ module save_dac_input #(
     		end
     		
     		##CLKS_TO_SKIP;
+            //@negedge reset;
     		while (num_samples < NUM_SAMPLES) begin
     			##1 
                 if (dac_clk.clk_en) begin

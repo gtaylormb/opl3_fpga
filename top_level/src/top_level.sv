@@ -120,13 +120,13 @@ module top_level (
     wire USB0_VBUS_PWRSELECT;
     wire USB0_VBUS_PWRFAULT; 
     
-    logic [REG_FNUM_WIDTH-1:0] fnum = 1023;
-    logic [REG_MULT_WIDTH-1:0] mult = 1;
+    logic [REG_FNUM_WIDTH-1:0] fnum = 512;
+    logic [REG_MULT_WIDTH-1:0] mult = 5;
     logic [REG_BLOCK_WIDTH-1:0] block = 4;
-    logic [REG_WS_WIDTH-1:0] ws = 0;
+    logic [REG_WS_WIDTH-1:0] ws = 7;
     logic vib = 0;
     logic dvb = 0;
-    logic [ENV_WIDTH-1:0] env = 25;
+    logic [ENV_WIDTH-1:0] env = 0;
     
     localparam int CLK_COUNT = CLK_FREQ;
     
@@ -142,7 +142,10 @@ module top_level (
         if (counter == CLK_COUNT -1)
             block <= block + 1;
 
-    wire [SAMPLE_WIDTH-1:0] sample;
+    logic signed [SAMPLE_WIDTH-1:0] sample;
+    wire signed [OP_OUT_WIDTH-1:0] op_out;
+    
+    always_comb sample = op_out;
       
     clk_gen clk_gen_inst(
         .*
@@ -165,7 +168,7 @@ module top_level (
      */
     nco_control phase_gen_inst (
         .en(sample_clk_en),        
-        .out(sample),
+        .out(op_out),
         .*
     );
     
