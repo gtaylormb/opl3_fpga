@@ -26,9 +26,19 @@ RTL_SRC = \
 	
 SIM_SRC = \
 	top_level/sim/top_level_tb.sv \
-	modules/clks/src/clk_gen/clk_gen_funcsim.v \
-	modules/ps/src/processing_system7_0/processing_system7_0_funcsim.v \
+	modules/clks/ip/clk_gen/clk_gen_funcsim.v \
+	modules/ps/ip/processing_system7_0/processing_system7_0_funcsim.v \
 	modules/oscillators/sim/save_dac_input.sv
+	
+IP_SRC = \
+	modules/clks/ip/clk_gen/clk_gen.xci \
+	modules/ps/ip/processing_system7_0/processing_system7_0.xci
+	
+XDC_SRC = \
+	top_level/constraints/ZYBO_Master.xdc
+	
+INC_DIR0 = \
+	./	
 	
 SIM_LIB = \
 	sim_lib_vivado_2014.3/unisims/*.v
@@ -46,36 +56,16 @@ sim: compile-eval
 sim-debug: compile
 	cygstart vsim -L sim_lib top_level_tb glbl -voptargs=+acc
 	
-syn-eval: check-local-changes
-	echo -e "add_file $(RTL_SRC) $(SYN_CONSTRAINT)\nhdl_define\
-	 -set \"FAMILY=\`FAMILY_PROASIC3L EVAL=1\
-	 SVN_REV=$(SVN_REV) SVN_DIRTY=$(SVN_DIRTY)\"" > files.tcl
-	synplify_pro -batch build/syn_eval.tcl
-	
-syn-proto: check-local-changes
-	echo -e "add_file $(RTL_SRC) $(SYN_CONSTRAINT)\nhdl_define\
-	 -set \"FAMILY=\`FAMILY_PROASIC3E\
-	 SVN_REV=$(SVN_REV) SVN_DIRTY=$(SVN_DIRTY)\"" > files.tcl
-	synplify_pro -license_wait -batch build/syn_proto.tcl
-	
-syn-flight: check-local-changes
-	echo -e "add_file $(RTL_SRC) $(SYN_CONSTRAINT)\nhdl_define\
-	 -set \"FAMILY=\`FAMILY_RTAX\
-	 SVN_REV=$(SVN_REV) SVN_DIRTY=$(SVN_DIRTY)\"" > files.tcl
-	synplify_pro -batch build/syn_flight.tcl
-	
-# For P&R, run scripts from within Window Designer GUI instead. Designer crashes in linux for RTAX.	
-#pr-proto: 
-#	/opt/microsemi/Libero_v9.1/Libero/bin/designer SCRIPT:build/pr_proto.tcl
-#	cd prototype && mv dsac_proto.pdb dsac_proto_$(SVN_REV)_${shell date --iso-8601}.pdb
-	
-#pr-flight:
-#	/opt/microsemi/Libero_v9.1/Libero/bin/designer SCRIPT:build/pr_flight.tcl
-#	cd flight && mv dsac_flight.pdb dsac_flight_$(SVN_REV)_${shell date --iso-8601}.pdb	
-	
-#build-proto: syn-proto pr-proto
+syn: build/post_syn.dcp
 
-#build-flight: syn-flight pr-flight
+place: build/post_place.dcp
+
+route: build/post_route.dcp
+
+bitstream: build/opl3.bit
+
+program: build/opl3.bit
+	vivado -mode batch -source top_level/scripts/vivado_program.tcl -log build/program_log.txt -nojournal
 
 archive-proto:
 	cd .. && tar --exclude-vcs -cvf dsac_proto_fpga_rev$(SVN_REV).tar modules topLevelFPGA && gzip dsac_proto_fpga_rev$(SVN_REV).tar
@@ -86,20 +76,18 @@ archive-flight:
 clean:
 	rm -rf  *.tmp  *.log  log transcript work *.wlf vsim.fcdb proasic3L rtax
 	rm -rf *~ core csrc simv* vc_hdrs.h ucli.key urg* *.log core.* synlog.tcl
-	rm -rf sim_lib
+	rm -rf sim_lib build usage_stat*
+
+build/post_syn.dcp: $(RTL_SRC) $(IP_SRC) $(XDC_SRC)
+	test -e build || mkdir build
+	vivado -mode batch -source top_level/scripts/vivado_syn.tcl -nojournal \
+	-log build/syn_log.txt -tclargs "$(RTL_SRC)" "$(INC_DIR0)" "$(IP_SRC)" "$(XDC_SRC)"
+
+build/post_place.dcp: build/post_syn.dcp
+	vivado -mode batch -source top_level/scripts/vivado_place.tcl -log build/place_log.txt -nojournal
+
+build/post_route.dcp: build/post_place.dcp
+	vivado -mode batch -source top_level/scripts/vivado_route.tcl -log build/route_log.txt -nojournal
 	
-#*******************************************************************************
-#
-#   Copyright 2012, by the California Institute of Technology.
-#   ALL RIGHTS RESERVED. United States Government Sponsorship acknowledged.
-#   Any commercial use must be negotiated with the Office of Technology
-#   Transfer at the California Institute of Technology.
-#
-#   This software may be subject to U.S. export control laws and regulations.
-#   By accepting this document, the user agrees to comply with all applicable
-#   U.S. export laws and regulations.  User has the responsibility to obtain
-#   export licenses, or other export authority as may be required before
-#   exporting such information to foreign countries or providing access to
-#   foreign persons.
-#
-#******************************************************************************/	
+build/opl3.bit: build/post_route.dcp
+	vivado -mode batch -source top_level/scripts/vivado_bitstream.tcl -log build/bitstream_log.txt -nojournal	
