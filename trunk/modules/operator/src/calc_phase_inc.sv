@@ -40,7 +40,7 @@ module calc_phase_inc (
     logic [REG_FNUM_WIDTH-1:0] delta0 = 0;
     logic [REG_FNUM_WIDTH-1:0] delta1 = 0;
     logic [REG_FNUM_WIDTH-1:0] delta2 = 0;
-    logic [REG_FNUM_WIDTH-1:0] delta3 = 0;
+    wire [REG_FNUM_WIDTH-1:0] vib_val;
     
     always_ff @(posedge clk)
         pre_mult <= fnum << block; // might be - 1 here;
@@ -73,22 +73,15 @@ module calc_phase_inc (
     
     always_ff @(posedge clk)
         if (vib)
-            phase_inc <= phase_inc_p0 + delta3;
+            phase_inc <= phase_inc_p0 + vib_val;
         else
             phase_inc <= phase_inc_p0;
-        
-    /*
-     * LFO for vibrato, 6.06884765625Hz (Sample Freq/2**13)
-     */        
-    always_ff @(posedge clk)
-        if (sample_clk_en)
-            vibrato_index <= vibrato_index + 1;
-        
-    always_comb delta0 = fnum >> 7;
-    always_comb delta1 = ((vibrato_index >> 10) & 3) == 3 ? delta0 >> 1 : delta0;
-    always_comb delta2 = !dvb ? delta1 >> 1 : delta1;
     
-    always_ff @(posedge clk)
-        delta3 <= ((vibrato_index >> 10) & 4) != 0 ? ~delta2 : delta2;
+    /*
+     * Calculate vib_val
+     */
+    vibrato vibrato (
+        .*
+    );
 endmodule
 `default_nettype wire  // re-enable implicit net type declarations

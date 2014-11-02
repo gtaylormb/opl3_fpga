@@ -1,7 +1,7 @@
 /*******************************************************************************
 #   +html+<pre>
 #
-#   FILENAME: calc_ksl_add.sv
+#   FILENAME: ksl_add_rom.sv
 #   AUTHOR: Greg Taylor     CREATION DATE: 31 Oct 2014
 #
 #   DESCRIPTION:
@@ -17,7 +17,9 @@
 `timescale 1ns / 1ps
 `default_nettype none // disable implicit net type declarations
 
-module calc_ksl_add # (
+import opl3_pkg::*;
+
+module ksl_add_rom # (
     KSL_ADD_WIDTH = 8 // do not override
 ) (
 	input wire clk,
@@ -58,7 +60,6 @@ module calc_ksl_add # (
         2: ksl_add <= tmp;
         3: ksl_add <= tmp << 2;
         endcase
-            
 endmodule
 `default_nettype wire  // re-enable implicit net type declarations
 	

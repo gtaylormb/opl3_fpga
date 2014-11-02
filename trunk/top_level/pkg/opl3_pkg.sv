@@ -41,5 +41,7 @@ package opl3_pkg;
     parameter ENV_WIDTH = 9;
     parameter OP_OUT_WIDTH = 13;
     parameter PHASE_ACC_WIDTH = 20;
+    parameter AM_VAL_WIDTH = 5;
+    parameter ENV_RATE_COUNTER_OVERFLOW_WIDTH = 8;
 
 endpackage

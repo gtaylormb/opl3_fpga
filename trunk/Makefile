@@ -20,6 +20,11 @@ RTL_SRC = \
 	modules/operator/src/operator.sv \
 	modules/operator/src/calc_phase_inc.sv \
 	modules/operator/src/phase_generator.sv \
+	modules/operator/src/vibrato.sv \
+	modules/operator/src/envelope_generator.sv \
+	modules/operator/src/ksl_add_rom.sv \
+	modules/operator/src/env_rate_counter.sv \
+	modules/operator/src/tremolo.sv \
 	modules/operator/src/opl3_log_sine_lut.sv \
 	modules/operator/src/opl3_exp_lut.sv \
 	modules/misc/src/edge_detector.sv
