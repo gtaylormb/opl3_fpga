@@ -27,13 +27,24 @@ module operator (
     input wire [REG_WS_WIDTH-1:0] ws,
     input wire vib,
     input wire dvb,
-    input wire [ENV_WIDTH-1:0] env,
-    input wire kon,    
+    input wire kon,  
+    input wire [REG_ENV_WIDTH-1:0] ar, // attack rate
+    input wire [REG_ENV_WIDTH-1:0] dr, // decay rate
+    input wire [REG_ENV_WIDTH-1:0] sl, // sustain level
+    input wire [REG_ENV_WIDTH-1:0] rr, // release rate
+    input wire [REG_TL_WIDTH-1:0] tl,  // total level
+    input wire ksr,                    // key scale rate
+    input wire [REG_KSL_WIDTH-1:0] ksl, // key scale level
+    input wire egt,                     // envelope type
+    input wire am,                      // amplitude modulation (tremolo)
+    input wire dam,                     // depth of tremolo
+    input wire nts,                     // keyboard split selection        
 	output logic signed [OP_OUT_WIDTH-1:0] out
 );   
     wire [PHASE_ACC_WIDTH-1:0] phase_inc;
     wire key_on_pulse;
     wire key_off_pulse;
+    wire [ENV_WIDTH-1:0] env;
     
     /*
      * Detect key on and key off
@@ -58,10 +69,12 @@ module operator (
     calc_phase_inc calc_phase_inc (
         .*
     );
+    
+    envelope_generator envelope_generator (
+        .*
+    );
         
-    phase_generator #(
-    	.PHASE_ACC_WIDTH(PHASE_ACC_WIDTH)
-    ) phase_generator (
+    phase_generator phase_generator (
         .*
     );
 endmodule

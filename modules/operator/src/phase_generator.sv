@@ -18,11 +18,8 @@
 
 import opl3_pkg::*;
 
-module phase_generator #(
-	parameter PHASE_ACC_WIDTH = 0,
-	parameter LUT_INPUT_WIDTH = 10
-)(
-	input wire clk,
+module phase_generator (
+    input wire clk,
 	input wire sample_clk_en,
 	input wire [PHASE_ACC_WIDTH-1:0] phase_inc,
     input wire [REG_WS_WIDTH-1:0] ws,

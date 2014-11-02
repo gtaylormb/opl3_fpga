@@ -128,6 +128,18 @@ module top_level (
     logic dvb = 0;
     logic [ENV_WIDTH-1:0] env = 0;
     logic kon = 0;
+    logic [REG_ENV_WIDTH-1:0] ar; // attack rate
+    logic [REG_ENV_WIDTH-1:0] dr; // decay rate
+    logic [REG_ENV_WIDTH-1:0] sl; // sustain level
+    logic [REG_ENV_WIDTH-1:0] rr; // release rate
+    logic [REG_TL_WIDTH-1:0] tl;  // total level
+    logic ksr;                    // key scale rate
+    logic [REG_KSL_WIDTH-1:0] ksl; // key scale level
+    logic egt;                     // envelope type
+    logic am;                      // amplitude modulation (tremolo)
+    logic dam;                     // depth of tremolo
+    logic nts;                     // keyboard split selection    
+    
     
     localparam int CLK_COUNT = CLK_FREQ;
     
@@ -158,7 +170,7 @@ module top_level (
     always_comb ac_mclk = clk;
     
     /*
-     * Generate the 12.727/256 sample clock enable
+     * Generate the 12.727MHz/256 sample clock enable
      */
     clk_div #(
         .INPUT_CLK_FREQ(CLK_FREQ),       
