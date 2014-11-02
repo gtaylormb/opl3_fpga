@@ -1,7 +1,7 @@
 /*******************************************************************************
 #   +html+<pre>
 #
-#   FILENAME: nco_control.sv
+#   FILENAME: calc_phase_inc.sv
 #   AUTHOR: Greg Taylor     CREATION DATE: 13 Oct 2014
 #
 #   DESCRIPTION:
@@ -19,25 +19,20 @@
 
 import opl3_pkg::*;
 
-module nco_control #(
-	parameter OUTPUT_WIDTH = 16
-)(
-	input wire clk,
-	input wire en,
+module calc_phase_inc (
+    input wire clk,
+	input wire sample_clk_en,
     input wire [REG_FNUM_WIDTH-1:0] fnum,
     input wire [REG_MULT_WIDTH-1:0] mult,
     input wire [REG_BLOCK_WIDTH-1:0] block,
-    input wire [REG_WS_WIDTH-1:0] ws,
     input wire vib,
     input wire dvb,
     input wire [ENV_WIDTH-1:0] env,
-	output logic signed [OP_OUT_WIDTH-1:0] out
+    output logic [PHASE_ACC_WIDTH-1:0] phase_inc = 0
 );
     localparam VIBRATO_INDEX_WIDTH = 13;
-    localparam PHASE_ACC_WIDTH = 20;
     
     logic [PHASE_ACC_WIDTH-1:0] phase_inc_p0 = 0;
-    logic [PHASE_ACC_WIDTH-1:0] phase_inc = 0;
     logic [PHASE_ACC_WIDTH-1:0] pre_mult = 0;
     logic [PHASE_ACC_WIDTH-1:0] post_mult = 0;
     
@@ -86,7 +81,7 @@ module nco_control #(
      * LFO for vibrato, 6.06884765625Hz (Sample Freq/2**13)
      */        
     always_ff @(posedge clk)
-        if (en)
+        if (sample_clk_en)
             vibrato_index <= vibrato_index + 1;
         
     always_comb delta0 = fnum >> 7;
@@ -95,11 +90,5 @@ module nco_control #(
     
     always_ff @(posedge clk)
         delta3 <= ((vibrato_index >> 10) & 4) != 0 ? ~delta2 : delta2;
-    
-    nco #(
-    	.PHASE_ACC_WIDTH(PHASE_ACC_WIDTH)
-    ) nco_inst (
-        .*
-    );
 endmodule
 `default_nettype wire  // re-enable implicit net type declarations

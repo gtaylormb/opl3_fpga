@@ -10,7 +10,6 @@
 #	quarter period of a log sine wave according to the following formula from
 #	"OPLx decapsulated" by Matthew Gambrell and Olli Niemitalo:
 #	x <= 0..255, y <= round((power(2, x/256)-1)*1024)
-#	It is pipelined--out has 3 pipeline delays from theta.
 #
 #   CHANGE HISTORY:
 #   26 Oct 2014        Greg Taylor

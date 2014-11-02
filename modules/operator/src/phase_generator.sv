@@ -1,20 +1,14 @@
 /*******************************************************************************
 #   +html+<pre>
 #
-#   FILENAME: nco.sv
-#   AUTHOR: Greg Taylor     CREATION DATE: 22 June 2012
+#   FILENAME: phase_generator.sv
+#   AUTHOR: Greg Taylor     CREATION DATE: 13 Oct 2014
 #
 #   DESCRIPTION:
-#	Frequency resolution is given by: Fmin = Fclk/2^phase_acc_width.
-#   Phase increment may be calculated by: 
-#   Pinc = (Fout * 2^phase_acc_width)/Fclk + 0.5
 #
 #   CHANGE HISTORY:
-#   22 June 2012    Greg Taylor
+#   13 Oct 2014    Greg Taylor
 #       Initial version
-#
-#   24 Oct 2014     Greg Taylor
-#       Added Waveform Select (ws) stuff to choose waveform output (for OPL3)
 #
 #   SVN Identification
 #   $Id$
@@ -24,15 +18,16 @@
 
 import opl3_pkg::*;
 
-module nco #(
+module phase_generator #(
 	parameter PHASE_ACC_WIDTH = 0,
 	parameter LUT_INPUT_WIDTH = 10
 )(
 	input wire clk,
-	input wire en,
+	input wire sample_clk_en,
 	input wire [PHASE_ACC_WIDTH-1:0] phase_inc,
     input wire [REG_WS_WIDTH-1:0] ws,
     input wire [ENV_WIDTH-1:0] env,
+    input wire key_on_pulse,
 	output logic signed [OP_OUT_WIDTH-1:0] out
 );	
     localparam LOG_SIN_OUT_WIDTH = 12;
@@ -53,16 +48,17 @@ module nco #(
     logic [LOG_SIN_OUT_WIDTH-1:0] tmp_ws7; 
         
     /*
-     * Main NCO
+     * Phase Accumulator
      */
 	always_ff @(posedge clk)
-		if (en) 
-            if (ws == 4 || ws == 5)
+		if (sample_clk_en)
+            if (key_on_pulse)
+                phase_acc <= 0;
+            else if (ws == 4 || ws == 5)
                 // double the frequency
 		        phase_acc <= phase_acc + (phase_inc << 1);
             else
-                phase_acc <= phase_acc + phase_inc;
-            
+                phase_acc <= phase_acc + phase_inc;           
         
     always_comb tmp_ws2 = tmp_out1 < 0 ? ~tmp_out1 : tmp_out1;
     always_comb tmp_ws4 = is_odd_period ? tmp_out1 : 0;
@@ -70,11 +66,11 @@ module nco #(
     edge_detector #(
         .EDGE_LEVEL(0),
         .CLK_DLY(0)
-    ) lut_msg_edge_detect_inst (
+    ) phase_acc_msb_edge_detect (
         .in(phase_acc[19]),
         .edge_detected(phase_acc_msb_pos_edge_pulse),
         .*
-    );    
+    );
     
     always_ff @(posedge clk)
         if (phase_acc_msb_pos_edge_pulse)

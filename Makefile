@@ -17,18 +17,18 @@ RTL_SRC = \
 	top_level/src/top_level.sv \
 	modules/clks/src/clk_div.sv \
 	modules/i2s/src/i2s.sv \
-	modules/misc/src/edge_detector.sv \
-	modules/oscillators/src/nco_control.sv \
-	modules/oscillators/src/nco.sv \
-	modules/oscillators/src/rand_num_4bit.sv \
-	modules/oscillators/src/opl3_log_sine_lut.sv \
-	modules/oscillators/src/opl3_exp_lut.sv
+	modules/operator/src/operator.sv \
+	modules/operator/src/calc_phase_inc.sv \
+	modules/operator/src/phase_generator.sv \
+	modules/operator/src/opl3_log_sine_lut.sv \
+	modules/operator/src/opl3_exp_lut.sv \
+	modules/misc/src/edge_detector.sv
 	
 SIM_SRC = \
 	top_level/sim/top_level_tb.sv \
 	modules/clks/ip/clk_gen/clk_gen_funcsim.v \
 	modules/ps/ip/processing_system7_0/processing_system7_0_funcsim.v \
-	modules/oscillators/sim/save_dac_input.sv
+	modules/operator/sim/save_dac_input.sv
 	
 IP_SRC = \
 	modules/clks/ip/clk_gen/clk_gen.xci \

@@ -127,6 +127,7 @@ module top_level (
     logic vib = 0;
     logic dvb = 0;
     logic [ENV_WIDTH-1:0] env = 0;
+    logic kon = 0;
     
     localparam int CLK_COUNT = CLK_FREQ;
     
@@ -146,33 +147,33 @@ module top_level (
     wire signed [OP_OUT_WIDTH-1:0] op_out;
     
     always_comb sample = op_out;
-      
-    clk_gen clk_gen_inst(
+    
+    /*
+     * Generate the 12.727MHz clock
+     */
+    clk_gen clk_gen (
         .*
     );
     always_comb reset = !clk_locked;
     always_comb ac_mclk = clk;
     
+    /*
+     * Generate the 12.727/256 sample clock enable
+     */
     clk_div #(
         .INPUT_CLK_FREQ(CLK_FREQ),       
         .OUTPUT_CLK_EN_FREQ(SAMPLE_FREQ) 
-    ) sample_clk_gen_inst (
+    ) sample_clk_gen (
         .clk_en(sample_clk_en),
         .*
     );
 
-    /*
-     * Frequency resolution can be found from the formula for F_NUM in ymf262
-     * datasheet. Set F_NUM to 1, solve for frequency. This gives away the width
-     * of the NCO
-     */
-    nco_control phase_gen_inst (
-        .en(sample_clk_en),        
+    operator operator (      
         .out(op_out),
         .*
     );
     
-    i2s i2s_inst (
+    i2s i2s (
         .left_channel(sample),
         .right_channel(sample),
         .*
@@ -187,8 +188,8 @@ module top_level (
     save_dac_input #(
         .DAC_WIDTH(SAMPLE_WIDTH),
         .NUM_SAMPLES(128),
-        .FILENAME("modules/oscillators/analysis/dac_data.bin")
-    ) save_dac_input_inst (
+        .FILENAME("modules/operator/analysis/dac_data.bin")
+    ) save_dac_input (
         .dac_input(sample),
         .clk_en(sample_clk_en),
         .*
@@ -196,14 +197,17 @@ module top_level (
 `endif    
     
     /*
-     * The Zynq CPU must be instantiated
+     * The Zynq CPU
      */
-    processing_system7_0 cpu_inst (
+    processing_system7_0 cpu (
         .*
     );   
     
     always_comb ac_mute_n = 1;
     
+    /*
+     * Instantiate tri-state buffers for I2C
+     */
     assign i2c_scl = I2C0_SCL_T ? 1'bZ : I2C0_SCL_O;
     assign i2c_sda = I2C0_SDA_T ? 1'bZ : I2C0_SDA_O;
     assign I2C0_SCL_I = i2c_scl;

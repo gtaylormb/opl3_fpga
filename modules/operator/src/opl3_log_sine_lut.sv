@@ -10,7 +10,6 @@
 #	quarter period of a log out wave according to the following formula from
 #	"OPLx decapsulated" by Matthew Gambrell and Olli Niemitalo:
 #	x <= 0..255, y <= round(-log(sin((x+0.5)*pi/256/2))/log(2)*256)
-#	It is pipelined--out has 3 pipeline delays from theta.
 #
 #   CHANGE HISTORY:
 #   26 Oct 2014        Greg Taylor
