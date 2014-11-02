@@ -33,9 +33,13 @@ package opl3_pkg;
     parameter REG_FNUM_WIDTH = 10;
     parameter REG_BLOCK_WIDTH = 3;
     parameter REG_WS_WIDTH = 3;
+    parameter REG_ENV_WIDTH = 4;
+    parameter REG_TL_WIDTH = 6;
+    parameter REG_KSL_WIDTH = 2;
     
     parameter SAMPLE_WIDTH = 16;
     parameter ENV_WIDTH = 9;
     parameter OP_OUT_WIDTH = 13;
+    parameter PHASE_ACC_WIDTH = 20;
 
 endpackage
