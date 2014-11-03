@@ -20,6 +20,7 @@ import opl3_pkg::*;
 
 module register_file (
 	input wire clk,
+    input wire reset,
     input wire cs,
     input wire rd,
     input wire wr,
@@ -71,7 +72,99 @@ module register_file (
     generate
     for (i = 0; i < 'h16; i++) begin
         always_ff @(posedge clk)
-            if (cs && wr)
+            if (reset) begin
+                timer1 <= 0;
+                timer2 <= 0;
+                irq_rst <= 0;
+                mt1 <= 0;
+                mt2 <= 0;
+                st1 <= 0;
+                st2 <= 0;
+                connection_sel <= 0;
+                is_new <= 0;
+                nts <= 0;                     // keyboard split selection     
+                dvb <= 0;
+                dam <= 0;                             // depth of tremolo
+                ryt <= 0;
+                bd <= 0;
+                sd <= 0;
+                tom <= 0;
+                tc <= 0;
+                hh <= 0;
+                
+                if (i < 9) begin
+                    cha [0][i] <= 0;
+                    cha [1][i] <= 0;
+                    chb [0][i] <= 0;
+                    chb [1][i] <= 0;
+                    chc [0][i] <= 0;
+                    chc [1][i] <= 0;
+                    chd [0][i] <= 0;
+                    chd [1][i] <= 0;
+                    fb [0][i] <= 0;
+                    fb [1][i] <= 0;
+                    cnt [0][i] <= 0; 
+                    cnt [1][i] <= 0;                    
+                    kon [0][i] <= 0;
+                    kon [1][i] <= 0;                    
+                    block [0][i] <= 0;
+                    block [1][i] <= 0;                    
+                    fnum [0][i] <= 0;
+                    fnum [1][i] <= 0;
+                    
+                    mult [0][i] <= 0;
+                    mult [1][i] <= 0;
+                    ws [0][i] <= 0;
+                    ws [1][i] <= 0;
+                    vib [0][i] <= 0;
+                    vib [1][i] <= 0;
+                    ar [0][i] <= 0; // attack rate
+                    ar [1][i] <= 0; // attack rate
+                    dr [0][i] <= 0; // decay rate
+                    dr [1][i] <= 0; // decay rate
+                    sl [0][i] <= 0; // sustain level
+                    sl [1][i] <= 0; // sustain level
+                    rr [0][i] <= 0; // release rate
+                    rr [1][i] <= 0; // release rate
+                    tl [0][i] <= 0;  // total level
+                    tl [1][i] <= 0;  // total level
+                    ksr [0][i] <= 0;                    // key scale rate
+                    ksr [1][i] <= 0;  
+                    ksl [0][i] <= 0; // key scale level
+                    ksl [1][i] <= 0; // key scale level
+                    egt [0][i] <= 0;                     // envelope type
+                    egt [1][i] <= 0;  
+                    am [0][i] <= 0;                      // amplitude modulation (tremolo)
+                    am [1][i] <= 0;                                          
+                end
+                else if (i < 18) begin
+                    mult [0][i] <= 0;
+                    mult [1][i] <= 0;
+                    ws [0][i] <= 0;
+                    ws [1][i] <= 0;
+                    vib [0][i] <= 0;
+                    vib [1][i] <= 0;
+                    ar [0][i] <= 0; // attack rate
+                    ar [1][i] <= 0; // attack rate
+                    dr [0][i] <= 0; // decay rate
+                    dr [1][i] <= 0; // decay rate
+                    sl [0][i] <= 0; // sustain level
+                    sl [1][i] <= 0; // sustain level
+                    rr [0][i] <= 0; // release rate
+                    rr [1][i] <= 0; // release rate
+                    tl [0][i] <= 0;  // total level
+                    tl [1][i] <= 0;  // total level
+                    ksr [0][i] <= 0;                    // key scale rate
+                    ksr [1][i] <= 0;  
+                    ksl [0][i] <= 0; // key scale level
+                    ksl [1][i] <= 0; // key scale level
+                    egt [0][i] <= 0;                     // envelope type
+                    egt [1][i] <= 0;  
+                    am [0][i] <= 0;                      // amplitude modulation (tremolo)
+                    am [1][i] <= 0;                       
+                end
+            end                   
+            else if (cs && wr)
                 unique case (address)
                 'h2: if (!bank_select) timer1 <= data_in;
                 'h3: if (!bank_select) timer2 <= data_in;
