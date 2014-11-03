@@ -24,7 +24,7 @@ module i2s_tb;
     localparam GATE_DELAY = 2; // in ns
     
     bit clk;
-    bit sample_clk_en;
+    wire sample_clk_en;
     bit [SAMPLE_WIDTH-1:0] left_channel = 0;
     bit [SAMPLE_WIDTH-1:0] right_channel = 2**16/2;
     wire i2s_sclk;
@@ -46,7 +46,7 @@ module i2s_tb;
     
     i2s i2s_inst (
         .*
-    );      
+    );
     	
     always_ff @(posedge clk)
         if (sample_clk_en) begin

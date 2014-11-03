@@ -29,6 +29,10 @@ package opl3_pkg;
     parameter DAC_OVERSAMPLE = 256;
     parameter SAMPLE_FREQ = CLK_FREQ/DAC_OVERSAMPLE;
     
+    parameter REG_FILE_ADDRESS_WIDTH = $clog2('hF5);
+    parameter REG_FILE_DATA_WIDTH = 8;
+    parameter REG_TIMER_WIDTH = 8;
+    parameter REG_CONNECTION_SEL_WIDTH = 6;
     parameter REG_MULT_WIDTH = 4;
     parameter REG_FNUM_WIDTH = 10;
     parameter REG_BLOCK_WIDTH = 3;
@@ -36,6 +40,7 @@ package opl3_pkg;
     parameter REG_ENV_WIDTH = 4;
     parameter REG_TL_WIDTH = 6;
     parameter REG_KSL_WIDTH = 2;
+    parameter REG_FB_WIDTH = 3;
     
     parameter SAMPLE_WIDTH = 16;
     parameter ENV_WIDTH = 9;

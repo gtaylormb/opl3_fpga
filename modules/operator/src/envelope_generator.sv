@@ -19,7 +19,7 @@
 import opl3_pkg::*;
 
 module envelope_generator #(
-    parameter SILENCE = 511        
+    parameter SILENCE = 511
 )(
 	input wire clk,
 	input wire sample_clk_en,
@@ -54,7 +54,7 @@ module envelope_generator #(
     state_t next_state;    
     
     wire [KSL_ADD_WIDTH-1:0] ksl_add;
-    logic [ENV_WIDTH-1:0] env_int = 0;
+    logic [ENV_WIDTH-1:0] env_int = SILENCE;
     wire [AM_VAL_WIDTH-1:0] am_val;
     logic [REG_ENV_WIDTH-1:0] requested_rate;
     wire [ENV_RATE_COUNTER_OVERFLOW_WIDTH-1:0] rate_counter_overflow;
@@ -68,7 +68,7 @@ module envelope_generator #(
             state <= ATTACK;
         else if (key_off_pulse)
             state <= RELEASE;
-        else
+        else if (sample_clk_en)
             state <= next_state;
         
     always_comb

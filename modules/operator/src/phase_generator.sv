@@ -64,6 +64,7 @@ module phase_generator (
         .EDGE_LEVEL(0),
         .CLK_DLY(0)
     ) phase_acc_msb_edge_detect (
+        .clk_en(1'b1),
         .in(phase_acc[19]),
         .edge_detected(phase_acc_msb_pos_edge_pulse),
         .*
