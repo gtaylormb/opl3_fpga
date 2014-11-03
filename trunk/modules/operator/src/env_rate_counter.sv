@@ -28,7 +28,7 @@ module env_rate_counter (
     input wire [REG_ENV_WIDTH-1:0] requested_rate,
     output logic [ENV_RATE_COUNTER_OVERFLOW_WIDTH-1:0] rate_counter_overflow = 0
 );
-    localparam COUNTER_WIDTH = 14;
+    localparam COUNTER_WIDTH = 15;
     localparam OVERFLOW_TMP_MAX_VALUE = 7<<15;
     
     logic [ENV_RATE_COUNTER_OVERFLOW_WIDTH-1:0] rate_tmp0;

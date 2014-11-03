@@ -42,8 +42,10 @@ module operator (
 	output logic signed [OP_OUT_WIDTH-1:0] out
 );   
     wire [PHASE_ACC_WIDTH-1:0] phase_inc;
+    wire key_on;
     wire key_on_pulse;
-    wire key_off_pulse;
+    wire key_off;
+    logic key_off_pulse;
     wire [ENV_WIDTH-1:0] env;
     
     /*
@@ -53,18 +55,21 @@ module operator (
         .EDGE_LEVEL(1), 
         .CLK_DLY(1)
     ) key_on_edge_detect (
+        .clk_en(sample_clk_en),
         .in(kon), 
         .edge_detected(key_on_pulse),
         .*
     );
+    
     edge_detector #(
         .EDGE_LEVEL(0), 
         .CLK_DLY(1)
     ) key_off_edge_detect (
+        .clk_en(sample_clk_en),
         .in(kon), 
         .edge_detected(key_off_pulse),
         .*
-    );      
+    );
     
     calc_phase_inc calc_phase_inc (
         .*

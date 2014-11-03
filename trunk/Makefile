@@ -27,12 +27,14 @@ RTL_SRC = \
 	modules/operator/src/tremolo.sv \
 	modules/operator/src/opl3_log_sine_lut.sv \
 	modules/operator/src/opl3_exp_lut.sv \
+	modules/register_file/src/register_file.sv \
 	modules/misc/src/edge_detector.sv
 	
 SIM_SRC = \
 	top_level/sim/top_level_tb.sv \
 	modules/clks/ip/clk_gen/clk_gen_funcsim.v \
 	modules/ps/ip/processing_system7_0/processing_system7_0_funcsim.v \
+	modules/ps/ip/axi_protocol_converter_0/axi_protocol_converter_0_funcsim.v \
 	modules/operator/sim/save_dac_input.sv
 	
 IP_SRC = \

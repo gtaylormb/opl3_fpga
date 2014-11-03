@@ -27,6 +27,7 @@ module edge_detector #(
     parameter CLK_DLY = 0 // 0 = no clock delay, 1 = 1 clock delay
 ) (
     input wire clk,
+    input wire clk_en,
     input wire in, 
     output reg edge_detected = 0
 );
@@ -36,7 +37,7 @@ module edge_detector #(
     always_ff @(posedge clk)
     	if (!CLK_DLY)
             in_r0 <= in;
-        else begin
+        else if (clk_en) begin
             in_r0 <= in;
             in_r1 <= in_r0;
         end
