@@ -48,15 +48,15 @@ module save_dac_input #(
     			$display("Error opening DAC data file: %s", err);
     		end
     		
-    		##CLKS_TO_SKIP;
-            //@negedge reset;
-    		while (num_samples < NUM_SAMPLES) begin
-    			##1 
-                if (dac_clk.clk_en) begin
-                $fwrite(fd, "%x\n", dac_clk.dac_input);
-                    num_samples++;
+    		//##CLKS_TO_SKIP;
+            if (!reset)
+        		while (num_samples < NUM_SAMPLES) begin
+        			##1 
+                    if (dac_clk.clk_en) begin
+                    $fwrite(fd, "%x\n", dac_clk.dac_input);
+                        num_samples++;
+                    end
                 end
-            end       
     			
     		$fclose(fd);
     		$display("Saved %s.", FILENAME);

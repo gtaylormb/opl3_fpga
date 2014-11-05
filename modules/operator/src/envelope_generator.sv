@@ -58,6 +58,7 @@ module envelope_generator #(
     wire [AM_VAL_WIDTH-1:0] am_val;
     logic [REG_ENV_WIDTH-1:0] requested_rate;
     wire [ENV_RATE_COUNTER_OVERFLOW_WIDTH-1:0] rate_counter_overflow;
+    logic [ENV_WIDTH:0] env_tmp; // one more bit wide than env for >, < comparison
     
     ksl_add_rom ksl_add_rom (
         .*
@@ -95,15 +96,15 @@ module envelope_generator #(
     );
     
     always_ff @(posedge clk)
-        if (state == ATTACK)
-            if (rate_counter_overflow != 0)
-                env_int <= env_int - (env_int*rate_counter_overflow >> 3) + 1;
-        else if (state == DECAY || state == RELEASE)
-            if (env_int + rate_counter_overflow < env_int)
-                // env_int would overflow
-                env_int <= SILENCE;
-            else
-                env_int <= env_int + rate_counter_overflow;     
+        if (sample_clk_en)
+            if (state == ATTACK && rate_counter_overflow != 0 && env_int != 0)
+                env_int <= env_int - (((env_int*rate_counter_overflow) >> 3) + 1);
+            else if (state == DECAY || state == RELEASE)
+                if (env_int + rate_counter_overflow > SILENCE)
+                    // env_int would overflow
+                    env_int <= SILENCE;
+                else
+                    env_int <= env_int + rate_counter_overflow;     
     
     /*
      * Calculate am_val
@@ -111,12 +112,20 @@ module envelope_generator #(
     tremolo tremolo (
         .*
     );
+    
+    always_comb
+        if (am)
+            env_tmp = env_int + (tl << 2) + ksl_add + am_val;
+        else
+            env_tmp = env_int + (tl << 2) + ksl_add;
             
     always_ff @(posedge clk)
-        if (am) // tremolo
-            env <= env_int + (tl << 2) + ksl_add + am_val;
+        if (env_tmp < 0)
+            env <= 0;
+        else if (env_tmp > SILENCE) 
+            env <= SILENCE;
         else
-            env <= env_int + (tl << 2) + ksl_add;
+            env <= env_tmp;
     
 endmodule
 `default_nettype wire  // re-enable implicit net type declarations
