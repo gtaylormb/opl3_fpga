@@ -25,7 +25,8 @@ module operator_tb;
     
     bit clk;
     wire sample_clk_en;
-    wire [OP_OUT_WIDTH-1:0] out;
+    wire signed [OP_OUT_WIDTH-1:0] out;
+    logic signed [15:0] dac_input;
     
     bit [REG_FNUM_WIDTH-1:0] fnum = 512;
     bit [REG_MULT_WIDTH-1:0] mult = 5;
@@ -87,18 +88,33 @@ module operator_tb;
         .*
     );
     
+    save_dac_input #(
+        .DAC_WIDTH(SAMPLE_WIDTH),
+        .NUM_SAMPLES(32*1024),
+        .FILENAME("analysis/dac_data.bin")
+    ) save_dac_input (
+        .dac_input(dac_input),
+        .reset(1'b0),
+        .clk_en(sample_clk_en),
+        .*
+    );
+    always_comb dac_input = out; // this will sign extend out
+    
     initial begin
         ##10;
-        mclk.ar <= 50;
-        mclk.dr <= 100;
-        mclk.sl <= 20;
-        mclk.rr <= 50;
-        mclk.tl <= 100;
+        mclk.ar <= 5;
+        mclk.dr <= 7;
+        mclk.sl <= 2;
+        mclk.rr <= 7;
+        mclk.tl <= 15;
+        mclk.egt <= 1;
+        mclk.am <= 1;
+        mclk.dam <= 1;
         ##1000;
         mclk.kon <= 1;
-        ##10000;
+        ##(CLK_FREQ/3);
         mclk.kon <= 0;
-        ##10000;  
+        ##12e6;  
     end
 
 endmodule

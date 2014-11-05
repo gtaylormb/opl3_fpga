@@ -24,10 +24,12 @@ module tremolo (
     input wire dam, // depth of tremolo
     output logic [AM_VAL_WIDTH-1:0] am_val = 0
 );
-    localparam TREMOLO_INDEX_WIDTH = 14;
+    localparam TREMOLO_MAX_COUNT = 13*1024;
+    localparam TREMOLO_INDEX_WIDTH = $clog2(TREMOLO_MAX_COUNT);
     
     logic [TREMOLO_INDEX_WIDTH-1:0] tremolo_index = 0;
-    logic [TREMOLO_INDEX_WIDTH-8-1:0] am_val_tmp;
+    logic [TREMOLO_INDEX_WIDTH-8-1:0] am_val_tmp0;
+    logic [TREMOLO_INDEX_WIDTH-8-1:0] am_val_tmp1;
     
     /*
      * Low-Frequency Oscillator (LFO)
@@ -35,15 +37,24 @@ module tremolo (
      */            
     always_ff @(posedge clk)
         if (sample_clk_en)
-            tremolo_index <= tremolo_index + 1;
+            if (tremolo_index == TREMOLO_MAX_COUNT - 1)
+                tremolo_index <= 0;
+            else
+                tremolo_index <= tremolo_index + 1;
     
-    always_comb am_val_tmp = tremolo_index >> 8;
+    always_comb am_val_tmp0 = tremolo_index >> 8;
+    
+    always_comb 
+        if (am_val_tmp0 > 26)
+            am_val_tmp1 = 2*26 + ~am_val_tmp0;
+        else
+            am_val_tmp1 = am_val_tmp0;
         
     always_ff @(posedge clk)
         if (dam)
-            am_val <= am_val_tmp > 26 ? 2*26 - am_val_tmp : am_val_tmp;
+            am_val <= am_val_tmp1;
         else
-            am_val <= am_val_tmp > 26 ? (2*26 - am_val_tmp) >> 2 : am_val_tmp >> 2;
+            am_val <= am_val_tmp1 >> 2;
 endmodule
 `default_nettype wire  // re-enable implicit net type declarations
 	

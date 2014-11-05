@@ -81,7 +81,8 @@ uint8_t EnvelopeGenerator::calculateRate( uint8_t rateValue ) const
         rof >>= 2;
     }
     // here, rof<=15
-    return std::min<uint8_t>( 63, rof + (rateValue << 2) );
+	// the limit of 60 results in rof=0 if rateValue=15 below
+    return std::min<uint8_t>( 60, rof + (rateValue << 2) );
 }
 
 inline uint8_t EnvelopeGenerator::advanceCounter( uint8_t rate )

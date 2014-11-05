@@ -36,19 +36,21 @@ module env_rate_counter (
     logic [ENV_RATE_COUNTER_OVERFLOW_WIDTH-1:0] rate_tmp2;
     logic [ENV_RATE_COUNTER_OVERFLOW_WIDTH-1:0] effective_rate = 0;
     logic [ENV_RATE_COUNTER_OVERFLOW_WIDTH-1:0] rate_value;
+    logic [ENV_RATE_COUNTER_OVERFLOW_WIDTH-1:0] requested_rate_shifted;
     logic [1:0] rof;
     logic [COUNTER_WIDTH-1:0] counter = 0;
     logic [$clog2(OVERFLOW_TMP_MAX_VALUE)-1:0] overflow_tmp;
     
-    always_comb rate_tmp0 = (fnum >> nts ? 8 : 9) & 1;
+    always_comb rate_tmp0 = nts ? fnum[8] : fnum[9];
     always_comb rate_tmp1 = rate_tmp0 | (block << 1);
     always_comb rate_tmp2 = ksr ? rate_tmp1 : rate_tmp1 >> 2;
+    always_comb requested_rate_shifted = requested_rate << 2;   
     
     always_ff @(posedge clk)
-        if (rate_tmp2 + (requested_rate << 2) > 63)
-            effective_rate <= 63;
+        if (rate_tmp2 + requested_rate_shifted > 60)
+            effective_rate <= 60;
         else
-            effective_rate <= rate_tmp2 + (requested_rate << 2);
+            effective_rate <= rate_tmp2 + requested_rate_shifted;
         
     always_comb rate_value = effective_rate >> 2;
     always_comb rof = effective_rate[1:0];
