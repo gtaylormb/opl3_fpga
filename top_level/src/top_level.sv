@@ -187,10 +187,13 @@ module top_level (
     wire [REG_FB_WIDTH-1:0] fb [2][9];
     wire cnt [2][9];
 
-    logic signed [SAMPLE_WIDTH-1:0] sample;
-    wire signed [OP_OUT_WIDTH-1:0] op_out;
+    logic signed [SAMPLE_WIDTH-1:0] sample_l;
+    logic signed [SAMPLE_WIDTH-1:0] sample_r;    
+    wire signed [OP_OUT_WIDTH-1:0] op_out_l;
+    wire signed [OP_OUT_WIDTH-1:0] op_out_r;    
     
-    always_comb sample = op_out;
+    always_comb sample_l = op_out_l;
+    always_comb sample_r = op_out_r;    
     
     /*
      * Generate the 12.727MHz clock
@@ -211,15 +214,72 @@ module top_level (
         .clk_en(sample_clk_en),
         .*
     );
+    
+    logic [$clog2(CLK_FREQ)-1:0] counter = 0;
+    logic kon_tmp = 0;
+    
+    always_ff @(posedge clk)
+        if (counter == CLK_FREQ - 1)
+            counter <= 0;
+        else
+            counter <= counter + 1;
+        
+    always_ff @(posedge clk)
+        if (counter == CLK_FREQ - 1)
+            kon_tmp <= 1;
+        else if (counter == CLK_FREQ/3 - 1)
+            kon_tmp <= 0;
 
- /*   operator operator (      
-        .out(op_out),
+    operator operator_l (      
+        .out(op_out_l),
+        .fnum(512),
+        .mult(1),
+        .block(4),
+        .ws(1),
+        .vib(0),
+        .dvb(0),
+        .kon(kon_tmp),
+        .ar(6), 
+        .dr(7),
+        .sl(2), 
+        .rr(7), 
+        .tl(0),  
+        .ksr(0),                  
+        .ksl(0), 
+        .egt(0),                    
+        .am(0),                      
+        .dam(1),                     
+        .nts(0),                   
         .*
-    ); */
+    );
+    
+    operator operator_r (      
+            .out(op_out_r),
+            .fnum(512),
+            .mult(1),
+            .block(2),
+            .ws(3),
+            .vib(0),
+            .dvb(0),
+            .kon(kon_tmp),
+            .ar(6), 
+            .dr(7),
+            .sl(2), 
+            .rr(7), 
+            .tl(0),  
+            .ksr(0),                  
+            .ksl(0), 
+            .egt(0),                    
+            .am(0),                      
+            .dam(1),                     
+            .nts(0),                   
+            .*
+            );     
+    
     
     i2s i2s (
-        .left_channel(sample),
-        .right_channel(sample),
+        .left_channel(sample_l),
+        .right_channel(sample_r),
         .*
     );
     
@@ -234,7 +294,7 @@ module top_level (
         .NUM_SAMPLES(128),
         .FILENAME("modules/operator/analysis/dac_data.bin")
     ) save_dac_input (
-        .dac_input(sample),
+        .dac_input(sample_l),
         .clk_en(sample_clk_en),
         .*
     ); 
@@ -247,9 +307,9 @@ module top_level (
         .*
     );
     
-    always_comb M_AXI_GP0_ACLK = clk;
+    //always_comb M_AXI_GP0_ACLK = clk;
     
-    axi_protocol_converter_0 axi_protocol_converter(
+/*    axi_protocol_converter_0 axi_protocol_converter(
         .aclk(clk),
         .aresetn(!reset),
         .s_axi_awaddr(M_AXI_GP0_AWADDR),
@@ -286,11 +346,11 @@ module top_level (
         .s_axi_rvalid(M_AXI_GP0_RVALID),
         .s_axi_rready(M_AXI_GP0_RREADY),
         .*
-    );
+    ); */
     
-    register_file register_file (
+ /*   register_file register_file (
         .*
-    );    
+    );    */
     
     always_comb ac_mute_n = 1;
     

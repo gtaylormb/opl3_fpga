@@ -25,7 +25,7 @@ package opl3_pkg;
      * give us a 49.7148KHz sample clock. We don't have to worry about clock
      * domain crossings.
      */
-    parameter CLK_FREQ = 12.727e6;
+    parameter int CLK_FREQ = 12.727e6;
     parameter DAC_OVERSAMPLE = 256;
     parameter SAMPLE_FREQ = CLK_FREQ/DAC_OVERSAMPLE;
     

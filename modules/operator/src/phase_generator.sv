@@ -25,7 +25,7 @@ module phase_generator (
     input wire [REG_WS_WIDTH-1:0] ws,
     input wire [ENV_WIDTH-1:0] env,
     input wire key_on_pulse,
-	output logic signed [OP_OUT_WIDTH-1:0] out
+	output logic signed [OP_OUT_WIDTH-1:0] out = 0
 );	
     localparam LOG_SIN_OUT_WIDTH = 12;
     localparam EXP_IN_WIDTH = 8;
@@ -38,8 +38,8 @@ module phase_generator (
     wire [LOG_SIN_OUT_WIDTH-1:0] log_sin_out; 
     logic [LOG_SIN_PLUS_GAIN_WIDTH-1:0] log_sin_plus_gain = 0;     
     wire [EXP_OUT_WIDTH-1:0] exp_out;
-	logic [OP_OUT_WIDTH-1:0] tmp_out0;
-    logic signed [OP_OUT_WIDTH-1:0] tmp_out1;
+	logic [OP_OUT_WIDTH-1:0] tmp_out0 = 0;
+    logic signed [OP_OUT_WIDTH-1:0] tmp_out1 = 0;
     logic signed [OP_OUT_WIDTH-1:0] tmp_ws2;
     logic signed [OP_OUT_WIDTH-1:0] tmp_ws4;  
     logic [LOG_SIN_OUT_WIDTH-1:0] tmp_ws7; 
