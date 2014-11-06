@@ -73,7 +73,7 @@ module operator (
     
     calc_phase_inc calc_phase_inc (
         .*
-    );
+    ); 
     
     envelope_generator envelope_generator (
         .*
