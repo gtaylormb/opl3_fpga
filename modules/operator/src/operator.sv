@@ -38,15 +38,21 @@ module operator (
     input wire egt,                     // envelope type
     input wire am,                      // amplitude modulation (tremolo)
     input wire dam,                     // depth of tremolo
-    input wire nts,                     // keyboard split selection        
+    input wire nts,                     // keyboard split selection
+    input wire use_feedback,
+    input wire [REG_FB_WIDTH-1:0] fb,
+    input wire [OP_OUT_WIDTH-1:0] modulation,
 	output logic signed [OP_OUT_WIDTH-1:0] out
 );   
     wire [PHASE_ACC_WIDTH-1:0] phase_inc;
+    logic [PHASE_ACC_WIDTH-1:0] phase_inc_post_add = 0;    
     wire key_on;
     wire key_on_pulse;
     wire key_off;
     logic key_off_pulse;
     wire [ENV_WIDTH-1:0] env;
+    logic [OP_OUT_WIDTH-1:0] feedback [2] = {0, 0};
+    logic [PHASE_ACC_WIDTH-1:0] feedback_result = 0;        
     
     /*
      * Detect key on and key off
@@ -71,6 +77,24 @@ module operator (
         .*
     );
     
+    always_ff @(posedge clk) begin
+        feedback[0] <= out;
+        feedback[1] <= feedback[0];
+    end
+    
+    always_ff @(posedge clk)
+        feedback_result <= ((feedback[0] + feedback[1]) << fb) >> 9;
+        
+    /*
+     * An operator that implements feedback does not take any modulation
+     * input (it is always operator 1 in any channel scheme)
+     */            
+    always_ff @(posedge clk)
+        if (use_feedback)
+            phase_inc_post_add <= phase_inc + feedback_result;
+        else
+            phase_inc_post_add <= phase_inc + modulation;
+    
     calc_phase_inc calc_phase_inc (
         .*
     ); 
@@ -80,6 +104,7 @@ module operator (
     );
         
     phase_generator phase_generator (
+        .phase_inc(phase_inc_post_add),
         .*
     );
 endmodule
