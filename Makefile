@@ -15,6 +15,7 @@
 #*******************************************************************************
 RTL_SRC = \
 	top_level/src/top_level.sv \
+	modules/channels/src/channels.sv \
 	modules/clks/src/clk_div.sv \
 	modules/i2s/src/i2s.sv \
 	modules/operator/src/operator.sv \
@@ -27,6 +28,7 @@ RTL_SRC = \
 	modules/operator/src/tremolo.sv \
 	modules/operator/src/opl3_log_sine_lut.sv \
 	modules/operator/src/opl3_exp_lut.sv \
+	modules/register_file/src/opl3_axi_wrapper.sv \
 	modules/register_file/src/register_file.sv \
 	modules/misc/src/edge_detector.sv
 	
@@ -39,7 +41,8 @@ SIM_SRC = \
 	
 IP_SRC = \
 	modules/clks/ip/clk_gen/clk_gen.xci \
-	modules/ps/ip/processing_system7_0/processing_system7_0.xci
+	modules/ps/ip/processing_system7_0/processing_system7_0.xci \
+	modules/ps/ip/axi_protocol_converter_0/axi_protocol_converter_0.xci
 	
 XDC_SRC = \
 	top_level/constraints/ZYBO_Master.xdc
@@ -47,12 +50,17 @@ XDC_SRC = \
 INC_DIR0 = \
 	./	
 	
+INC_DIR1 = \
+	modules/ps/ip/processing_system7_bfm_0/hdl
+	
 SIM_LIB = \
-	sim_lib_vivado_2014.3/unisims/*.v
+	sim_lib_vivado_2014.3/unisims/*.v \
+	sim_lib_vivado_2014.3/secureip/axi_bfm/cdn_axi3_master_bfm.vp \
+	sim_lib_vivado_2014.3/secureip/axi_bfm/cdn_axi3_slave_bfm.vp
 	
 compile: compile_sim_lib
 	test -e work || vlib work
-	vlog -incr $(SIM_SRC) $(RTL_SRC) +define+SIM
+	vlog -incr $(SIM_SRC) $(RTL_SRC) +define+SIM +incdir+$(INC_DIR1)
 	
 compile_sim_lib:
 	test -e sim_lib || (vlib sim_lib && vlog -work sim_lib -incr $(SIM_LIB))	

@@ -98,8 +98,8 @@ module top_level (
     wire M_AXI_GP0_RLAST;
     wire M_AXI_GP0_RVALID;
     wire M_AXI_GP0_WREADY;
-    wire [11:0]M_AXI_GP0_BID;
-    wire [11:0]M_AXI_GP0_RID;
+    wire [11:0]M_AXI_GP0_BID = 0;
+    wire [11:0]M_AXI_GP0_RID = 0;
     wire [1:0]M_AXI_GP0_BRESP;
     wire [1:0]M_AXI_GP0_RRESP;
     wire [31:0]M_AXI_GP0_RDATA;
@@ -115,10 +115,10 @@ module top_level (
     wire ENET0_PTP_SYNC_FRAME_TX;
     wire ENET0_SOF_RX;
     wire ENET0_SOF_TX;    
-    wire SDIO0_WP;
+    wire SDIO0_WP = 0;
     wire [1:0]USB0_PORT_INDCTL;
     wire USB0_VBUS_PWRSELECT;
-    wire USB0_VBUS_PWRFAULT;
+    wire USB0_VBUS_PWRFAULT = 0;
     
     wire [31:0]m_axi_araddr;
     wire [2:0]m_axi_arprot;
@@ -147,6 +147,8 @@ module top_level (
     wire [REG_FILE_ADDRESS_WIDTH-1:0] address;
     wire [REG_FILE_DATA_WIDTH-1:0] data_in;
     wire [REG_FILE_DATA_WIDTH-1:0] data_out;
+    wire rd_valid;
+    
     wire [REG_TIMER_WIDTH-1:0] timer1;
     wire [REG_TIMER_WIDTH-1:0] timer2;
     wire irq_rst;
@@ -188,12 +190,11 @@ module top_level (
     wire cnt [2][9];
 
     logic signed [SAMPLE_WIDTH-1:0] sample_l;
-    logic signed [SAMPLE_WIDTH-1:0] sample_r;    
-    wire signed [OP_OUT_WIDTH-1:0] op_out_l;
-    wire signed [OP_OUT_WIDTH-1:0] op_out_r;    
-    
-    always_comb sample_l = op_out_l;
-    always_comb sample_r = op_out_r;    
+    logic signed [SAMPLE_WIDTH-1:0] sample_r;
+    wire signed [SAMPLE_WIDTH-1:0] channel_a;
+    wire signed [SAMPLE_WIDTH-1:0] channel_b;
+    wire signed [SAMPLE_WIDTH-1:0] channel_c;
+    wire signed [SAMPLE_WIDTH-1:0] channel_d;   
     
     /*
      * Generate the 12.727MHz clock
@@ -215,67 +216,21 @@ module top_level (
         .*
     );
     
-    logic [$clog2(CLK_FREQ)-1:0] counter = 0;
-    logic kon_tmp = 0;
-    
-    always_ff @(posedge clk)
-        if (counter == CLK_FREQ - 1)
-            counter <= 0;
-        else
-            counter <= counter + 1;
-        
-    always_ff @(posedge clk)
-        if (counter == CLK_FREQ - 1)
-            kon_tmp <= 1;
-        else if (counter == CLK_FREQ/3 - 1)
-            kon_tmp <= 0;
-
-    operator operator_l (      
-        .out(op_out_l),
-        .fnum(512),
-        .mult(1),
-        .block(4),
-        .ws(1),
-        .vib(0),
-        .dvb(0),
-        .kon(kon_tmp),
-        .ar(6), 
-        .dr(7),
-        .sl(2), 
-        .rr(7), 
-        .tl(0),  
-        .ksr(0),                  
-        .ksl(0), 
-        .egt(0),                    
-        .am(0),                      
-        .dam(1),                     
-        .nts(0),                   
+    channels channels (
         .*
     );
     
-    operator operator_r (      
-            .out(op_out_r),
-            .fnum(512),
-            .mult(1),
-            .block(2),
-            .ws(3),
-            .vib(0),
-            .dvb(0),
-            .kon(kon_tmp),
-            .ar(6), 
-            .dr(7),
-            .sl(2), 
-            .rr(7), 
-            .tl(0),  
-            .ksr(0),                  
-            .ksl(0), 
-            .egt(0),                    
-            .am(0),                      
-            .dam(1),                     
-            .nts(0),                   
-            .*
-            );     
-    
+    /*
+     * TODO: check how these signals are combined in analog, what channels
+     * go to what
+     * 
+     * Shift to avoid clipping (these channels are normally combined in analog
+     * after the DAC)
+     */        
+    always_ff @(posedge clk) begin
+        sample_l <= (channel_a >> 1) + (channel_b >> 1);
+        sample_r <= (channel_c >> 1) + (channel_d >> 1);
+    end 
     
     i2s i2s (
         .left_channel(sample_l),
@@ -287,19 +242,7 @@ module top_level (
     always_comb led[1] = 1;
     always_comb led[2] = 1;
     always_comb led[3] = 1;
-    
-`ifdef SIM    
-    save_dac_input #(
-        .DAC_WIDTH(SAMPLE_WIDTH),
-        .NUM_SAMPLES(128),
-        .FILENAME("modules/operator/analysis/dac_data.bin")
-    ) save_dac_input (
-        .dac_input(sample_l),
-        .clk_en(sample_clk_en),
-        .*
-    ); 
-`endif    
-    
+
     /*
      * The Zynq CPU
      */
@@ -307,9 +250,9 @@ module top_level (
         .*
     );
     
-    //always_comb M_AXI_GP0_ACLK = clk;
+    always_comb M_AXI_GP0_ACLK = clk;
     
-/*    axi_protocol_converter_0 axi_protocol_converter(
+    axi_protocol_converter_0 axi_protocol_converter(
         .aclk(clk),
         .aresetn(!reset),
         .s_axi_awaddr(M_AXI_GP0_AWADDR),
@@ -346,11 +289,15 @@ module top_level (
         .s_axi_rvalid(M_AXI_GP0_RVALID),
         .s_axi_rready(M_AXI_GP0_RREADY),
         .*
-    ); */
+    );
     
- /*   register_file register_file (
+    opl3_axi_wrapper opl3_axi_wrapper (
         .*
-    );    */
+    );
+    
+    register_file register_file (
+        .*
+    ); 
     
     always_comb ac_mute_n = 1;
     
