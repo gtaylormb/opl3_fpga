@@ -9,7 +9,7 @@ read_verilog -sv ${RTL_SRC}
 read_ip ${IP_SRC}
 read_xdc ${XDC_SRC}
 
-synth_design -name opl3 -part xc7z010clg400-1 -top top_level -include_dirs \
+synth_design -name opl3 -part xc7z020clg400-1 -top top_level -include_dirs \
  ${INC_DIR0} -fsm_extraction auto
  
 opt_design

@@ -19,6 +19,9 @@
 module top_level_tb;
     localparam CLK_FREQ = 125e6;
     localparam CLK_HALF_PERIOD = 1/real'(CLK_FREQ)*1000e6/2;
+    localparam CLK_PS_FREQ = 50e6;
+    localparam CLK_PS_HALF_PERIOD = 1/real'(CLK_FREQ)*1000e6/2;    
+    
     localparam GATE_DELAY = 2; // in ns    
     
     bit clk125;
@@ -49,9 +52,9 @@ module top_level_tb;
     wire [31:0]DDR_DQ;
     wire [3:0]DDR_DQS_n;
     wire [3:0]DDR_DQS;
-    wire PS_SRSTB;
-    wire PS_CLK;
-    wire PS_PORB;    
+    bit PS_SRSTB = 0;
+    bit PS_CLK;
+    bit PS_PORB = 0;    
     
     pullup(i2c_scl);
     pullup(i2c_sda);
@@ -59,7 +62,11 @@ module top_level_tb;
     always begin
         #CLK_HALF_PERIOD clk125 = 0;
         #CLK_HALF_PERIOD clk125 = 1;
-    end        
+    end
+    always begin
+        #CLK_PS_HALF_PERIOD PS_CLK = 0;
+        #CLK_PS_HALF_PERIOD PS_CLK = 1;
+    end          
     
     top_level top_level_inst (
         .*
@@ -70,6 +77,8 @@ module top_level_tb;
 		endclocking      
 		
         initial begin
+            #(CLK_PS_HALF_PERIOD*2*5) PS_PORB = 1;
+            #(CLK_PS_HALF_PERIOD*2*10) PS_SRSTB = 1;
         	@(posedge ac_mute_n);
         end
     endprogram
