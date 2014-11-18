@@ -16,6 +16,7 @@
 RTL_SRC = \
 	top_level/src/top_level.sv \
 	modules/channels/src/channels.sv \
+	modules/channels/src/control_operators.sv \
 	modules/clks/src/clk_div.sv \
 	modules/i2s/src/i2s.sv \
 	modules/operator/src/operator.sv \
@@ -54,9 +55,7 @@ INC_DIR1 = \
 	modules/ps/ip/processing_system7_bfm_0/hdl
 	
 SIM_LIB = \
-	sim_lib_vivado_2014.3/unisims/*.v \
-	sim_lib_vivado_2014.3/secureip/axi_bfm/cdn_axi3_master_bfm.vp \
-	sim_lib_vivado_2014.3/secureip/axi_bfm/cdn_axi3_slave_bfm.vp
+	sim_lib_vivado_2014.3/unisims/*.v
 	
 compile: compile_sim_lib
 	test -e work || vlib work

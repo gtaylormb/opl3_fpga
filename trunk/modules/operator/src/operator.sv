@@ -21,13 +21,15 @@ import opl3_pkg::*;
 module operator (
 	input wire clk,
 	input wire sample_clk_en,
+    input wire [BANK_NUM_WIDTH-1:0] bank_num,
+    input wire [OP_NUM_WIDTH-1:0] op_num,              
     input wire [REG_FNUM_WIDTH-1:0] fnum,
     input wire [REG_MULT_WIDTH-1:0] mult,
     input wire [REG_BLOCK_WIDTH-1:0] block,
     input wire [REG_WS_WIDTH-1:0] ws,
     input wire vib,
     input wire dvb,
-    input wire kon,  
+    input wire kon[NUM_BANKS][NUM_OPERATORS_PER_BANK],  
     input wire [REG_ENV_WIDTH-1:0] ar, // attack rate
     input wire [REG_ENV_WIDTH-1:0] dr, // decay rate
     input wire [REG_ENV_WIDTH-1:0] sl, // sustain level
@@ -46,44 +48,54 @@ module operator (
 );   
     wire [PHASE_ACC_WIDTH-1:0] phase_inc;
     logic [PHASE_ACC_WIDTH-1:0] phase_inc_post_add = 0;    
-    wire key_on;
-    wire key_on_pulse;
-    wire key_off;
+    logic key_on_pulse;
+    wire [NUM_BANKS-1:0][NUM_OPERATORS_PER_BANK-1:0] key_on_pulse_array;
     logic key_off_pulse;
+    wire [NUM_BANKS-1:0][NUM_OPERATORS_PER_BANK-1:0] key_off_pulse_array;
     wire [ENV_WIDTH-1:0] env;
-    logic [OP_OUT_WIDTH-1:0] feedback [2] = {0, 0};
+    logic [OP_OUT_WIDTH-1:0] feedback [NUM_BANKS][NUM_OPERATORS_PER_BANK][2] =
+     '{default: 0};
     logic [PHASE_ACC_WIDTH-1:0] feedback_result = 0;        
     
-    /*
-     * Detect key on and key off
-     */
-    edge_detector #(
-        .EDGE_LEVEL(1), 
-        .CLK_DLY(1)
-    ) key_on_edge_detect (
-        .clk_en(sample_clk_en),
-        .in(kon), 
-        .edge_detected(key_on_pulse),
-        .*
-    );
+    genvar i, j;
+    generate
+        for (i = 0; i < NUM_BANKS; i ++) 
+            for (j = 0; j < NUM_OPERATORS_PER_BANK; j++) begin        
+                /*
+                 * Detect key on and key off
+                 */
+                edge_detector #(
+                    .EDGE_LEVEL(1), 
+                    .CLK_DLY(1)
+                ) key_on_edge_detect (
+                    .clk_en(sample_clk_en),
+                    .in(kon[i][j]), 
+                    .edge_detected(key_on_pulse_array[i][j]),
+                    .*
+                );
+                
+                edge_detector #(
+                    .EDGE_LEVEL(0), 
+                    .CLK_DLY(1)
+                ) key_off_edge_detect (
+                    .clk_en(sample_clk_en),
+                    .in(kon[i][j]), 
+                    .edge_detected(key_off_pulse_array[i][j]),
+                    .*
+                );
+            end
+    endgenerate     
     
-    edge_detector #(
-        .EDGE_LEVEL(0), 
-        .CLK_DLY(1)
-    ) key_off_edge_detect (
-        .clk_en(sample_clk_en),
-        .in(kon), 
-        .edge_detected(key_off_pulse),
-        .*
-    );
+    always_comb key_on_pulse = |key_on_pulse_array[0] || |key_on_pulse_array[1];
+    always_comb key_off_pulse = |key_off_pulse_array[0] || |key_off_pulse_array[1];     
     
     always_ff @(posedge clk) begin
-        feedback[0] <= out;
-        feedback[1] <= feedback[0];
+        feedback[bank_num][op_num][0] <= out;
+        feedback[bank_num][op_num][1] <= feedback[bank_num][op_num][0];
     end
     
-    always_ff @(posedge clk)
-        feedback_result <= ((feedback[0] + feedback[1]) << fb) >> 9;
+    always_comb
+        feedback_result = ((feedback[bank_num][op_num][0] + feedback[bank_num][op_num][1]) << fb) >> 9;
         
     /*
      * An operator that implements feedback does not take any modulation

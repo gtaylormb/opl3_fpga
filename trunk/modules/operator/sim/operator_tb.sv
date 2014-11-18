@@ -34,7 +34,7 @@ module operator_tb;
     bit [REG_WS_WIDTH-1:0] ws = 0;
     bit vib = 0;
     bit dvb = 0;
-    bit kon = 0;
+    logic kon [NUM_BANKS][NUM_OPERATORS_PER_BANK] = '{default: '0};
     bit [REG_ENV_WIDTH-1:0] ar = 0; // attack rate
     bit [REG_ENV_WIDTH-1:0] dr = 0; // decay rate
     bit [REG_ENV_WIDTH-1:0] sl = 0; // sustain level
@@ -45,7 +45,13 @@ module operator_tb;
     bit egt = 0;                     // envelope type
     bit am = 0;                      // amplitude modulation (tremolo)
     bit dam = 0;                     // depth of tremolo
-    bit nts = 0;                     // keyboard split selection               
+    bit nts = 0;                     // keyboard split selection   
+    bit use_feedback = 0;       
+    bit [REG_FB_WIDTH-1:0] fb = 0;       
+    bit [OP_OUT_WIDTH-1:0] modulation = 0; 
+    
+    bit [BANK_NUM_WIDTH-1:0] bank_num = 0;
+    bit [OP_NUM_WIDTH-1:0] op_num = 0; 
     
     always begin
         #CLK_HALF_PERIOD clk = 0;
@@ -101,6 +107,10 @@ module operator_tb;
     always_comb dac_input = out; // this will sign extend out
     
     initial begin
+        for (int i = 0; i < 2; i++)
+            for (int j = 0; j < 18; j++)
+                mclk.kon[i][j] <= 0;
+        
         ##10;
         mclk.ar <= 5;
         mclk.dr <= 7;
@@ -111,10 +121,23 @@ module operator_tb;
         mclk.am <= 0;
         mclk.dam <= 1;
         ##1000;
-        mclk.kon <= 1;
+        mclk.kon[0][0] <= 1;
         ##(CLK_FREQ/3);
-        mclk.kon <= 0;
-        ##12e6;  
+        mclk.kon[0][0] <= 0;
+        ##12e6; 
+        
+        mclk.fnum <= 128;
+        mclk.mult <= 2;
+        mclk.block <= 2;
+        mclk.kon[0][1] <= 1;
+        mclk.ar <= 3; // attack rate
+        mclk.dr <= 5; // decay rate
+        mclk.sl <= 1; // sustain level
+        mclk.rr <= 3; // release rate
+        mclk.tl <= 1;  // total level         
+        ##(CLK_FREQ/3);
+        mclk.kon[0][1] <= 0;
+        ##12e6;         
     end
 
 endmodule
