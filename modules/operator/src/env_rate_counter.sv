@@ -21,6 +21,8 @@ import opl3_pkg::*;
 module env_rate_counter (
 	input wire clk,
 	input wire sample_clk_en,
+    input wire [BANK_NUM_WIDTH-1:0] bank_num,
+    input wire [OP_NUM_WIDTH-1:0] op_num,                  
     input wire ksr, // key scale rate    
     input wire nts, // keyboard split selection
     input wire [REG_FNUM_WIDTH-1:0] fnum,    
@@ -38,7 +40,8 @@ module env_rate_counter (
     logic [ENV_RATE_COUNTER_OVERFLOW_WIDTH-1:0] rate_value;
     logic [ENV_RATE_COUNTER_OVERFLOW_WIDTH-1:0] requested_rate_shifted;
     logic [1:0] rof;
-    logic [COUNTER_WIDTH-1:0] counter = 0;
+    logic [COUNTER_WIDTH-1:0] counter [NUM_BANKS][NUM_OPERATORS_PER_BANK] =
+     '{ default: '0 };
     logic [$clog2(OVERFLOW_TMP_MAX_VALUE)-1:0] overflow_tmp;
     
     always_comb rate_tmp0 = nts ? fnum[8] : fnum[9];
@@ -57,9 +60,9 @@ module env_rate_counter (
     
     always_ff @(posedge clk)
         if (sample_clk_en && requested_rate != 0)
-            counter <= counter + ((4 | rof) << rate_value);
+            counter[bank_num][op_num] <= counter[bank_num][op_num] + ((4 | rof) << rate_value);
         
-    always_comb overflow_tmp = counter + ((4 | rof) << rate_value);
+    always_comb overflow_tmp = counter[bank_num][op_num] + ((4 | rof) << rate_value);
     
     always_ff @(posedge clk)
         rate_counter_overflow <= overflow_tmp >> 15;

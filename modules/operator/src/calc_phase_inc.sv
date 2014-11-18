@@ -22,6 +22,8 @@ import opl3_pkg::*;
 module calc_phase_inc (
     input wire clk,
 	input wire sample_clk_en,
+    input wire [BANK_NUM_WIDTH-1:0] bank_num,
+    input wire [OP_NUM_WIDTH-1:0] op_num,                    
     input wire [REG_FNUM_WIDTH-1:0] fnum,
     input wire [REG_MULT_WIDTH-1:0] mult,
     input wire [REG_BLOCK_WIDTH-1:0] block,
@@ -42,8 +44,7 @@ module calc_phase_inc (
     logic [REG_FNUM_WIDTH-1:0] delta2 = 0;
     wire [REG_FNUM_WIDTH-1:0] vib_val;
     
-    always_ff @(posedge clk)
-        pre_mult <= fnum << block; // might be - 1 here;
+    always_comb pre_mult = fnum << block; // might be - 1 here; 
     
 	always_ff @(posedge clk)
 		unique case (mult)
@@ -65,17 +66,11 @@ module calc_phase_inc (
         'hF: post_mult <= pre_mult*15;
         endcase
     
-    /*
-     * Pipeline output of multipliers a bit just for good form
-     */
-    always_ff @(posedge clk)
-        phase_inc_p0 <= post_mult;
-    
-    always_ff @(posedge clk)
+    always_comb
         if (vib)
-            phase_inc <= phase_inc_p0 + vib_val;
+            phase_inc = post_mult + vib_val;
         else
-            phase_inc <= phase_inc_p0;
+            phase_inc = post_mult;
     
     /*
      * Calculate vib_val

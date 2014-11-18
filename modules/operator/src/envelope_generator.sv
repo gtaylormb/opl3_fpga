@@ -23,6 +23,8 @@ module envelope_generator #(
 )(
 	input wire clk,
 	input wire sample_clk_en,
+    input wire [BANK_NUM_WIDTH-1:0] bank_num,
+    input wire [OP_NUM_WIDTH-1:0] op_num,        
     input wire [REG_ENV_WIDTH-1:0] ar, // attack rate
     input wire [REG_ENV_WIDTH-1:0] dr, // decay rate
     input wire [REG_ENV_WIDTH-1:0] sl, // sustain level
@@ -50,11 +52,12 @@ module envelope_generator #(
         RELEASE
     } state_t;
     
-    state_t state = RELEASE;
+    state_t state [NUM_BANKS][NUM_OPERATORS_PER_BANK] = '{ default: RELEASE };
     state_t next_state;    
     
     wire [KSL_ADD_WIDTH-1:0] ksl_add;
-    logic [ENV_WIDTH-1:0] env_int = SILENCE;
+    logic [ENV_WIDTH-1:0] env_int [NUM_BANKS][NUM_OPERATORS_PER_BANK] =
+     '{ default: SILENCE};
     wire [AM_VAL_WIDTH-1:0] am_val;
     logic [REG_ENV_WIDTH-1:0] requested_rate;
     wire [ENV_RATE_COUNTER_OVERFLOW_WIDTH-1:0] rate_counter_overflow;
@@ -66,22 +69,22 @@ module envelope_generator #(
     
     always_ff @(posedge clk)
         if (key_on_pulse)
-            state <= ATTACK;
+            state[bank_num][op_num] <= ATTACK;
         else if (key_off_pulse)
-            state <= RELEASE;
+            state[bank_num][op_num] <= RELEASE;
         else if (sample_clk_en)
-            state <= next_state;
+            state[bank_num][op_num] <= next_state;
         
     always_comb
-        unique case (state)
-        ATTACK: next_state = env_int == 0 ? DECAY : ATTACK;
-        DECAY: next_state = (env_int >> 4) >= sl ? SUSTAIN : DECAY;
+        unique case (state[bank_num][op_num])
+        ATTACK: next_state = env_int[bank_num][op_num] == 0 ? DECAY : ATTACK;
+        DECAY: next_state = (env_int[bank_num][op_num] >> 4) >= sl ? SUSTAIN : DECAY;
         SUSTAIN: next_state = !egt ? RELEASE : SUSTAIN;
         RELEASE: next_state = RELEASE;
         endcase
             
     always_comb
-        unique case (state)
+        unique case (state[bank_num][op_num])
         ATTACK: requested_rate = ar;
         DECAY: requested_rate = dr;
         SUSTAIN: requested_rate = 0;
@@ -97,14 +100,14 @@ module envelope_generator #(
     
     always_ff @(posedge clk)
         if (sample_clk_en)
-            if (state == ATTACK && rate_counter_overflow != 0 && env_int != 0)
-                env_int <= env_int - (((env_int*rate_counter_overflow) >> 3) + 1);
-            else if (state == DECAY || state == RELEASE)
-                if (env_int + rate_counter_overflow > SILENCE)
+            if (state[bank_num][op_num] == ATTACK && rate_counter_overflow != 0 && env_int[bank_num][op_num] != 0)
+                env_int[bank_num][op_num] <= env_int[bank_num][op_num] - (((env_int[bank_num][op_num]*rate_counter_overflow) >> 3) + 1);
+            else if (state[bank_num][op_num] == DECAY || state[bank_num][op_num] == RELEASE)
+                if (env_int[bank_num][op_num] + rate_counter_overflow > SILENCE)
                     // env_int would overflow
-                    env_int <= SILENCE;
+                    env_int[bank_num][op_num] <= SILENCE;
                 else
-                    env_int <= env_int + rate_counter_overflow;     
+                    env_int[bank_num][op_num] <= env_int[bank_num][op_num] + rate_counter_overflow;     
     
     /*
      * Calculate am_val
@@ -115,9 +118,9 @@ module envelope_generator #(
     
     always_comb
         if (am)
-            env_tmp = env_int + (tl << 2) + ksl_add + am_val;
+            env_tmp = env_int[bank_num][op_num] + (tl << 2) + ksl_add + am_val;
         else
-            env_tmp = env_int + (tl << 2) + ksl_add;
+            env_tmp = env_int[bank_num][op_num] + (tl << 2) + ksl_add;
             
     always_ff @(posedge clk)
         if (env_tmp < 0)
