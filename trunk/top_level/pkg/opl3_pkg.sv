@@ -48,6 +48,7 @@ package opl3_pkg;
     parameter PHASE_ACC_WIDTH = 20;
     parameter AM_VAL_WIDTH = 5;
     parameter ENV_RATE_COUNTER_OVERFLOW_WIDTH = 8;
+    parameter CHANNEL_ACCUMULATOR_WIDTH = 19;    
     
     parameter NUM_BANKS = 2;
     parameter NUM_OPERATORS_PER_BANK = 18;

@@ -65,10 +65,19 @@ module channels (
     logic [$clog2(NUM_CHANNEL_ADD_STATES)-1:0] state = 0;
     logic [$clog2(NUM_CHANNEL_ADD_STATES)-1:0] next_state;
     logic signed [OP_OUT_WIDTH-1:0] operator_out [NUM_BANKS][NUM_OPERATORS_PER_BANK];
+    
+    /*
+     * Each channel is accumulated (can be up to 19 bits) and then clamped to
+     * 16-bits.
+     */
+    logic signed [CHANNEL_ACCUMULATOR_WIDTH-1:0] channel_a_acc_pre_clamp = 0;
+    logic signed [CHANNEL_ACCUMULATOR_WIDTH-1:0] channel_b_acc_pre_clamp = 0;
+    logic signed [CHANNEL_ACCUMULATOR_WIDTH-1:0] channel_c_acc_pre_clamp = 0;
+    logic signed [CHANNEL_ACCUMULATOR_WIDTH-1:0] channel_d_acc_pre_clamp = 0;  
   
     genvar i, j;
     generate            
-    for (i = 0; i < 2; i++) begin
+    for (i = 0; i < NUM_BANKS; i++) begin
         /*
          * 2 operator channel output connections
          */
@@ -137,169 +146,206 @@ module channels (
         
     always_ff @(posedge clk)
         unique case (state)
-        0: channel_a <= 0;
+        0: channel_a_acc_pre_clamp <= 0;
         1: if (cha[0][0])
-            channel_a <= connection_sel[0] ? channel_4_op[0][0] : channel_2_op[0][0];
+            channel_a_acc_pre_clamp <= connection_sel[0] ? channel_4_op[0][0] : channel_2_op[0][0];
         2: if (cha[0][1])
-            channel_a <= channel_a + (connection_sel[1] ? channel_4_op[0][1] : channel_2_op[0][1]);
+            channel_a_acc_pre_clamp <= channel_a_acc_pre_clamp + (connection_sel[1] ? channel_4_op[0][1] : channel_2_op[0][1]);
         3: if (cha[0][2])
-            channel_a <= channel_a + (connection_sel[2] ? channel_4_op[0][2] : channel_2_op[0][2]);
+            channel_a_acc_pre_clamp <= channel_a_acc_pre_clamp + (connection_sel[2] ? channel_4_op[0][2] : channel_2_op[0][2]);
         4: if (cha[0][3])
-            channel_a <= channel_a + (connection_sel[0] ? 0 : channel_2_op[0][3]);
+            channel_a_acc_pre_clamp <= channel_a_acc_pre_clamp + (connection_sel[0] ? 0 : channel_2_op[0][3]);
         5: if (cha[0][4])
-            channel_a <= channel_a + (connection_sel[1] ? 0 : channel_2_op[0][4]);
+            channel_a_acc_pre_clamp <= channel_a_acc_pre_clamp + (connection_sel[1] ? 0 : channel_2_op[0][4]);
         6: if (cha[0][5])
-            channel_a <= channel_a + (connection_sel[2] ? 0 : channel_2_op[0][5]);
+            channel_a_acc_pre_clamp <= channel_a_acc_pre_clamp + (connection_sel[2] ? 0 : channel_2_op[0][5]);
         7: if (cha[0][6])
-            channel_a <= channel_a + channel_2_op[0][6];
+            channel_a_acc_pre_clamp <= channel_a_acc_pre_clamp + channel_2_op[0][6];
         8: if (cha[0][7])
-            channel_a <= channel_a + channel_2_op[0][7];
+            channel_a_acc_pre_clamp <= channel_a_acc_pre_clamp + channel_2_op[0][7];
         9: if (cha[0][8])
-            channel_a <= channel_a + channel_2_op[0][8];
+            channel_a_acc_pre_clamp <= channel_a_acc_pre_clamp + channel_2_op[0][8];
         10: if (cha[1][0])
-            channel_a <= connection_sel[3] ? channel_4_op[1][0] : channel_2_op[1][0];
+            channel_a_acc_pre_clamp <= connection_sel[3] ? channel_4_op[1][0] : channel_2_op[1][0];
         11: if (cha[1][1])
-            channel_a <= channel_a + (connection_sel[4] ? channel_4_op[1][1] : channel_2_op[1][1]);
+            channel_a_acc_pre_clamp <= channel_a_acc_pre_clamp + (connection_sel[4] ? channel_4_op[1][1] : channel_2_op[1][1]);
         12: if (cha[1][2])
-            channel_a <= channel_a + (connection_sel[5] ? channel_4_op[1][2] : channel_2_op[1][2]);
+            channel_a_acc_pre_clamp <= channel_a_acc_pre_clamp + (connection_sel[5] ? channel_4_op[1][2] : channel_2_op[1][2]);
         13: if (cha[1][3])
-            channel_a <= channel_a + (connection_sel[3] ? 0 : channel_2_op[1][3]);
+            channel_a_acc_pre_clamp <= channel_a_acc_pre_clamp + (connection_sel[3] ? 0 : channel_2_op[1][3]);
         14: if (cha[1][4])
-            channel_a <= channel_a + (connection_sel[4] ? 0 : channel_2_op[1][4]);
+            channel_a_acc_pre_clamp <= channel_a_acc_pre_clamp + (connection_sel[4] ? 0 : channel_2_op[1][4]);
         15: if (cha[1][5])
-            channel_a <= channel_a + (connection_sel[5] ? 0 : channel_2_op[1][5]);
+            channel_a_acc_pre_clamp <= channel_a_acc_pre_clamp + (connection_sel[5] ? 0 : channel_2_op[1][5]);
         16: if (cha[1][6])
-            channel_a <= channel_a + channel_2_op[1][6];
+            channel_a_acc_pre_clamp <= channel_a_acc_pre_clamp + channel_2_op[1][6];
         17: if (cha[1][7])
-            channel_a <= channel_a + channel_2_op[1][7];
+            channel_a_acc_pre_clamp <= channel_a_acc_pre_clamp + channel_2_op[1][7];
         18: if (cha[1][8])
-            channel_a <= channel_a + channel_2_op[1][8];
+            channel_a_acc_pre_clamp <= channel_a_acc_pre_clamp + channel_2_op[1][8];
         endcase
             
     always_ff @(posedge clk)
         unique case (state)
-        0: channel_b <= 0;
+        0: channel_b_acc_pre_clamp <= 0;
         1: if (chb[0][0])
-            channel_b <= connection_sel[0] ? channel_4_op[0][0] : channel_2_op[0][0];
+            channel_b_acc_pre_clamp <= connection_sel[0] ? channel_4_op[0][0] : channel_2_op[0][0];
         2: if (chb[0][1])
-            channel_b <= channel_b + (connection_sel[1] ? channel_4_op[0][1] : channel_2_op[0][1]);
+            channel_b_acc_pre_clamp <= channel_b_acc_pre_clamp + (connection_sel[1] ? channel_4_op[0][1] : channel_2_op[0][1]);
         3: if (chb[0][2])
-            channel_b <= channel_b + (connection_sel[2] ? channel_4_op[0][2] : channel_2_op[0][2]);
+            channel_b_acc_pre_clamp <= channel_b_acc_pre_clamp + (connection_sel[2] ? channel_4_op[0][2] : channel_2_op[0][2]);
         4: if (chb[0][3])
-            channel_b <= channel_b + (connection_sel[0] ? 0 : channel_2_op[0][3]);
+            channel_b_acc_pre_clamp <= channel_b_acc_pre_clamp + (connection_sel[0] ? 0 : channel_2_op[0][3]);
         5: if (chb[0][4])
-            channel_b <= channel_b + (connection_sel[1] ? 0 : channel_2_op[0][4]);
+            channel_b_acc_pre_clamp <= channel_b_acc_pre_clamp + (connection_sel[1] ? 0 : channel_2_op[0][4]);
         6: if (chb[0][5])
-            channel_b <= channel_b + (connection_sel[2] ? 0 : channel_2_op[0][5]);
+            channel_b_acc_pre_clamp <= channel_b_acc_pre_clamp + (connection_sel[2] ? 0 : channel_2_op[0][5]);
         7: if (chb[0][6])
-            channel_b <= channel_b + channel_2_op[0][6];
+            channel_b_acc_pre_clamp <= channel_b_acc_pre_clamp + channel_2_op[0][6];
         8: if (chb[0][7])
-            channel_b <= channel_b + channel_2_op[0][7];
+            channel_b_acc_pre_clamp <= channel_b_acc_pre_clamp + channel_2_op[0][7];
         9: if (chb[0][8])
-            channel_b <= channel_b + channel_2_op[0][8];
+            channel_b_acc_pre_clamp <= channel_b_acc_pre_clamp + channel_2_op[0][8];
         10: if (chb[1][0])
-            channel_b <= connection_sel[3] ? channel_4_op[1][0] : channel_2_op[1][0];
+            channel_b_acc_pre_clamp <= connection_sel[3] ? channel_4_op[1][0] : channel_2_op[1][0];
         11: if (chb[1][1])
-            channel_b <= channel_b + (connection_sel[4] ? channel_4_op[1][1] : channel_2_op[1][1]);
+            channel_b_acc_pre_clamp <= channel_b_acc_pre_clamp + (connection_sel[4] ? channel_4_op[1][1] : channel_2_op[1][1]);
         12: if (chb[1][2])
-            channel_b <= channel_b + (connection_sel[5] ? channel_4_op[1][2] : channel_2_op[1][2]);
+            channel_b_acc_pre_clamp <= channel_b_acc_pre_clamp + (connection_sel[5] ? channel_4_op[1][2] : channel_2_op[1][2]);
         13: if (chb[1][3])
-            channel_b <= channel_b + (connection_sel[3] ? 0 : channel_2_op[1][3]);
+            channel_b_acc_pre_clamp <= channel_b_acc_pre_clamp + (connection_sel[3] ? 0 : channel_2_op[1][3]);
         14: if (chb[1][4])
-            channel_b <= channel_b + (connection_sel[4] ? 0 : channel_2_op[1][4]);
+            channel_b_acc_pre_clamp <= channel_b_acc_pre_clamp + (connection_sel[4] ? 0 : channel_2_op[1][4]);
         15: if (chb[1][5])
-            channel_b <= channel_b + (connection_sel[5] ? 0 : channel_2_op[1][5]);
+            channel_b_acc_pre_clamp <= channel_b_acc_pre_clamp + (connection_sel[5] ? 0 : channel_2_op[1][5]);
         16: if (chb[1][6])
-            channel_b <= channel_b + channel_2_op[1][6];
+            channel_b_acc_pre_clamp <= channel_b_acc_pre_clamp + channel_2_op[1][6];
         17: if (chb[1][7])
-            channel_b <= channel_b + channel_2_op[1][7];
+            channel_b_acc_pre_clamp <= channel_b_acc_pre_clamp + channel_2_op[1][7];
         18: if (chb[1][8])
-            channel_b <= channel_b + channel_2_op[1][8];
+            channel_b_acc_pre_clamp <= channel_b_acc_pre_clamp + channel_2_op[1][8];
         endcase              
             
     always_ff @(posedge clk)
         unique case (state)
-        0: channel_c <= 0;
+        0: channel_c_acc_pre_clamp <= 0;
         1: if (chc[0][0])
-            channel_c <= connection_sel[0] ? channel_4_op[0][0] : channel_2_op[0][0];
+            channel_c_acc_pre_clamp <= connection_sel[0] ? channel_4_op[0][0] : channel_2_op[0][0];
         2: if (chc[0][1])
-            channel_c <= channel_c + (connection_sel[1] ? channel_4_op[0][1] : channel_2_op[0][1]);
+            channel_c_acc_pre_clamp <= channel_c_acc_pre_clamp + (connection_sel[1] ? channel_4_op[0][1] : channel_2_op[0][1]);
         3: if (chc[0][2])
-            channel_c <= channel_c + (connection_sel[2] ? channel_4_op[0][2] : channel_2_op[0][2]);
+            channel_c_acc_pre_clamp <= channel_c_acc_pre_clamp + (connection_sel[2] ? channel_4_op[0][2] : channel_2_op[0][2]);
         4: if (chc[0][3])
-            channel_c <= channel_c + (connection_sel[0] ? 0 : channel_2_op[0][3]);
+            channel_c_acc_pre_clamp <= channel_c_acc_pre_clamp + (connection_sel[0] ? 0 : channel_2_op[0][3]);
         5: if (chc[0][4])
-            channel_c <= channel_c + (connection_sel[1] ? 0 : channel_2_op[0][4]);
+            channel_c_acc_pre_clamp <= channel_c_acc_pre_clamp + (connection_sel[1] ? 0 : channel_2_op[0][4]);
         6: if (chc[0][5])
-            channel_c <= channel_c + (connection_sel[2] ? 0 : channel_2_op[0][5]);
+            channel_c_acc_pre_clamp <= channel_c_acc_pre_clamp + (connection_sel[2] ? 0 : channel_2_op[0][5]);
         7: if (chc[0][6])
-            channel_c <= channel_c + channel_2_op[0][6];
+            channel_c_acc_pre_clamp <= channel_c_acc_pre_clamp + channel_2_op[0][6];
         8: if (chc[0][7])
-            channel_c <= channel_c + channel_2_op[0][7];
+            channel_c_acc_pre_clamp <= channel_c_acc_pre_clamp + channel_2_op[0][7];
         9: if (chc[0][8])
-            channel_c <= channel_c + channel_2_op[0][8];
+            channel_c_acc_pre_clamp <= channel_c_acc_pre_clamp + channel_2_op[0][8];
         10: if (chc[1][0])
-            channel_c <= connection_sel[3] ? channel_4_op[1][0] : channel_2_op[1][0];
+            channel_c_acc_pre_clamp <= connection_sel[3] ? channel_4_op[1][0] : channel_2_op[1][0];
         11: if (chc[1][1])
-            channel_c <= channel_c + (connection_sel[4] ? channel_4_op[1][1] : channel_2_op[1][1]);
+            channel_c_acc_pre_clamp <= channel_c_acc_pre_clamp + (connection_sel[4] ? channel_4_op[1][1] : channel_2_op[1][1]);
         12: if (chc[1][2])
-            channel_c <= channel_c + (connection_sel[5] ? channel_4_op[1][2] : channel_2_op[1][2]);
+            channel_c_acc_pre_clamp <= channel_c_acc_pre_clamp + (connection_sel[5] ? channel_4_op[1][2] : channel_2_op[1][2]);
         13: if (chc[1][3])
-            channel_c <= channel_c + (connection_sel[3] ? 0 : channel_2_op[1][3]);
+            channel_c_acc_pre_clamp <= channel_c_acc_pre_clamp + (connection_sel[3] ? 0 : channel_2_op[1][3]);
         14: if (chc[1][4])
-            channel_c <= channel_c + (connection_sel[4] ? 0 : channel_2_op[1][4]);
+            channel_c_acc_pre_clamp <= channel_c_acc_pre_clamp + (connection_sel[4] ? 0 : channel_2_op[1][4]);
         15: if (chc[1][5])
-            channel_c <= channel_c + (connection_sel[5] ? 0 : channel_2_op[1][5]);
+            channel_c_acc_pre_clamp <= channel_c_acc_pre_clamp + (connection_sel[5] ? 0 : channel_2_op[1][5]);
         16: if (chc[1][6])
-            channel_c <= channel_c + channel_2_op[1][6];
+            channel_c_acc_pre_clamp <= channel_c_acc_pre_clamp + channel_2_op[1][6];
         17: if (chc[1][7])
-            channel_c <= channel_c + channel_2_op[1][7];
+            channel_c_acc_pre_clamp <= channel_c_acc_pre_clamp + channel_2_op[1][7];
         18: if (chc[1][8])
-            channel_c <= channel_c + channel_2_op[1][8];
+            channel_c_acc_pre_clamp <= channel_c_acc_pre_clamp + channel_2_op[1][8];
         endcase
             
     always_ff @(posedge clk)
         unique case (state)
-        0: channel_d <= 0;
+        0: channel_d_acc_pre_clamp <= 0;
         1: if (chd[0][0])
-            channel_d <= connection_sel[0] ? channel_4_op[0][0] : channel_2_op[0][0];
+            channel_d_acc_pre_clamp <= connection_sel[0] ? channel_4_op[0][0] : channel_2_op[0][0];
         2: if (chd[0][1])
-            channel_d <= channel_d + (connection_sel[1] ? channel_4_op[0][1] : channel_2_op[0][1]);
+            channel_d_acc_pre_clamp <= channel_d_acc_pre_clamp + (connection_sel[1] ? channel_4_op[0][1] : channel_2_op[0][1]);
         3: if (chd[0][2])
-            channel_d <= channel_d + (connection_sel[2] ? channel_4_op[0][2] : channel_2_op[0][2]);
+            channel_d_acc_pre_clamp <= channel_d_acc_pre_clamp + (connection_sel[2] ? channel_4_op[0][2] : channel_2_op[0][2]);
         4: if (chd[0][3])
-            channel_d <= channel_d + (connection_sel[0] ? 0 : channel_2_op[0][3]);
+            channel_d_acc_pre_clamp <= channel_d_acc_pre_clamp + (connection_sel[0] ? 0 : channel_2_op[0][3]);
         5: if (chd[0][4])
-            channel_d <= channel_d + (connection_sel[1] ? 0 : channel_2_op[0][4]);
+            channel_d_acc_pre_clamp <= channel_d_acc_pre_clamp + (connection_sel[1] ? 0 : channel_2_op[0][4]);
         6: if (chd[0][5])
-            channel_d <= channel_d + (connection_sel[2] ? 0 : channel_2_op[0][5]);
+            channel_d_acc_pre_clamp <= channel_d_acc_pre_clamp + (connection_sel[2] ? 0 : channel_2_op[0][5]);
         7: if (chd[0][6])
-            channel_d <= channel_d + channel_2_op[0][6];
+            channel_d_acc_pre_clamp <= channel_d_acc_pre_clamp + channel_2_op[0][6];
         8: if (chd[0][7])
-            channel_d <= channel_d + channel_2_op[0][7];
+            channel_d_acc_pre_clamp <= channel_d_acc_pre_clamp + channel_2_op[0][7];
         9: if (chd[0][8])
-            channel_d <= channel_d + channel_2_op[0][8];
+            channel_d_acc_pre_clamp <= channel_d_acc_pre_clamp + channel_2_op[0][8];
         10: if (chd[1][0])
-            channel_d <= connection_sel[3] ? channel_4_op[1][0] : channel_2_op[1][0];
+            channel_d_acc_pre_clamp <= connection_sel[3] ? channel_4_op[1][0] : channel_2_op[1][0];
         11: if (chd[1][1])
-            channel_d <= channel_d + (connection_sel[4] ? channel_4_op[1][1] : channel_2_op[1][1]);
+            channel_d_acc_pre_clamp <= channel_d_acc_pre_clamp + (connection_sel[4] ? channel_4_op[1][1] : channel_2_op[1][1]);
         12: if (chd[1][2])
-            channel_d <= channel_d + (connection_sel[5] ? channel_4_op[1][2] : channel_2_op[1][2]);
+            channel_d_acc_pre_clamp <= channel_d_acc_pre_clamp + (connection_sel[5] ? channel_4_op[1][2] : channel_2_op[1][2]);
         13: if (chd[1][3])
-            channel_d <= channel_d + (connection_sel[3] ? 0 : channel_2_op[1][3]);
+            channel_d_acc_pre_clamp <= channel_d_acc_pre_clamp + (connection_sel[3] ? 0 : channel_2_op[1][3]);
         14: if (chd[1][4])
-            channel_d <= channel_d + (connection_sel[4] ? 0 : channel_2_op[1][4]);
+            channel_d_acc_pre_clamp <= channel_d_acc_pre_clamp + (connection_sel[4] ? 0 : channel_2_op[1][4]);
         15: if (chd[1][5])
-            channel_d <= channel_d + (connection_sel[5] ? 0 : channel_2_op[1][5]);
+            channel_d_acc_pre_clamp <= channel_d_acc_pre_clamp + (connection_sel[5] ? 0 : channel_2_op[1][5]);
         16: if (chd[1][6])
-            channel_d <= channel_d + channel_2_op[1][6];
+            channel_d_acc_pre_clamp <= channel_d_acc_pre_clamp + channel_2_op[1][6];
         17: if (chd[1][7])
-            channel_d <= channel_d + channel_2_op[1][7];
+            channel_d_acc_pre_clamp <= channel_d_acc_pre_clamp + channel_2_op[1][7];
         18: if (chd[1][8])
-            channel_d <= channel_d + channel_2_op[1][8];
+            channel_d_acc_pre_clamp <= channel_d_acc_pre_clamp + channel_2_op[1][8];
         endcase     
     endgenerate
     
+    /*
+     * Clamp output channels
+     */
+    always_ff @(posedge clk) begin
+        if (channel_a_acc_pre_clamp > 2**15 - 1)
+            channel_a <= 2**15 - 1;
+        else if (channel_a_acc_pre_clamp < -2**15)
+            channel_a <= -2**15;
+        else
+            channel_a <= channel_a_acc_pre_clamp;
+
+        if (channel_b_acc_pre_clamp > 2**15 - 1)
+            channel_b <= 2**15 - 1;
+        else if (channel_b_acc_pre_clamp < -2**15)
+            channel_b <= -2**15;
+        else
+            channel_b <= channel_b_acc_pre_clamp;              
+
+        if (channel_c_acc_pre_clamp > 2**15 - 1)
+            channel_c <= 2**15 - 1;
+        else if (channel_c_acc_pre_clamp < -2**15)
+            channel_c <= -2**15;
+        else
+            channel_c <= channel_c_acc_pre_clamp;              
+
+        if (channel_d_acc_pre_clamp > 2**15 - 1)
+            channel_d <= 2**15 - 1;
+        else if (channel_d_acc_pre_clamp < -2**15)
+            channel_d <= -2**15;
+        else
+            channel_d <= channel_d_acc_pre_clamp; 
+    end        
+    
+    /*
+     * One operator is instantiated; it replicates the necessary registers for
+     * all operator slots (phase accumulation, envelope state and value, etc).
+     */    
     control_operators control_operators (
         .*
     );
