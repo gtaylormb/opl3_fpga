@@ -80,12 +80,6 @@ bitstream: build/opl3.bit
 
 program: build/opl3.bit
 	vivado -mode batch -source top_level/scripts/vivado_program.tcl -log build/program_log.txt -nojournal
-
-archive-proto:
-	cd .. && tar --exclude-vcs -cvf dsac_proto_fpga_rev$(SVN_REV).tar modules topLevelFPGA && gzip dsac_proto_fpga_rev$(SVN_REV).tar
-	
-archive-flight:
-	cd .. && tar --exclude-vcs -cvf dsac_flight_fpga_rev$(SVN_REV).tar modules topLevelFPGA && gzip dsac_flight_fpga_rev$(SVN_REV).tar
 	
 clean:
 	rm -rf  *.tmp  *.log  log transcript work *.wlf vsim.fcdb proasic3L rtax

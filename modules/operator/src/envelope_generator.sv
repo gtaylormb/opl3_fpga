@@ -45,11 +45,16 @@ module envelope_generator #(
 );
     localparam KSL_ADD_WIDTH = 8;
     
-    typedef enum {
-        ATTACK,
-        DECAY,
-        SUSTAIN,
-        RELEASE
+    /*
+     * Because of the 2D array of state registers, this state machine isn't
+     * picked up by Vivado synthesis, therefore is not optimized. Manually
+     * optimize encoding to 1-hot
+     */
+    typedef enum logic [3:0]{
+        ATTACK    = 4'b0000,
+        DECAY     = 4'b0010,
+        SUSTAIN   = 4'b0100,
+        RELEASE   = 4'b1000
     } state_t;
     
     state_t state [NUM_BANKS][NUM_OPERATORS_PER_BANK] = '{ default: RELEASE };

@@ -471,7 +471,11 @@ module control_operators (
             op_num = state - NUM_OPERATORS_PER_BANK - 1;
         else
             op_num = state - 1;
-        
+    
+    /*
+     * The sample_clk_en input for each operator slot is pulsed in the first
+     * cycle of that time slot
+     */                
     operator operator (
         .clk(clk),
         .sample_clk_en(state != 0 && delay_counter == 0),
