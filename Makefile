@@ -5,6 +5,12 @@
 #   AUTHOR: Greg Taylor      CREATION DATE: 17 Oct 2014
 #
 #   DESCRIPTION: 
+#	Run 'make sim-debug' to debug the design in the Modelsim GUI
+#
+#	Run 'make bitstream' to build the entire design (synthesis, P&R, bitstream)
+#
+#	Run 'make program' to program the FPGA (may have to modify script for your
+#	setup)
 #
 #   CHANGE HISTORY:
 #   17 Oct 2014        Greg Taylor
@@ -13,6 +19,8 @@
 #   SVN Identification
 #   $Id$
 #*******************************************************************************
+uname_O := $(shell sh -c 'uname -o 2>/dev/null || echo not')	
+
 RTL_SRC = \
 	top_level/src/top_level.sv \
 	modules/channels/src/channels.sv \
@@ -67,8 +75,13 @@ compile_sim_lib:
 sim: compile-eval
 	vsim -L sim_lib -c top_level_tb glbl -do "run -a"
 	
+# Launch the Modelsim GUI for debugging design		
 sim-debug: compile
+ifneq (, $(findstring Cygwin, $(uname_O)))
 	cygstart vsim -L sim_lib top_level_tb glbl -voptargs=+acc
+else
+	vsim -L sim_lib top_level_tb glbl -voptargs=+acc
+endif
 	
 syn: build/post_syn.dcp
 
