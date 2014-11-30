@@ -20,14 +20,14 @@ import opl3_pkg::*;
 
 module phase_generator (
     input wire clk,
-	input wire sample_clk_en,
+    input wire sample_clk_en,
     input wire [BANK_NUM_WIDTH-1:0] bank_num,
     input wire [OP_NUM_WIDTH-1:0] op_num,  
 	input wire [PHASE_ACC_WIDTH-1:0] phase_inc,
     input wire [REG_WS_WIDTH-1:0] ws,
     input wire [ENV_WIDTH-1:0] env,
     input wire key_on_pulse,
-	output logic signed [OP_OUT_WIDTH-1:0] out = 0
+    output logic signed [OP_OUT_WIDTH-1:0] out = 0
 );	
     localparam LOG_SIN_OUT_WIDTH = 12;
     localparam EXP_IN_WIDTH = 8;

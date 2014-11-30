@@ -22,7 +22,7 @@ import opl3_pkg::*;
 module ksl_add_rom # (
     KSL_ADD_WIDTH = 8 // do not override
 ) (
-	input wire clk,
+    input wire clk,
     input wire [REG_FNUM_WIDTH-1:0] fnum,
     input wire [REG_BLOCK_WIDTH-1:0] block,
     input wire [REG_KSL_WIDTH-1:0] ksl,

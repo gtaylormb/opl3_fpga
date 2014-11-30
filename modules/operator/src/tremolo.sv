@@ -20,7 +20,7 @@ import opl3_pkg::*;
 
 module tremolo (
     input wire clk,
-	input wire sample_clk_en,
+    input wire sample_clk_en,
     input wire [BANK_NUM_WIDTH-1:0] bank_num,
     input wire [OP_NUM_WIDTH-1:0] op_num,            
     input wire dam, // depth of tremolo

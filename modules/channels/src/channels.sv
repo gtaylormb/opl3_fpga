@@ -19,8 +19,8 @@
 import opl3_pkg::*;
 
 module channels (
-	input wire clk,
-	input wire sample_clk_en,
+    input wire clk,
+    input wire sample_clk_en,
     input wire [REG_CONNECTION_SEL_WIDTH-1:0] connection_sel,
     input wire is_new,
     input wire nts,                     // keyboard split selection     

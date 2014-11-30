@@ -19,7 +19,7 @@
 import opl3_pkg::*;
 
 module register_file (
-	input wire clk,
+    input wire clk,
     input wire cs,
     input wire rd,
     input wire wr,
