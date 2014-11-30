@@ -214,8 +214,10 @@ module top_level (
     wire [REG_FB_WIDTH-1:0] fb [2][9];
     wire cnt [2][9];
 
-    logic signed [SAMPLE_WIDTH-1:0] sample_l;
-    logic signed [SAMPLE_WIDTH-1:0] sample_r;
+    logic signed [SAMPLE_WIDTH-1:0] sample_l = 0;
+    logic signed [SAMPLE_WIDTH-1:0] sample_r = 0;
+    logic signed [SAMPLE_WIDTH:0] sample_l_pre_clamp = 0;
+    logic signed [SAMPLE_WIDTH:0] sample_r_pre_clamp = 0;
     wire signed [SAMPLE_WIDTH-1:0] channel_a;
     wire signed [SAMPLE_WIDTH-1:0] channel_b;
     wire signed [SAMPLE_WIDTH-1:0] channel_c;
@@ -246,15 +248,28 @@ module top_level (
     );
     
     /*
-     * TODO: check how these signals are combined in analog, what channels
-     * go to what
-     * 
-     * Shift to avoid clipping (these channels are normally combined in analog
-     * after the DAC)
-     */        
+     * The 4 output channels are normally combined in the analog domain after
+     * the YAC512 DAC outputs. Here we'll just add and clamp to 16-bit
+     */
     always_ff @(posedge clk) begin
-        sample_l <= (channel_a >> 1) + (channel_b >> 1);
-        sample_r <= (channel_c >> 1) + (channel_d >> 1);
+        sample_l_pre_clamp <= channel_a + channel_b;
+        sample_r_pre_clamp <= channel_c + channel_d;
+    end
+    
+    always_ff @(posedge clk) begin
+        if (sample_l_pre_clamp > 2**15 - 1)
+            sample_l <= 2** 15 -1;
+        else if (sample_l_pre_clamp < -2**15)
+            sample_l <= -2**15;
+        else
+            sample_l <= sample_l_pre_clamp;
+               
+        if (sample_r_pre_clamp > 2**15 - 1)
+            sample_r <= 2** 15 -1;
+        else if (sample_r_pre_clamp < -2**15)
+            sample_r <= -2**15;
+        else
+            sample_r <= sample_r_pre_clamp;
     end 
     
     i2s i2s (

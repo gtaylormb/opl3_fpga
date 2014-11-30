@@ -5,6 +5,8 @@ set XDC_SRC [lindex $argv 3]
 
 set outputDir build
 
+create_project -part xc7z010clg400-1 -in_memory
+
 read_verilog -sv ${RTL_SRC}
 read_ip ${IP_SRC}
 read_xdc ${XDC_SRC}
@@ -12,7 +14,7 @@ read_xdc ${XDC_SRC}
 synth_design -name opl3 -part xc7z010clg400-1 -top top_level -include_dirs \
  ${INC_DIR0}
  
-opt_design -directive NoBramPowerOpt
+opt_design
 
 report_utilization -file $outputDir/post_syn_util.txt
 
