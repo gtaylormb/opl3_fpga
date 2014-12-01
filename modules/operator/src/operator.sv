@@ -114,10 +114,11 @@ module operator (
     always_comb key_on_pulse = |key_on_pulse_array[0] || |key_on_pulse_array[1];
     always_comb key_off_pulse = |key_off_pulse_array[0] || |key_off_pulse_array[1];     
     
-    always_ff @(posedge clk) begin
-        feedback[bank_num][op_num][0] <= out;
-        feedback[bank_num][op_num][1] <= feedback[bank_num][op_num][0];
-    end
+    always_ff @(posedge clk)
+        if (sample_clk_en) begin
+            feedback[bank_num][op_num][0] <= out;
+            feedback[bank_num][op_num][1] <= feedback[bank_num][op_num][0];
+        end
     
     always_comb
         feedback_result = ((feedback[bank_num][op_num][0] + feedback[bank_num][op_num][1]) << fb) >> 9;
