@@ -74,18 +74,18 @@ module operator (
     wire [PHASE_ACC_WIDTH-1:0] phase_inc;
     logic [PHASE_ACC_WIDTH-1:0] phase_inc_post_add = 0;    
     logic key_on_pulse;
-    wire [NUM_BANKS-1:0][NUM_OPERATORS_PER_BANK-1:0] key_on_pulse_array;
+    wire key_on_pulse_array [NUM_BANKS][NUM_OPERATORS_PER_BANK];
     logic key_off_pulse;
-    wire [NUM_BANKS-1:0][NUM_OPERATORS_PER_BANK-1:0] key_off_pulse_array;
+    wire key_off_pulse_array [NUM_BANKS][NUM_OPERATORS_PER_BANK];
     wire [ENV_WIDTH-1:0] env;
     logic [OP_OUT_WIDTH-1:0] feedback [NUM_BANKS][NUM_OPERATORS_PER_BANK][2] =
      '{default: 0};
-    logic [PHASE_ACC_WIDTH-1:0] feedback_result = 0;        
+    logic [PHASE_ACC_WIDTH-1:0] feedback_result = 0; 
     
     genvar i, j;
     generate
         for (i = 0; i < NUM_BANKS; i ++) 
-            for (j = 0; j < NUM_OPERATORS_PER_BANK; j++) begin        
+            for (j = 0; j < NUM_OPERATORS_PER_BANK; j++) begin 
                 /*
                  * Detect key on and key off
                  */
@@ -93,7 +93,7 @@ module operator (
                     .EDGE_LEVEL(1), 
                     .CLK_DLY(1)
                 ) key_on_edge_detect (
-                    .clk_en(sample_clk_en),
+                    .clk_en(i == bank_num && j == op_num && sample_clk_en),
                     .in(kon[i][j]), 
                     .edge_detected(key_on_pulse_array[i][j]),
                     .*
@@ -103,16 +103,16 @@ module operator (
                     .EDGE_LEVEL(0), 
                     .CLK_DLY(1)
                 ) key_off_edge_detect (
-                    .clk_en(sample_clk_en),
+                    .clk_en(i == bank_num && j == op_num && sample_clk_en),
                     .in(kon[i][j]), 
                     .edge_detected(key_off_pulse_array[i][j]),
                     .*
-                );
-            end
-    endgenerate     
+                );                                   
+            end            
+    endgenerate 
     
-    always_comb key_on_pulse = |key_on_pulse_array[0] || |key_on_pulse_array[1];
-    always_comb key_off_pulse = |key_off_pulse_array[0] || |key_off_pulse_array[1];     
+    always_comb key_on_pulse = key_on_pulse_array[bank_num][op_num];
+    always_comb key_off_pulse = key_off_pulse_array[bank_num][op_num];          
     
     always_ff @(posedge clk)
         if (sample_clk_en) begin

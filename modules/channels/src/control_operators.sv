@@ -74,10 +74,6 @@ module control_operators (
     input wire tom,
     input wire tc,
     input wire hh,
-    input wire cha [NUM_BANKS][NUM_CHANNELS_PER_BANK],
-    input wire chb [NUM_BANKS][NUM_CHANNELS_PER_BANK],
-    input wire chc [NUM_BANKS][NUM_CHANNELS_PER_BANK],
-    input wire chd [NUM_BANKS][NUM_CHANNELS_PER_BANK],
     input wire [REG_FB_WIDTH-1:0] fb [NUM_BANKS][NUM_CHANNELS_PER_BANK],
     input wire cnt [NUM_BANKS][NUM_CHANNELS_PER_BANK],
     output logic signed [OP_OUT_WIDTH-1:0] operator_out [NUM_BANKS][NUM_OPERATORS_PER_BANK] = '{default: '0}
