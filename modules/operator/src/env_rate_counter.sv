@@ -68,11 +68,12 @@ module env_rate_counter (
     logic [COUNTER_WIDTH-1:0] counter [NUM_BANKS][NUM_OPERATORS_PER_BANK] =
      '{ default: '0 };
     logic [$clog2(OVERFLOW_TMP_MAX_VALUE)-1:0] overflow_tmp;
+    logic sample_clk_en_d0 = 0;
     
     always_comb rate_tmp0 = nts ? fnum[8] : fnum[9];
     always_comb rate_tmp1 = rate_tmp0 | (block << 1);
     always_comb rate_tmp2 = ksr ? rate_tmp1 : rate_tmp1 >> 2;
-    always_comb requested_rate_shifted = requested_rate << 2;   
+    always_comb requested_rate_shifted = requested_rate << 2;
     
     always_ff @(posedge clk)
         if (rate_tmp2 + requested_rate_shifted > 60)
@@ -84,7 +85,10 @@ module env_rate_counter (
     always_comb rof = effective_rate[1:0];
     
     always_ff @(posedge clk)
-        if (sample_clk_en && requested_rate != 0)
+        sample_clk_en_d0 <= sample_clk_en;
+    
+    always_ff @(posedge clk)
+        if (sample_clk_en_d0 && requested_rate != 0)
             counter[bank_num][op_num] <= counter[bank_num][op_num] + ((4 | rof) << rate_value);
         
     always_comb overflow_tmp = counter[bank_num][op_num] + ((4 | rof) << rate_value);

@@ -69,6 +69,7 @@ module envelope_generator #(
     output logic [ENV_WIDTH-1:0] env = SILENCE
 );
     localparam KSL_ADD_WIDTH = 8;
+    localparam PIPELINE_DELAY = 3;
     
     /*
      * Because of the 2D array of state registers, this state machine isn't
@@ -92,6 +93,7 @@ module envelope_generator #(
     logic [REG_ENV_WIDTH-1:0] requested_rate;
     wire [ENV_RATE_COUNTER_OVERFLOW_WIDTH-1:0] rate_counter_overflow;
     logic [ENV_WIDTH:0] env_tmp; // one more bit wide than env for >, < comparison
+    logic [PIPELINE_DELAY-1:0] sample_clk_en_delayed = 0;
     
     ksl_add_rom ksl_add_rom (
         .*
@@ -128,8 +130,13 @@ module envelope_generator #(
         .*
     );
     
+    always_ff @(posedge clk) begin
+        sample_clk_en_delayed <= sample_clk_en_delayed << 1;
+        sample_clk_en_delayed[0] <= sample_clk_en;
+    end        
+    
     always_ff @(posedge clk)
-        if (sample_clk_en)
+        if (sample_clk_en_delayed[PIPELINE_DELAY-1])
             if (state[bank_num][op_num] == ATTACK && rate_counter_overflow != 0 && env_int[bank_num][op_num] != 0)
                 env_int[bank_num][op_num] <= env_int[bank_num][op_num] - (((env_int[bank_num][op_num]*rate_counter_overflow) >> 3) + 1);
             else if (state[bank_num][op_num] == DECAY || state[bank_num][op_num] == RELEASE)
