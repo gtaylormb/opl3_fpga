@@ -58,6 +58,9 @@ module phase_generator (
     localparam EXP_IN_WIDTH = 8;
     localparam EXP_OUT_WIDTH = 10;
     localparam LOG_SIN_PLUS_GAIN_WIDTH = 13;
+    localparam PIPELINE_DELAY = 2;     
+    
+    logic [PIPELINE_DELAY-1:0] sample_clk_en_delayed = 0;
 	logic [PHASE_ACC_WIDTH-1:0] phase_acc [NUM_BANKS][NUM_OPERATORS_PER_BANK] = '{ default: '0 };
     
     logic is_odd_period [NUM_BANKS][NUM_OPERATORS_PER_BANK] = '{ default: '0 };
@@ -70,12 +73,17 @@ module phase_generator (
     logic signed [OP_OUT_WIDTH-1:0] tmp_ws2;
     logic signed [OP_OUT_WIDTH-1:0] tmp_ws4;  
     logic [LOG_SIN_OUT_WIDTH-1:0] tmp_ws7; 
+    
+    always_ff @(posedge clk) begin
+        sample_clk_en_delayed <= sample_clk_en_delayed << 1;
+        sample_clk_en_delayed[0] <= sample_clk_en;
+    end          
         
     /*
      * Phase Accumulator
      */
 	always_ff @(posedge clk)
-		if (sample_clk_en)
+		if (sample_clk_en_delayed[PIPELINE_DELAY-1])
             if (key_on_pulse)
                 phase_acc[bank_num][op_num] <= 0;
             else if (ws == 4 || ws == 5)

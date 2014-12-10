@@ -530,8 +530,12 @@ module control_operators (
     generate
     for (i = 0; i < NUM_BANKS; i++)
         for (j = 0; j < NUM_OPERATORS_PER_BANK; j++)
+            /*
+             * Capture output from operator in the last cycle of the time slot
+             */
             always_ff @(posedge clk)
-                if (i == bank_num && j == op_num)
+                if (i == bank_num && j == op_num &&
+                 delay_counter == OPERATOR_PIPELINE_DELAY - 1)
                     operator_out[i][j] <= operator_out_tmp;
     endgenerate    
     

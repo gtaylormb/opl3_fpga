@@ -75,11 +75,11 @@ module env_rate_counter (
     always_comb rate_tmp2 = ksr ? rate_tmp1 : rate_tmp1 >> 2;
     always_comb requested_rate_shifted = requested_rate << 2;
     
-    always_ff @(posedge clk)
+    always_comb
         if (rate_tmp2 + requested_rate_shifted > 60)
-            effective_rate <= 60;
+            effective_rate = 60;
         else
-            effective_rate <= rate_tmp2 + requested_rate_shifted;
+            effective_rate = rate_tmp2 + requested_rate_shifted;
         
     always_comb rate_value = effective_rate >> 2;
     always_comb rof = effective_rate[1:0];
@@ -93,8 +93,8 @@ module env_rate_counter (
         
     always_comb overflow_tmp = counter[bank_num][op_num] + ((4 | rof) << rate_value);
     
-    always_ff @(posedge clk)
-        rate_counter_overflow <= overflow_tmp >> 15;
+    always_comb
+        rate_counter_overflow = overflow_tmp >> 15;
     
 endmodule
 `default_nettype wire  // re-enable implicit net type declarations

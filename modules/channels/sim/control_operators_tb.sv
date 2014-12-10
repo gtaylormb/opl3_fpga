@@ -82,6 +82,7 @@ module control_operators_tb;
     wire signed [OP_OUT_WIDTH-1:0] operator_out [NUM_BANKS][NUM_OPERATORS_PER_BANK];
     
     logic signed [SAMPLE_WIDTH-1:0] dac_input [2];
+    integer sample_number = 0;
     
     always begin
         #CLK_HALF_PERIOD clk = 0;
@@ -130,14 +131,18 @@ module control_operators_tb;
         .*
     );       
     
+    always_ff @(posedge clk)
+        if (sample_clk_en)
+            sample_number <= sample_number + 1;
+    
     always_comb dac_input[0] = operator_out[0][0]; // this will sign extend out
     always_comb dac_input[1] = operator_out[0][3]; // this will sign extend out
     
     initial begin        
         ##10;
         fnum[0][0] = 128;
-        mult[0][3] = 2;
-        block[0][0] = 2;                
+        mult[0][3] = 10;
+        block[0][0] = 3;                
         ar[0][3] = 5;
         dr[0][3] = 7;
         sl[0][3] = 2;

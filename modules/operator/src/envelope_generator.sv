@@ -69,14 +69,14 @@ module envelope_generator #(
     output logic [ENV_WIDTH-1:0] env = SILENCE
 );
     localparam KSL_ADD_WIDTH = 8;
-    localparam PIPELINE_DELAY = 3;
+    localparam PIPELINE_DELAY = 2;
     
     /*
      * Because of the 2D array of state registers, this state machine isn't
      * picked up by Vivado synthesis, therefore is not optimized. Manually
      * optimize encoding to 1-hot
      */
-    typedef enum logic [3:0]{
+    typedef enum logic [3:0] {
         ATTACK    = 4'b0000,
         DECAY     = 4'b0010,
         SUSTAIN   = 4'b0100,

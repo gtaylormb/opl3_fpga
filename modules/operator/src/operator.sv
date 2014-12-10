@@ -68,11 +68,11 @@ module operator (
     input wire nts,                     // keyboard split selection
     input wire use_feedback,
     input wire [REG_FB_WIDTH-1:0] fb,
-    input wire [OP_OUT_WIDTH-1:0] modulation,
+    input wire signed [OP_OUT_WIDTH-1:0] modulation,
     output logic signed [OP_OUT_WIDTH-1:0] out
 );   
-    wire [PHASE_ACC_WIDTH-1:0] phase_inc;
-    logic [PHASE_ACC_WIDTH-1:0] phase_inc_post_add = 0;    
+    wire signed [PHASE_ACC_WIDTH-1:0] phase_inc;
+    logic signed [PHASE_ACC_WIDTH-1:0] phase_inc_post_add = 0;    
     logic key_on_pulse;
     wire key_on_pulse_array [NUM_BANKS][NUM_OPERATORS_PER_BANK];
     logic key_off_pulse;
