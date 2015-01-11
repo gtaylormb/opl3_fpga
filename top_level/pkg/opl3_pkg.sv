@@ -79,5 +79,8 @@ package opl3_pkg;
     parameter NUM_CHANNELS_PER_BANK = 9;
     parameter BANK_NUM_WIDTH = $clog2(NUM_BANKS);
     parameter OP_NUM_WIDTH = $clog2(NUM_OPERATORS_PER_BANK);
+    
+    parameter TIMER1_TICK_INTERVAL = 80e-6;  // in seconds
+    parameter TIMER2_TICK_INTERVAL = 320e-6; // in seconds
 
 endpackage

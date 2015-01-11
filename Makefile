@@ -64,6 +64,8 @@ RTL_SRC = \
 	modules/operator/src/opl3_exp_lut.sv \
 	modules/register_file/src/opl3_axi_wrapper.sv \
 	modules/register_file/src/register_file.sv \
+	modules/timers/src/timers.sv \
+	modules/timers/src/timer.sv \
 	modules/misc/src/edge_detector.sv
 	
 SIM_SRC = \

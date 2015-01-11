@@ -144,6 +144,7 @@ module top_level (
     wire [1:0]USB0_PORT_INDCTL;
     wire USB0_VBUS_PWRSELECT;
     wire USB0_VBUS_PWRFAULT = 0;
+    wire [0:0]IRQ_F2P;
     
     wire [31:0]m_axi_araddr;
     wire [2:0]m_axi_arprot;
@@ -338,6 +339,11 @@ module top_level (
     register_file register_file (
         .*
     ); 
+    
+    timers timers (
+        .irq(IRQ_F2P),
+        .*
+    );       
     
     always_comb ac_mute_n = 1;
     

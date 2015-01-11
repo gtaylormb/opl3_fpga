@@ -140,7 +140,7 @@ module control_operators_tb;
     
     initial begin        
         ##10;
-        fnum[0][0] = 128;
+        fnum[0][0] = 255;
         mult[0][3] = 10;
         block[0][0] = 3;                
         ar[0][3] = 5;
