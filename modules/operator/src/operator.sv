@@ -78,9 +78,9 @@ module operator (
     logic key_off_pulse;
     wire key_off_pulse_array [NUM_BANKS][NUM_OPERATORS_PER_BANK];
     wire [ENV_WIDTH-1:0] env;
-    logic [OP_OUT_WIDTH-1:0] feedback [NUM_BANKS][NUM_OPERATORS_PER_BANK][2] =
+    logic signed [OP_OUT_WIDTH-1:0] feedback [NUM_BANKS][NUM_OPERATORS_PER_BANK][2] =
      '{default: 0};
-    logic [PHASE_ACC_WIDTH-1:0] feedback_result = 0; 
+    logic signed [PHASE_ACC_WIDTH-1:0] feedback_result = 0; 
     
     genvar i, j;
     generate
@@ -121,7 +121,8 @@ module operator (
         end
     
     always_comb
-        feedback_result = ((feedback[bank_num][op_num][0] + feedback[bank_num][op_num][1]) << fb) >> 9;
+        feedback_result = ((feedback[bank_num][op_num][0] +
+         feedback[bank_num][op_num][1]) << fb) >> 9;
         
     /*
      * An operator that implements feedback does not take any modulation
