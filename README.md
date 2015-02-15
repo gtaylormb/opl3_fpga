@@ -5,7 +5,7 @@ Follow the progress and discussion in http://forums.submarine.org.uk/phpBB/viewt
 
 There are some minor differences between this version and the original chip, mainly due to the hardware on
 the board that I'm using. The design is targeted to the Digilent ZYBO board which has the Xilinx Zynq-7000
-SoC with a ARM dual-core Cortex-A9 together with an FPGA. The board also has an Analog Devices SSM2603
+SoC containing an ARM dual-core Cortex-A9 and an FPGA. The board also has an Analog Devices SSM2603
 audio codec with dual 24-bit DACs. So the interfaces are different--the interface to the CPU is AXI4-Lite
 and the interface to the DAC is I2S, matching the particular hardware I have to work with.
 
