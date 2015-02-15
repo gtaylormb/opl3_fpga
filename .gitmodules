@@ -1,3 +1,6 @@
 [submodule "docs/ppplayer-code"]
 	path = docs/ppplayer-code
 	url = git://git.code.sf.net/p/peepeeplayer/code
+[submodule "docs/imfplay"]
+	path = docs/imfplay
+	url = ./docs/imfplay/
