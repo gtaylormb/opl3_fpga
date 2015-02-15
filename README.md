@@ -1,6 +1,7 @@
 opl3_fpga
 =========
-Reverse engineered SystemVerilog RTL version of the Yamaha OPL3 (YMF262) FM Synthesizer. Currently in progress.
+Reverse engineered SystemVerilog RTL version of the 
+<a href="http://en.wikipedia.org/wiki/Yamaha_YMF262">Yamaha OPL3 (YMF262)</a> FM Synthesizer. Currently in progress.
 Follow the progress and discussion in http://forums.submarine.org.uk/phpBB/viewtopic.php?f=9&t=58132
 
 There are some minor differences between this version and the original chip, mainly due to the hardware on
