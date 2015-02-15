@@ -4,9 +4,11 @@ Reverse engineered SystemVerilog RTL version of the Yamaha OPL3 (YMF262) FM Synt
 Follow the progress and discussion in http://forums.submarine.org.uk/phpBB/viewtopic.php?f=9&t=58132
 
 There are some minor differences between this version and the original chip, mainly due to the hardware on
-the board that I'm using. The design is targeted to the Digilent ZYBO board which has the Xilinx Zynq-7000
-SoC containing an ARM dual-core Cortex-A9 and an FPGA. The board also has an Analog Devices SSM2603
-audio codec with dual 24-bit DACs. So the interfaces are different--the interface to the CPU is AXI4-Lite
+the board that I'm using. The design is targeted to the <a href="https://www.digilentinc.com/Products/Detail.cfm?Prod=ZYBO">Digilent ZYBO board</a>
+which has the <a href="http://www.xilinx.com/products/silicon-devices/soc/zynq-7000.html">Xilinx Zynq-7000
+SoC</a> containing an ARM dual-core Cortex-A9 and an FPGA. The board also has an 
+<a href="http://www.analog.com/en/products/audio-video/audio-codecs/ssm2603.html#product-overview">Analog Devices SSM2603
+audio codec</a> with dual 24-bit DACs. So the interfaces are different--the interface to the CPU is AXI4-Lite
 and the interface to the DAC is I2S, matching the particular hardware I have to work with. These
 interfaces are wrapped in the FPGA design and would be easy to swap out.
 
