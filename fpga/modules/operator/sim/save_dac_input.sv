@@ -47,10 +47,10 @@ module save_dac_input #(
    parameter FILENAME = "dac_data.bin",
    parameter CLKS_TO_SKIP = 5000 // the number of clocks to skip at the beginning of sim
 )(
-	input wire clk,
+    input wire clk,
     input wire reset,
     input wire clk_en,
-	input wire [DAC_WIDTH-1:0] dac_input
+    input wire [DAC_WIDTH-1:0] dac_input
 );
     timeunit 1ns;
     integer fd;
@@ -59,32 +59,32 @@ module save_dac_input #(
     int num_samples = 0;
     
     program save_dac_data;
-		default clocking dac_clk @(posedge clk);
-			default input #1step;
-			input dac_input;
+        default clocking dac_clk @(posedge clk);
+            default input #1step;
+            input dac_input;
             input clk_en;
-		endclocking      
+        endclocking      
 		
         initial begin
-        	fd = $fopen(FILENAME, "w");
+            fd = $fopen(FILENAME, "w");
         	
-    		if (!fd) begin
-    			errno = $ferror(fd, err);
-    			$display("Error opening DAC data file: %s", err);
-    		end
+            if (!fd) begin
+                errno = $ferror(fd, err);
+                $display("Error opening DAC data file: %s", err);
+            end
     		
-    		//##CLKS_TO_SKIP;
+            //##CLKS_TO_SKIP;
             if (!reset)
-        		while (num_samples < NUM_SAMPLES) begin
-        			##1 
+                while (num_samples < NUM_SAMPLES) begin
+                    ##1 
                     if (dac_clk.clk_en) begin
                     $fwrite(fd, "%x\n", dac_clk.dac_input);
                         num_samples++;
                     end
                 end
     			
-    		$fclose(fd);
-    		$display("Saved %s.", FILENAME);
+            $fclose(fd);
+            $display("Saved %s.", FILENAME);
         end
     endprogram
 endmodule
