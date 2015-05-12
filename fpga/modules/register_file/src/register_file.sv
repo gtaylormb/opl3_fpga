@@ -93,26 +93,32 @@ module register_file (
     output logic [REG_FB_WIDTH-1:0] fb [2][9] = '{ default: '0 },
     output logic cnt [2][9] = '{ default: '0 }
 );           
+    
+    always_ff @(posedge clk)
+        if (cs && wr)
+            unique case (address)
+            'h2: if (!bank_select) timer1 <= data_in;
+            'h3: if (!bank_select) timer2 <= data_in;
+            'h4:
+                if (!bank_select) begin
+                    irq_rst <= data_in[7];
+                    mt1     <= data_in[6];
+                    mt2     <= data_in[5];
+                    st2     <= data_in[1];
+                    st1     <= data_in[0];
+                end
+                else
+                    connection_sel <= data_in[REG_CONNECTION_SEL_WIDTH-1:0];
+                'h5: if (bank_select) is_new <= data_in[0];
+                'h8: if (!bank_select) nts <= data_in[6];           
+            endcase
+                
     genvar i;
     generate
     for (i = 0; i < 'h16; i++) begin
         always_ff @(posedge clk)
            if (cs && wr)
-                unique case (address)
-                'h2: if (!bank_select) timer1 <= data_in;
-                'h3: if (!bank_select) timer2 <= data_in;
-                'h4:
-                    if (!bank_select) begin
-                        irq_rst <= data_in[7];
-                        mt1     <= data_in[6];
-                        mt2     <= data_in[5];
-                        st2     <= data_in[1];
-                        st1     <= data_in[0];
-                    end
-                    else
-                        connection_sel <= data_in[REG_CONNECTION_SEL_WIDTH-1:0];
-                'h5: if (bank_select) is_new <= data_in[0];
-                'h8: if (!bank_select) nts <= data_in[6];                                                       
+                unique case (address)                                                
                 'h20 + i:                    
                     if (i < 6) begin
                         am[bank_select][i]   <= data_in[7];
@@ -217,6 +223,7 @@ module register_file (
     always_ff @(posedge clk)
         if (cs && rd)
             unique case (address)
+            'h1: data_out <= !bank_select ? 'hba : 'hbe; // for read sanity check
             'h2: data_out <= !bank_select ? timer1 : 0;
             'h3: data_out <= !bank_select ? timer2 : 0;
             'h4:
