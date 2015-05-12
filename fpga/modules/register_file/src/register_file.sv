@@ -92,8 +92,7 @@ module register_file (
     output logic chd [2][9] = '{ default: '0 },
     output logic [REG_FB_WIDTH-1:0] fb [2][9] = '{ default: '0 },
     output logic cnt [2][9] = '{ default: '0 }
-);           
-    
+);             
     always_ff @(posedge clk)
         if (cs && wr)
             unique case (address)
@@ -109,8 +108,8 @@ module register_file (
                 end
                 else
                     connection_sel <= data_in[REG_CONNECTION_SEL_WIDTH-1:0];
-                'h5: if (bank_select) is_new <= data_in[0];
-                'h8: if (!bank_select) nts <= data_in[6];           
+            'h5: if (bank_select) is_new <= data_in[0];
+            'h8: if (!bank_select) nts <= data_in[6];           
             endcase
                 
     genvar i;
