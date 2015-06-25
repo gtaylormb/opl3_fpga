@@ -1,0 +1,16 @@
+Copyright 1986-2014 Xilinx, Inc. All Rights Reserved.
+------------------------------------------------------------------------------------
+| Tool Version : Vivado v.2014.4 (lin64) Build 1071353 Tue Nov 18 16:47:07 MST 2014
+| Date         : Sun Mar  8 22:11:17 2015
+| Host         : edinburgh running 64-bit Ubuntu 14.10
+| Command      : upgrade_ip
+| Device       : xc7z010clg400-1
+------------------------------------------------------------------------------------
+
+Upgrade Log for IP 'clk_gen'
+
+1. Summary
+----------
+
+SUCCESS in the upgrade of clk_gen (xilinx.com:ip:clk_wiz:5.1) from (Rev. 4) to (Rev. 5)
+

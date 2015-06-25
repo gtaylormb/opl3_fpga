@@ -44,7 +44,7 @@
 import opl3_pkg::*;
 
 module opl3_axi_wrapper #(
-    parameter AXI_BASE_ADDR = 'h22000000
+    parameter AXI_BASE_ADDR = 'h40000000
 )(
     input wire clk,
     input wire reset,

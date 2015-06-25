@@ -1,10 +1,10 @@
 -- Copyright 1986-2014 Xilinx, Inc. All Rights Reserved.
 -- --------------------------------------------------------------------------------
--- Tool Version: Vivado v.2014.3 (lin64) Build 1034051 Fri Oct  3 16:31:15 MDT 2014
--- Date        : Sat Oct 25 16:33:43 2014
--- Host        : edinburgh running 64-bit Ubuntu 14.04.1 LTS
+-- Tool Version: Vivado v.2014.4 (lin64) Build 1071353 Tue Nov 18 16:47:07 MST 2014
+-- Date        : Sun Mar  8 22:11:52 2015
+-- Host        : edinburgh running 64-bit Ubuntu 14.10
 -- Command     : write_vhdl -force -mode funcsim
---               /media/sf_D_DRIVE/Users/Greg/workspace/OPL3/vivado_logic_only/vivado_logic_only.srcs/sources_1/ip/clk_gen/clk_gen_funcsim.vhdl
+--               /media/sf_D_DRIVE/Users/Greg/git/opl3_fpga/fpga/modules/clks/ip/clk_gen/clk_gen_funcsim.vhdl
 -- Design      : clk_gen
 -- Purpose     : This VHDL netlist is a functional simulation representation of the design and should not be modified or
 --               synthesized. This netlist cannot be used for SDF annotated simulation.

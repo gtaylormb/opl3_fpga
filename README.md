@@ -11,7 +11,7 @@ SoC</a> containing an ARM dual-core Cortex-A9 and an FPGA. The board also has an
 <a href="http://www.analog.com/en/products/audio-video/audio-codecs/ssm2603.html#product-overview">Analog Devices SSM2603
 audio codec</a> with dual 24-bit DACs. So the interfaces are different--the interface to the CPU is AXI4-Lite
 and the interface to the DAC is I<sup>2</sup>S, matching the particular hardware I have to work with. These
-interfaces are wrapped in the FPGA design and would be easy to swap out.
+interfaces are wrapped in the design and would be easy to swap out.
 
 The original OPL3 chip used a 14.31818MHz master clock. The sample rate was 14.31818MHz/288 = 49.7159KHz.
 With 36 operator slots, that gives 8 clocks to update each operator each sample (operator logic is
