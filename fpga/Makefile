@@ -122,9 +122,9 @@ program: build/opl3.bit
 	vivado -mode batch -source top_level/scripts/vivado_program.tcl -log build/program_log.txt -nojournal
 	
 clean:
-	rm -rf  *.tmp  *.log  log transcript work *.wlf vsim.fcdb proasic3L rtax
+	rm -rf  *.tmp  *.log  log transcript work *.wlf vsim.fcdb
 	rm -rf *~ core csrc simv* vc_hdrs.h ucli.key urg* *.log core.* synlog.tcl
-	rm -rf sim_lib build usage_stat* top_level/ip_shared/ 
+	rm -rf sim_lib build usage_stat* top_level/ipshared/ .Xil
 
 build/post_syn.dcp: $(RTL_SRC) $(IP_SRC) $(BD_SRC) $(XDC_SRC)
 	test -e build || mkdir build

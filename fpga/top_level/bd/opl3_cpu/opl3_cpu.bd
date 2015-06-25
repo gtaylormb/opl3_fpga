@@ -142,6 +142,12 @@
           </spirit:wire>
         </spirit:port>
         <spirit:port>
+          <spirit:name>ac_mclk</spirit:name>
+          <spirit:wire>
+            <spirit:direction>out</spirit:direction>
+          </spirit:wire>
+        </spirit:port>
+        <spirit:port>
           <spirit:name>i2s_ws</spirit:name>
           <spirit:wire>
             <spirit:direction>out</spirit:direction>
@@ -171,12 +177,6 @@
         </spirit:port>
         <spirit:port>
           <spirit:name>i2s_sclk</spirit:name>
-          <spirit:wire>
-            <spirit:direction>out</spirit:direction>
-          </spirit:wire>
-        </spirit:port>
-        <spirit:port>
-          <spirit:name>ac_mclk</spirit:name>
           <spirit:wire>
             <spirit:direction>out</spirit:direction>
           </spirit:wire>
@@ -252,11 +252,11 @@
       <spirit:adHocConnection>
         <spirit:name>rst_processing_system7_0_100M_peripheral_aresetn</spirit:name>
         <spirit:internalPortReference spirit:componentRef="rst_processing_system7_0_100M" spirit:portRef="peripheral_aresetn"/>
+        <spirit:internalPortReference spirit:componentRef="opl3_fpga_0" spirit:portRef="s_axi_aresetn"/>
+        <spirit:internalPortReference spirit:componentRef="opl3_fpga_0" spirit:portRef="s_axi_intr_aresetn"/>
         <spirit:internalPortReference spirit:componentRef="processing_system7_0_axi_periph" spirit:portRef="S00_ARESETN"/>
         <spirit:internalPortReference spirit:componentRef="processing_system7_0_axi_periph" spirit:portRef="M00_ARESETN"/>
         <spirit:internalPortReference spirit:componentRef="processing_system7_0_axi_periph" spirit:portRef="M01_ARESETN"/>
-        <spirit:internalPortReference spirit:componentRef="opl3_fpga_0" spirit:portRef="s_axi_aresetn"/>
-        <spirit:internalPortReference spirit:componentRef="opl3_fpga_0" spirit:portRef="s_axi_intr_aresetn"/>
       </spirit:adHocConnection>
       <spirit:adHocConnection>
         <spirit:name>rst_processing_system7_0_100M_interconnect_aresetn</spirit:name>
@@ -271,15 +271,15 @@
       <spirit:adHocConnection>
         <spirit:name>opl3_fpga_0_clk12</spirit:name>
         <spirit:internalPortReference spirit:componentRef="opl3_fpga_0" spirit:portRef="clk12"/>
+        <spirit:externalPortReference spirit:portRef="ac_mclk"/>
         <spirit:internalPortReference spirit:componentRef="rst_processing_system7_0_100M" spirit:portRef="slowest_sync_clk"/>
+        <spirit:internalPortReference spirit:componentRef="processing_system7_0" spirit:portRef="M_AXI_GP0_ACLK"/>
+        <spirit:internalPortReference spirit:componentRef="opl3_fpga_0" spirit:portRef="s_axi_aclk"/>
+        <spirit:internalPortReference spirit:componentRef="opl3_fpga_0" spirit:portRef="s_axi_intr_aclk"/>
         <spirit:internalPortReference spirit:componentRef="processing_system7_0_axi_periph" spirit:portRef="ACLK"/>
         <spirit:internalPortReference spirit:componentRef="processing_system7_0_axi_periph" spirit:portRef="S00_ACLK"/>
         <spirit:internalPortReference spirit:componentRef="processing_system7_0_axi_periph" spirit:portRef="M00_ACLK"/>
         <spirit:internalPortReference spirit:componentRef="processing_system7_0_axi_periph" spirit:portRef="M01_ACLK"/>
-        <spirit:internalPortReference spirit:componentRef="processing_system7_0" spirit:portRef="M_AXI_GP0_ACLK"/>
-        <spirit:externalPortReference spirit:portRef="ac_mclk"/>
-        <spirit:internalPortReference spirit:componentRef="opl3_fpga_0" spirit:portRef="s_axi_aclk"/>
-        <spirit:internalPortReference spirit:componentRef="opl3_fpga_0" spirit:portRef="s_axi_intr_aclk"/>
       </spirit:adHocConnection>
       <spirit:adHocConnection>
         <spirit:name>opl3_fpga_0_i2s_ws</spirit:name>

@@ -16,7 +16,6 @@ update_ip_catalog -rebuild
 read_bd ${BD_SRC}
 open_bd_design ${BD_SRC}
 generate_target all -force [get_files ${BD_SRC}]
-#make_wrapper -top -files [get_files ${BD_SRC}]
 
 read_verilog -sv ${RTL_SRC}
 read_ip ${IP_SRC}
@@ -24,8 +23,6 @@ read_xdc ${XDC_SRC}
 
 synth_design -name opl3 -part xc7z010clg400-1 -top opl3_cpu_wrapper -include_dirs \
  ${INC_DIR0}
- 
-write_hwdef -file $outputDir/op3.hwdef -verbose
  
 opt_design
 
