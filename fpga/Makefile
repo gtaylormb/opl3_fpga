@@ -47,8 +47,8 @@
 uname_O := $(shell sh -c 'uname -o 2>/dev/null || echo not')	
 
 RTL_SRC = \
-	top_level/bd/opl3_cpu/hdl/opl3_cpu_wrapper.v \
-	top_level/src/opl3.sv \
+	bd/opl3_cpu/hdl/opl3_cpu_wrapper.v \
+	modules/top_level/src/opl3.sv \
 	modules/channels/src/channels.sv \
 	modules/channels/src/control_operators.sv \
 	modules/clks/src/clk_div.sv \
@@ -70,7 +70,7 @@ RTL_SRC = \
 #	modules/register_file/src/register_file_axi.sv \	
 	
 SIM_SRC = \
-	top_level/sim/top_level_tb.sv \
+	modules/top_level/sim/top_level_tb.sv \
 	modules/clks/ip/clk_gen/clk_gen_funcsim.v \
 	modules/operator/sim/save_dac_input.sv
 	
@@ -78,16 +78,13 @@ IP_SRC = \
 	modules/clks/ip/clk_gen/clk_gen.xci
 	
 BD_SRC = \
-	top_level/bd/opl3_cpu/opl3_cpu.bd
+	bd/opl3_cpu/opl3_cpu.bd
 	
 XDC_SRC = \
-	top_level/constraints/ZYBO_Master.xdc
+	constraints/ZYBO_Master.xdc
 	
 INC_DIR0 = \
-	./	
-	
-INC_DIR1 = \
-	modules/ps/ip/processing_system7_bfm_0/hdl
+	modules	
 	
 SIM_LIB = \
 	sim_lib_vivado_2014.3/unisims/*.v
@@ -119,23 +116,23 @@ route: build/post_route.dcp
 bitstream: build/opl3.bit
 
 program: build/opl3.bit
-	vivado -mode batch -source top_level/scripts/vivado_program.tcl -log build/program_log.txt -nojournal
+	vivado -mode batch -source scripts/vivado_program.tcl -log build/program_log.txt -nojournal
 	
 clean:
 	rm -rf  *.tmp  *.log  log transcript work *.wlf vsim.fcdb
 	rm -rf *~ core csrc simv* vc_hdrs.h ucli.key urg* *.log core.* synlog.tcl
-	rm -rf sim_lib build usage_stat* top_level/ipshared/ .Xil
+	rm -rf sim_lib build usage_stat* ipshared/ .Xil
 
 build/post_syn.dcp: $(RTL_SRC) $(IP_SRC) $(BD_SRC) $(XDC_SRC)
 	test -e build || mkdir build
-	vivado -mode batch -source top_level/scripts/vivado_syn.tcl -nojournal \
+	vivado -mode batch -source scripts/vivado_syn.tcl -nojournal \
 	-log build/syn_log.txt -tclargs "$(RTL_SRC)" "$(INC_DIR0)" "$(IP_SRC)" "$(BD_SRC)" "$(XDC_SRC)"
 
 build/post_place.dcp: build/post_syn.dcp
-	vivado -mode batch -source top_level/scripts/vivado_place.tcl -log build/place_log.txt -nojournal
+	vivado -mode batch -source scripts/vivado_place.tcl -log build/place_log.txt -nojournal
 
 build/post_route.dcp: build/post_place.dcp
-	vivado -mode batch -source top_level/scripts/vivado_route.tcl -log build/route_log.txt -nojournal
+	vivado -mode batch -source scripts/vivado_route.tcl -log build/route_log.txt -nojournal
 	
 build/opl3.bit: build/post_route.dcp
-	vivado -mode batch -source top_level/scripts/vivado_bitstream.tcl -log build/bitstream_log.txt -nojournal
+	vivado -mode batch -source scripts/vivado_bitstream.tcl -log build/bitstream_log.txt -nojournal

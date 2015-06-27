@@ -43,7 +43,7 @@ if { [get_projects -quiet] eq "" } {
 set design_name opl3_cpu
 
 # This script was generated for a remote BD.
-set str_bd_folder /media/sf_D_DRIVE/Users/Greg/git/opl3_fpga/fpga/top_level/bd
+set str_bd_folder /media/sf_D_DRIVE/Users/Greg/git/opl3_fpga/fpga/bd
 set str_bd_filepath ${str_bd_folder}/${design_name}/${design_name}.bd
 
 # Check if remote design exists on disk

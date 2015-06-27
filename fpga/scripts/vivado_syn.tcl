@@ -10,7 +10,7 @@ create_project -part xc7z010clg400-1 -in_memory
 set_property target_language Verilog [current_project]
 set_property default_lib work [current_project]
 
-set_property IP_REPO_PATHS top_level/ip_repo [current_fileset]
+set_property IP_REPO_PATHS modules [current_fileset]
 update_ip_catalog -rebuild
 
 read_bd ${BD_SRC}
