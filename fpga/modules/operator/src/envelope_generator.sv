@@ -77,7 +77,7 @@ module envelope_generator #(
      * optimize encoding to 1-hot
      */
     typedef enum logic [3:0] {
-        ATTACK    = 4'b0000,
+        ATTACK    = 4'b0001,
         DECAY     = 4'b0010,
         SUSTAIN   = 4'b0100,
         RELEASE   = 4'b1000
