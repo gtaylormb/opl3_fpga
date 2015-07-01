@@ -1,0 +1,53 @@
+Copyright 1986-2015 Xilinx, Inc. All Rights Reserved.
+------------------------------------------------------------------------------------
+| Tool Version : Vivado v.2015.1 (lin64) Build 1215546 Mon Apr 27 19:07:21 MDT 2015
+| Date         : Tue Jun 30 20:08:32 2015
+| Host         : edinburgh running 64-bit Ubuntu 15.04
+| Command      : upgrade_ip
+| Device       : xc7z010clg400-1
+------------------------------------------------------------------------------------
+
+Upgrade Log for IP 'opl3_cpu_opl3_fpga_1_0'
+
+1. Summary
+----------
+
+SUCCESS in the update of opl3_cpu_opl3_fpga_1_0 (gtaylormb:user:opl3_fpga:1.0 (Rev. 1)) to current project options.
+
+
+
+
+
+
+Copyright 1986-2015 Xilinx, Inc. All Rights Reserved.
+------------------------------------------------------------------------------------
+| Tool Version : Vivado v.2015.1 (lin64) Build 1215546 Mon Apr 27 19:07:21 MDT 2015
+| Date         : Tue Jun 30 20:08:18 2015
+| Host         : edinburgh running 64-bit Ubuntu 15.04
+| Command      : upgrade_ip
+| Device       : xc7z010clg400-1
+------------------------------------------------------------------------------------
+
+Upgrade Log for IP 'opl3_cpu_opl3_fpga_1_0'
+
+1. Summary
+----------
+
+CAUTION (success, with warnings) in the upgrade of opl3_cpu_opl3_fpga_1_0 from user.org:user:opl3_fpga:1.0 (Rev. 1) to gtaylormb:user:opl3_fpga:1.0 (Rev. 1)
+
+After upgrade, an IP may have parameter and port differences compared to the original customization. Please review the parameters within the IP customization GUI to ensure proper functionality. Also, please review the updated IP instantiation template to ensure proper connectivity, and update your design if required.
+
+2. Connection Warnings
+----------------------
+
+Detected external port differences while upgrading IP 'opl3_cpu_opl3_fpga_1_0'. These changes may impact your design.
+
+
+-upgrade has added port 'ac_mute_n'
+-upgrade has added port 'clk12'
+-upgrade has added port 'clk125'
+-upgrade has added port 'i2s_sclk'
+-upgrade has added port 'i2s_sd'
+-upgrade has added port 'i2s_ws'
+-upgrade has added port 'led'
+

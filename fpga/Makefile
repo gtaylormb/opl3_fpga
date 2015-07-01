@@ -75,7 +75,9 @@ SIM_SRC = \
 	modules/operator/sim/save_dac_input.sv
 	
 IP_SRC = \
-	modules/clks/ip/clk_gen/clk_gen.xci
+	modules/clks/ip/clk_gen/clk_gen.xci \
+	modules/ila/ip/ila_0/ila_0.xci \
+	modules/ila/ip/jtag_axi_0/jtag_axi_0.xci
 	
 BD_SRC = \
 	bd/opl3_cpu/opl3_cpu.bd
@@ -84,14 +86,14 @@ XDC_SRC = \
 	constraints/ZYBO_Master.xdc
 	
 INC_DIR0 = \
-	modules	
+	modules/
 	
 SIM_LIB = \
 	sim_lib_vivado_2014.3/unisims/*.v
 	
 compile: compile_sim_lib
 	test -e work || vlib work
-	vlog -incr $(SIM_SRC) $(RTL_SRC) +define+SIM +incdir+$(INC_DIR1)
+	vlog -incr $(SIM_SRC) $(RTL_SRC) +define+SIM +incdir+$(INC_DIR0)
 	
 compile_sim_lib:
 	test -e sim_lib || (vlib sim_lib && vlog -work sim_lib -incr $(SIM_LIB))	
@@ -115,6 +117,8 @@ route: build/post_route.dcp
 
 bitstream: build/opl3.bit
 
+probes: build/opl3.ltx
+
 program: build/opl3.bit
 	vivado -mode batch -source scripts/vivado_program.tcl -log build/program_log.txt -nojournal
 	
@@ -125,6 +129,7 @@ clean:
 
 build/post_syn.dcp: $(RTL_SRC) $(IP_SRC) $(BD_SRC) $(XDC_SRC)
 	test -e build || mkdir build
+	rm -rf ipshared
 	vivado -mode batch -source scripts/vivado_syn.tcl -nojournal \
 	-log build/syn_log.txt -tclargs "$(RTL_SRC)" "$(INC_DIR0)" "$(IP_SRC)" "$(BD_SRC)" "$(XDC_SRC)"
 
@@ -136,3 +141,6 @@ build/post_route.dcp: build/post_place.dcp
 	
 build/opl3.bit: build/post_route.dcp
 	vivado -mode batch -source scripts/vivado_bitstream.tcl -log build/bitstream_log.txt -nojournal
+	
+build/opl3.ltx: build/opl3.bit
+	vivado -mode batch -source scripts/vivado_probes.tcl -log build/probes_log.txt -nojournal	

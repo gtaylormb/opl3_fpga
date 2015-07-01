@@ -86,10 +86,9 @@ module opl3_axi_wrapper #(
          m_axi_araddr[REG_FILE_ADDRESS_WIDTH-1:0];
         bank_select = m_axi_wvalid ? m_axi_awaddr[REG_FILE_ADDRESS_WIDTH] :
          m_axi_araddr[REG_FILE_ADDRESS_WIDTH];
-        cs = ((m_axi_awaddr & AXI_BASE_ADDR) == AXI_BASE_ADDR) ||
-         ((m_axi_araddr & AXI_BASE_ADDR) == AXI_BASE_ADDR);
+        cs = 1;
         
-        wr = m_axi_wvalid && m_axi_wstrb[0];
+        wr = m_axi_wvalid;
         data_in = m_axi_wdata[REG_FILE_DATA_WIDTH-1:0];
         m_axi_bresp = 0; // OKAY
         m_axi_bvalid = 1;

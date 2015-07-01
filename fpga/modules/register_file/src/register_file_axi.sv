@@ -48,7 +48,7 @@ module register_file #(
     parameter NUM_AXI_REGISTERS = 61
 ) (
     input wire clk,
-    input wire [C_S_AXI_DATA_WIDTH-1:0] slv_reg [NUM_AXI_REGISTERS],        
+    input wire [7:0] slv8_reg[NUM_AXI_REGISTERS*4],        
     output logic [REG_TIMER_WIDTH-1:0] timer1 = 0,
     output logic [REG_TIMER_WIDTH-1:0] timer2 = 0,
     output logic irq_rst = 0,
@@ -88,7 +88,9 @@ module register_file #(
     output logic chd [2][9] = '{ default: '0 },
     output logic [REG_FB_WIDTH-1:0] fb [2][9] = '{ default: '0 },
     output logic cnt [2][9] = '{ default: '0 }
-);           
+);  
+    
+    
     always_ff @(posedge clk)
         if (cs && wr)
             unique case (address)

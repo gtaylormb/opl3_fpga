@@ -55,7 +55,7 @@ module opl3 #(
     output wire i2s_sd,
     output logic ac_mute_n,
     output logic [3:0] led,
-    input wire [C_S_AXI_DATA_WIDTH-1:0] slv_reg [NUM_AXI_REGISTERS]
+    input wire [7:0] slv8_reg[NUM_AXI_REGISTERS*4]
 );
     logic reset;
     wire clk_locked;
@@ -174,7 +174,7 @@ module opl3 #(
     );
     
     always_comb led[0] = ac_mute_n;
-    always_comb led[1] = 1;
+    always_comb led[1] = clk_locked;
     always_comb led[2] = 1;
     always_comb led[3] = 1;
         

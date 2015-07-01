@@ -11,7 +11,7 @@
 
 		// Parameters of Axi Slave Bus Interface S_AXI
 		parameter integer C_S_AXI_DATA_WIDTH	= 32,
-		parameter integer C_S_AXI_ADDR_WIDTH	= 9,
+		parameter integer C_S_AXI_ADDR_WIDTH	= 8,
 
 		// Parameters of Axi Slave Bus Interface S_AXI_INTR
 		parameter integer C_S_AXI_INTR_DATA_WIDTH	= 32,
