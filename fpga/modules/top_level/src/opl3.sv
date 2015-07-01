@@ -45,8 +45,8 @@
 import opl3_pkg::*;
 
 module opl3 #(
-    parameter integer C_S_AXI_DATA_WIDTH = 32,
-    parameter NUM_AXI_REGISTERS = 61
+    parameter integer C_S_AXI_DATA_WIDTH = 0,
+    parameter NUM_AXI_REGISTERS = 0
 ) (
     input wire clk125,
     output wire clk,
@@ -178,12 +178,12 @@ module opl3 #(
     always_comb led[2] = 1;
     always_comb led[3] = 1;
         
- /*   register_file_axi #(
+    register_file_axi #(
         .C_S_AXI_DATA_WIDTH(C_S_AXI_DATA_WIDTH),
         .NUM_AXI_REGISTERS(NUM_AXI_REGISTERS)
     ) register_file_axi (
         .*
-    ); */
+    ); 
     
   /*  timers timers (
         .irq(IRQ_F2P),

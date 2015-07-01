@@ -84,6 +84,8 @@
 		output wire  irq
 	);
         
+    localparam NUM_AXI_REGISTERS = 128;        
+        
 /*    logic [103:0] probe0;
         
     ila_0 ila (
@@ -140,7 +142,7 @@
 	//----------------------------------------------
     //-- Signals for user logic register space example
     //------------------------------------------------
-    //-- Number of Slave Registers 61
+    //-- Number of Slave Registers 128
     logic [C_S_AXI_DATA_WIDTH-1:0]    slv_reg0;
     logic [C_S_AXI_DATA_WIDTH-1:0]    slv_reg1;
     logic [C_S_AXI_DATA_WIDTH-1:0]    slv_reg2;
@@ -201,10 +203,77 @@
     logic [C_S_AXI_DATA_WIDTH-1:0]    slv_reg57;
     logic [C_S_AXI_DATA_WIDTH-1:0]    slv_reg58;
     logic [C_S_AXI_DATA_WIDTH-1:0]    slv_reg59;
-    logic [C_S_AXI_DATA_WIDTH-1:0]    slv_reg60;	
+    logic [C_S_AXI_DATA_WIDTH-1:0]    slv_reg60;
+    logic [C_S_AXI_DATA_WIDTH-1:0]    slv_reg61;
+    logic [C_S_AXI_DATA_WIDTH-1:0]    slv_reg62;
+    logic [C_S_AXI_DATA_WIDTH-1:0]    slv_reg63;
+    logic [C_S_AXI_DATA_WIDTH-1:0]    slv_reg64;
+    logic [C_S_AXI_DATA_WIDTH-1:0]    slv_reg65;
+    logic [C_S_AXI_DATA_WIDTH-1:0]    slv_reg66;
+    logic [C_S_AXI_DATA_WIDTH-1:0]    slv_reg67;
+    logic [C_S_AXI_DATA_WIDTH-1:0]    slv_reg68;
+    logic [C_S_AXI_DATA_WIDTH-1:0]    slv_reg69;
+    logic [C_S_AXI_DATA_WIDTH-1:0]    slv_reg70;
+    logic [C_S_AXI_DATA_WIDTH-1:0]    slv_reg71;
+    logic [C_S_AXI_DATA_WIDTH-1:0]    slv_reg72;
+    logic [C_S_AXI_DATA_WIDTH-1:0]    slv_reg73;
+    logic [C_S_AXI_DATA_WIDTH-1:0]    slv_reg74;
+    logic [C_S_AXI_DATA_WIDTH-1:0]    slv_reg75;
+    logic [C_S_AXI_DATA_WIDTH-1:0]    slv_reg76;
+    logic [C_S_AXI_DATA_WIDTH-1:0]    slv_reg77;
+    logic [C_S_AXI_DATA_WIDTH-1:0]    slv_reg78;
+    logic [C_S_AXI_DATA_WIDTH-1:0]    slv_reg79;
+    logic [C_S_AXI_DATA_WIDTH-1:0]    slv_reg80;
+    logic [C_S_AXI_DATA_WIDTH-1:0]    slv_reg81;
+    logic [C_S_AXI_DATA_WIDTH-1:0]    slv_reg82;
+    logic [C_S_AXI_DATA_WIDTH-1:0]    slv_reg83;
+    logic [C_S_AXI_DATA_WIDTH-1:0]    slv_reg84;
+    logic [C_S_AXI_DATA_WIDTH-1:0]    slv_reg85;
+    logic [C_S_AXI_DATA_WIDTH-1:0]    slv_reg86;
+    logic [C_S_AXI_DATA_WIDTH-1:0]    slv_reg87;
+    logic [C_S_AXI_DATA_WIDTH-1:0]    slv_reg88;
+    logic [C_S_AXI_DATA_WIDTH-1:0]    slv_reg89;
+    logic [C_S_AXI_DATA_WIDTH-1:0]    slv_reg90;
+    logic [C_S_AXI_DATA_WIDTH-1:0]    slv_reg91;
+    logic [C_S_AXI_DATA_WIDTH-1:0]    slv_reg92;
+    logic [C_S_AXI_DATA_WIDTH-1:0]    slv_reg93;
+    logic [C_S_AXI_DATA_WIDTH-1:0]    slv_reg94;
+    logic [C_S_AXI_DATA_WIDTH-1:0]    slv_reg95;
+    logic [C_S_AXI_DATA_WIDTH-1:0]    slv_reg96;
+    logic [C_S_AXI_DATA_WIDTH-1:0]    slv_reg97;
+    logic [C_S_AXI_DATA_WIDTH-1:0]    slv_reg98;
+    logic [C_S_AXI_DATA_WIDTH-1:0]    slv_reg99;
+    logic [C_S_AXI_DATA_WIDTH-1:0]    slv_reg100;
+    logic [C_S_AXI_DATA_WIDTH-1:0]    slv_reg101;
+    logic [C_S_AXI_DATA_WIDTH-1:0]    slv_reg102;
+    logic [C_S_AXI_DATA_WIDTH-1:0]    slv_reg103;
+    logic [C_S_AXI_DATA_WIDTH-1:0]    slv_reg104;
+    logic [C_S_AXI_DATA_WIDTH-1:0]    slv_reg105;
+    logic [C_S_AXI_DATA_WIDTH-1:0]    slv_reg106;
+    logic [C_S_AXI_DATA_WIDTH-1:0]    slv_reg107;
+    logic [C_S_AXI_DATA_WIDTH-1:0]    slv_reg108;
+    logic [C_S_AXI_DATA_WIDTH-1:0]    slv_reg109;
+    logic [C_S_AXI_DATA_WIDTH-1:0]    slv_reg110;
+    logic [C_S_AXI_DATA_WIDTH-1:0]    slv_reg111;
+    logic [C_S_AXI_DATA_WIDTH-1:0]    slv_reg112;
+    logic [C_S_AXI_DATA_WIDTH-1:0]    slv_reg113;
+    logic [C_S_AXI_DATA_WIDTH-1:0]    slv_reg114;
+    logic [C_S_AXI_DATA_WIDTH-1:0]    slv_reg115;
+    logic [C_S_AXI_DATA_WIDTH-1:0]    slv_reg116;
+    logic [C_S_AXI_DATA_WIDTH-1:0]    slv_reg117;
+    logic [C_S_AXI_DATA_WIDTH-1:0]    slv_reg118;
+    logic [C_S_AXI_DATA_WIDTH-1:0]    slv_reg119;
+    logic [C_S_AXI_DATA_WIDTH-1:0]    slv_reg120;
+    logic [C_S_AXI_DATA_WIDTH-1:0]    slv_reg121;
+    logic [C_S_AXI_DATA_WIDTH-1:0]    slv_reg122;
+    logic [C_S_AXI_DATA_WIDTH-1:0]    slv_reg123;
+    logic [C_S_AXI_DATA_WIDTH-1:0]    slv_reg124;
+    logic [C_S_AXI_DATA_WIDTH-1:0]    slv_reg125;
+    logic [C_S_AXI_DATA_WIDTH-1:0]    slv_reg126;
+    logic [C_S_AXI_DATA_WIDTH-1:0]    slv_reg127;         
     
-    logic [C_S_AXI_DATA_WIDTH-1:0] slv_reg [61];
-    logic [7:0] slv8_reg[61*4];
+    logic [C_S_AXI_DATA_WIDTH-1:0] slv_reg [NUM_AXI_REGISTERS];
+    logic [7:0] slv8_reg[NUM_AXI_REGISTERS*4];
 	
 // Instantiation of Axi Bus Interface S_AXI
 	opl3_fpga_v1_0_S_AXI # ( 
@@ -337,11 +406,78 @@
          slv_reg[58] = slv_reg58;         
          slv_reg[59] = slv_reg59;
          slv_reg[60] = slv_reg60;
+         slv_reg[61] = slv_reg61;
+         slv_reg[62] = slv_reg62;
+         slv_reg[63] = slv_reg63;
+         slv_reg[64] = slv_reg64;
+         slv_reg[65] = slv_reg65;
+         slv_reg[66] = slv_reg66;
+         slv_reg[67] = slv_reg67;
+         slv_reg[68] = slv_reg68;
+         slv_reg[69] = slv_reg69;
+         slv_reg[70] = slv_reg70;
+         slv_reg[71] = slv_reg71;
+         slv_reg[72] = slv_reg72;
+         slv_reg[73] = slv_reg73;
+         slv_reg[74] = slv_reg74;
+         slv_reg[75] = slv_reg75;
+         slv_reg[76] = slv_reg76;
+         slv_reg[77] = slv_reg77;
+         slv_reg[78] = slv_reg78;
+         slv_reg[79] = slv_reg79;
+         slv_reg[80] = slv_reg80;
+         slv_reg[81] = slv_reg81;
+         slv_reg[82] = slv_reg82;
+         slv_reg[83] = slv_reg83;
+         slv_reg[84] = slv_reg84;
+         slv_reg[85] = slv_reg85;
+         slv_reg[86] = slv_reg86;
+         slv_reg[87] = slv_reg87;
+         slv_reg[88] = slv_reg88;
+         slv_reg[89] = slv_reg89;
+         slv_reg[90] = slv_reg90;
+         slv_reg[91] = slv_reg91;
+         slv_reg[92] = slv_reg92;
+         slv_reg[93] = slv_reg93;
+         slv_reg[94] = slv_reg94;
+         slv_reg[95] = slv_reg95;
+         slv_reg[96] = slv_reg96;
+         slv_reg[97] = slv_reg97;
+         slv_reg[98] = slv_reg98;
+         slv_reg[99] = slv_reg99;
+         slv_reg[100] = slv_reg100;
+         slv_reg[101] = slv_reg101;
+         slv_reg[102] = slv_reg102;
+         slv_reg[103] = slv_reg103;
+         slv_reg[104] = slv_reg104;
+         slv_reg[105] = slv_reg105;
+         slv_reg[106] = slv_reg106;
+         slv_reg[107] = slv_reg107;
+         slv_reg[108] = slv_reg108;
+         slv_reg[109] = slv_reg109;
+         slv_reg[110] = slv_reg110;
+         slv_reg[111] = slv_reg111;
+         slv_reg[112] = slv_reg112;
+         slv_reg[113] = slv_reg113;
+         slv_reg[114] = slv_reg114;
+         slv_reg[115] = slv_reg115;
+         slv_reg[116] = slv_reg116;
+         slv_reg[117] = slv_reg117;
+         slv_reg[118] = slv_reg118;
+         slv_reg[119] = slv_reg119;
+         slv_reg[120] = slv_reg120;
+         slv_reg[121] = slv_reg121;
+         slv_reg[122] = slv_reg122;
+         slv_reg[123] = slv_reg123;
+         slv_reg[124] = slv_reg124;
+         slv_reg[125] = slv_reg125;
+         slv_reg[126] = slv_reg126;
+         slv_reg[127] = slv_reg127;                   
     end 
     
     genvar i;    
     generate
-    for (i = 0; i < 61; i++)
+    for (i = 0; i < NUM_AXI_REGISTERS; i++)
         always_comb begin        
             slv8_reg[i*4] = slv_reg[i][7:0];
             slv8_reg[i*4+1] = slv_reg[i][15:8];
@@ -351,7 +487,8 @@
     endgenerate
                                                                        
 	opl3 #(
-		.C_S_AXI_DATA_WIDTH(C_S_AXI_DATA_WIDTH)	
+		.C_S_AXI_DATA_WIDTH(C_S_AXI_DATA_WIDTH),
+        .NUM_AXI_REGISTERS(NUM_AXI_REGISTERS)
 	) opl3 (
        .clk(clk12),
        .*

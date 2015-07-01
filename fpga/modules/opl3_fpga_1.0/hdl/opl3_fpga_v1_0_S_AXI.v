@@ -78,7 +78,137 @@
 		output wire  S_AXI_RVALID,
 		// Read ready. This signal indicates that the master can
     		// accept the read data and response information.
-		input wire  S_AXI_RREADY
+		input wire  S_AXI_RREADY,
+        
+        output reg [C_S_AXI_DATA_WIDTH-1:0]    slv_reg0,
+        output reg [C_S_AXI_DATA_WIDTH-1:0]    slv_reg1,
+        output reg [C_S_AXI_DATA_WIDTH-1:0]    slv_reg2,
+        output reg [C_S_AXI_DATA_WIDTH-1:0]    slv_reg3,
+        output reg [C_S_AXI_DATA_WIDTH-1:0]    slv_reg4,
+        output reg [C_S_AXI_DATA_WIDTH-1:0]    slv_reg5,
+        output reg [C_S_AXI_DATA_WIDTH-1:0]    slv_reg6,
+        output reg [C_S_AXI_DATA_WIDTH-1:0]    slv_reg7,
+        output reg [C_S_AXI_DATA_WIDTH-1:0]    slv_reg8,
+        output reg [C_S_AXI_DATA_WIDTH-1:0]    slv_reg9,
+        output reg [C_S_AXI_DATA_WIDTH-1:0]    slv_reg10,
+        output reg [C_S_AXI_DATA_WIDTH-1:0]    slv_reg11,
+        output reg [C_S_AXI_DATA_WIDTH-1:0]    slv_reg12,
+        output reg [C_S_AXI_DATA_WIDTH-1:0]    slv_reg13,
+        output reg [C_S_AXI_DATA_WIDTH-1:0]    slv_reg14,
+        output reg [C_S_AXI_DATA_WIDTH-1:0]    slv_reg15,
+        output reg [C_S_AXI_DATA_WIDTH-1:0]    slv_reg16,
+        output reg [C_S_AXI_DATA_WIDTH-1:0]    slv_reg17,
+        output reg [C_S_AXI_DATA_WIDTH-1:0]    slv_reg18,
+        output reg [C_S_AXI_DATA_WIDTH-1:0]    slv_reg19,
+        output reg [C_S_AXI_DATA_WIDTH-1:0]    slv_reg20,
+        output reg [C_S_AXI_DATA_WIDTH-1:0]    slv_reg21,
+        output reg [C_S_AXI_DATA_WIDTH-1:0]    slv_reg22,
+        output reg [C_S_AXI_DATA_WIDTH-1:0]    slv_reg23,
+        output reg [C_S_AXI_DATA_WIDTH-1:0]    slv_reg24,
+        output reg [C_S_AXI_DATA_WIDTH-1:0]    slv_reg25,
+        output reg [C_S_AXI_DATA_WIDTH-1:0]    slv_reg26,
+        output reg [C_S_AXI_DATA_WIDTH-1:0]    slv_reg27,
+        output reg [C_S_AXI_DATA_WIDTH-1:0]    slv_reg28,
+        output reg [C_S_AXI_DATA_WIDTH-1:0]    slv_reg29,
+        output reg [C_S_AXI_DATA_WIDTH-1:0]    slv_reg30,
+        output reg [C_S_AXI_DATA_WIDTH-1:0]    slv_reg31,
+        output reg [C_S_AXI_DATA_WIDTH-1:0]    slv_reg32,
+        output reg [C_S_AXI_DATA_WIDTH-1:0]    slv_reg33,
+        output reg [C_S_AXI_DATA_WIDTH-1:0]    slv_reg34,
+        output reg [C_S_AXI_DATA_WIDTH-1:0]    slv_reg35,
+        output reg [C_S_AXI_DATA_WIDTH-1:0]    slv_reg36,
+        output reg [C_S_AXI_DATA_WIDTH-1:0]    slv_reg37,
+        output reg [C_S_AXI_DATA_WIDTH-1:0]    slv_reg38,
+        output reg [C_S_AXI_DATA_WIDTH-1:0]    slv_reg39,
+        output reg [C_S_AXI_DATA_WIDTH-1:0]    slv_reg40,
+        output reg [C_S_AXI_DATA_WIDTH-1:0]    slv_reg41,
+        output reg [C_S_AXI_DATA_WIDTH-1:0]    slv_reg42,
+        output reg [C_S_AXI_DATA_WIDTH-1:0]    slv_reg43,
+        output reg [C_S_AXI_DATA_WIDTH-1:0]    slv_reg44,
+        output reg [C_S_AXI_DATA_WIDTH-1:0]    slv_reg45,
+        output reg [C_S_AXI_DATA_WIDTH-1:0]    slv_reg46,
+        output reg [C_S_AXI_DATA_WIDTH-1:0]    slv_reg47,
+        output reg [C_S_AXI_DATA_WIDTH-1:0]    slv_reg48,
+        output reg [C_S_AXI_DATA_WIDTH-1:0]    slv_reg49,
+        output reg [C_S_AXI_DATA_WIDTH-1:0]    slv_reg50,
+        output reg [C_S_AXI_DATA_WIDTH-1:0]    slv_reg51,
+        output reg [C_S_AXI_DATA_WIDTH-1:0]    slv_reg52,
+        output reg [C_S_AXI_DATA_WIDTH-1:0]    slv_reg53,
+        output reg [C_S_AXI_DATA_WIDTH-1:0]    slv_reg54,
+        output reg [C_S_AXI_DATA_WIDTH-1:0]    slv_reg55,
+        output reg [C_S_AXI_DATA_WIDTH-1:0]    slv_reg56,
+        output reg [C_S_AXI_DATA_WIDTH-1:0]    slv_reg57,
+        output reg [C_S_AXI_DATA_WIDTH-1:0]    slv_reg58,
+        output reg [C_S_AXI_DATA_WIDTH-1:0]    slv_reg59,
+        output reg [C_S_AXI_DATA_WIDTH-1:0]    slv_reg60,
+        output reg [C_S_AXI_DATA_WIDTH-1:0]    slv_reg61,
+        output reg [C_S_AXI_DATA_WIDTH-1:0]    slv_reg62,
+        output reg [C_S_AXI_DATA_WIDTH-1:0]    slv_reg63,
+        output reg [C_S_AXI_DATA_WIDTH-1:0]    slv_reg64,
+        output reg [C_S_AXI_DATA_WIDTH-1:0]    slv_reg65,
+        output reg [C_S_AXI_DATA_WIDTH-1:0]    slv_reg66,
+        output reg [C_S_AXI_DATA_WIDTH-1:0]    slv_reg67,
+        output reg [C_S_AXI_DATA_WIDTH-1:0]    slv_reg68,
+        output reg [C_S_AXI_DATA_WIDTH-1:0]    slv_reg69,
+        output reg [C_S_AXI_DATA_WIDTH-1:0]    slv_reg70,
+        output reg [C_S_AXI_DATA_WIDTH-1:0]    slv_reg71,
+        output reg [C_S_AXI_DATA_WIDTH-1:0]    slv_reg72,
+        output reg [C_S_AXI_DATA_WIDTH-1:0]    slv_reg73,
+        output reg [C_S_AXI_DATA_WIDTH-1:0]    slv_reg74,
+        output reg [C_S_AXI_DATA_WIDTH-1:0]    slv_reg75,
+        output reg [C_S_AXI_DATA_WIDTH-1:0]    slv_reg76,
+        output reg [C_S_AXI_DATA_WIDTH-1:0]    slv_reg77,
+        output reg [C_S_AXI_DATA_WIDTH-1:0]    slv_reg78,
+        output reg [C_S_AXI_DATA_WIDTH-1:0]    slv_reg79,
+        output reg [C_S_AXI_DATA_WIDTH-1:0]    slv_reg80,
+        output reg [C_S_AXI_DATA_WIDTH-1:0]    slv_reg81,
+        output reg [C_S_AXI_DATA_WIDTH-1:0]    slv_reg82,
+        output reg [C_S_AXI_DATA_WIDTH-1:0]    slv_reg83,
+        output reg [C_S_AXI_DATA_WIDTH-1:0]    slv_reg84,
+        output reg [C_S_AXI_DATA_WIDTH-1:0]    slv_reg85,
+        output reg [C_S_AXI_DATA_WIDTH-1:0]    slv_reg86,
+        output reg [C_S_AXI_DATA_WIDTH-1:0]    slv_reg87,
+        output reg [C_S_AXI_DATA_WIDTH-1:0]    slv_reg88,
+        output reg [C_S_AXI_DATA_WIDTH-1:0]    slv_reg89,
+        output reg [C_S_AXI_DATA_WIDTH-1:0]    slv_reg90,
+        output reg [C_S_AXI_DATA_WIDTH-1:0]    slv_reg91,
+        output reg [C_S_AXI_DATA_WIDTH-1:0]    slv_reg92,
+        output reg [C_S_AXI_DATA_WIDTH-1:0]    slv_reg93,
+        output reg [C_S_AXI_DATA_WIDTH-1:0]    slv_reg94,
+        output reg [C_S_AXI_DATA_WIDTH-1:0]    slv_reg95,
+        output reg [C_S_AXI_DATA_WIDTH-1:0]    slv_reg96,
+        output reg [C_S_AXI_DATA_WIDTH-1:0]    slv_reg97,
+        output reg [C_S_AXI_DATA_WIDTH-1:0]    slv_reg98,
+        output reg [C_S_AXI_DATA_WIDTH-1:0]    slv_reg99,
+        output reg [C_S_AXI_DATA_WIDTH-1:0]    slv_reg100,
+        output reg [C_S_AXI_DATA_WIDTH-1:0]    slv_reg101,
+        output reg [C_S_AXI_DATA_WIDTH-1:0]    slv_reg102,
+        output reg [C_S_AXI_DATA_WIDTH-1:0]    slv_reg103,
+        output reg [C_S_AXI_DATA_WIDTH-1:0]    slv_reg104,
+        output reg [C_S_AXI_DATA_WIDTH-1:0]    slv_reg105,
+        output reg [C_S_AXI_DATA_WIDTH-1:0]    slv_reg106,
+        output reg [C_S_AXI_DATA_WIDTH-1:0]    slv_reg107,
+        output reg [C_S_AXI_DATA_WIDTH-1:0]    slv_reg108,
+        output reg [C_S_AXI_DATA_WIDTH-1:0]    slv_reg109,
+        output reg [C_S_AXI_DATA_WIDTH-1:0]    slv_reg110,
+        output reg [C_S_AXI_DATA_WIDTH-1:0]    slv_reg111,
+        output reg [C_S_AXI_DATA_WIDTH-1:0]    slv_reg112,
+        output reg [C_S_AXI_DATA_WIDTH-1:0]    slv_reg113,
+        output reg [C_S_AXI_DATA_WIDTH-1:0]    slv_reg114,
+        output reg [C_S_AXI_DATA_WIDTH-1:0]    slv_reg115,
+        output reg [C_S_AXI_DATA_WIDTH-1:0]    slv_reg116,
+        output reg [C_S_AXI_DATA_WIDTH-1:0]    slv_reg117,
+        output reg [C_S_AXI_DATA_WIDTH-1:0]    slv_reg118,
+        output reg [C_S_AXI_DATA_WIDTH-1:0]    slv_reg119,
+        output reg [C_S_AXI_DATA_WIDTH-1:0]    slv_reg120,
+        output reg [C_S_AXI_DATA_WIDTH-1:0]    slv_reg121,
+        output reg [C_S_AXI_DATA_WIDTH-1:0]    slv_reg122,
+        output reg [C_S_AXI_DATA_WIDTH-1:0]    slv_reg123,
+        output reg [C_S_AXI_DATA_WIDTH-1:0]    slv_reg124,
+        output reg [C_S_AXI_DATA_WIDTH-1:0]    slv_reg125,
+        output reg [C_S_AXI_DATA_WIDTH-1:0]    slv_reg126,
+        output reg [C_S_AXI_DATA_WIDTH-1:0]    slv_reg127        
+        
 	);
 
 	// AXI4LITE signals
@@ -104,134 +234,7 @@
 	//-- Signals for user logic register space example
 	//------------------------------------------------
 	//-- Number of Slave Registers 128
-	reg [C_S_AXI_DATA_WIDTH-1:0]	slv_reg0;
-	reg [C_S_AXI_DATA_WIDTH-1:0]	slv_reg1;
-	reg [C_S_AXI_DATA_WIDTH-1:0]	slv_reg2;
-	reg [C_S_AXI_DATA_WIDTH-1:0]	slv_reg3;
-	reg [C_S_AXI_DATA_WIDTH-1:0]	slv_reg4;
-	reg [C_S_AXI_DATA_WIDTH-1:0]	slv_reg5;
-	reg [C_S_AXI_DATA_WIDTH-1:0]	slv_reg6;
-	reg [C_S_AXI_DATA_WIDTH-1:0]	slv_reg7;
-	reg [C_S_AXI_DATA_WIDTH-1:0]	slv_reg8;
-	reg [C_S_AXI_DATA_WIDTH-1:0]	slv_reg9;
-	reg [C_S_AXI_DATA_WIDTH-1:0]	slv_reg10;
-	reg [C_S_AXI_DATA_WIDTH-1:0]	slv_reg11;
-	reg [C_S_AXI_DATA_WIDTH-1:0]	slv_reg12;
-	reg [C_S_AXI_DATA_WIDTH-1:0]	slv_reg13;
-	reg [C_S_AXI_DATA_WIDTH-1:0]	slv_reg14;
-	reg [C_S_AXI_DATA_WIDTH-1:0]	slv_reg15;
-	reg [C_S_AXI_DATA_WIDTH-1:0]	slv_reg16;
-	reg [C_S_AXI_DATA_WIDTH-1:0]	slv_reg17;
-	reg [C_S_AXI_DATA_WIDTH-1:0]	slv_reg18;
-	reg [C_S_AXI_DATA_WIDTH-1:0]	slv_reg19;
-	reg [C_S_AXI_DATA_WIDTH-1:0]	slv_reg20;
-	reg [C_S_AXI_DATA_WIDTH-1:0]	slv_reg21;
-	reg [C_S_AXI_DATA_WIDTH-1:0]	slv_reg22;
-	reg [C_S_AXI_DATA_WIDTH-1:0]	slv_reg23;
-	reg [C_S_AXI_DATA_WIDTH-1:0]	slv_reg24;
-	reg [C_S_AXI_DATA_WIDTH-1:0]	slv_reg25;
-	reg [C_S_AXI_DATA_WIDTH-1:0]	slv_reg26;
-	reg [C_S_AXI_DATA_WIDTH-1:0]	slv_reg27;
-	reg [C_S_AXI_DATA_WIDTH-1:0]	slv_reg28;
-	reg [C_S_AXI_DATA_WIDTH-1:0]	slv_reg29;
-	reg [C_S_AXI_DATA_WIDTH-1:0]	slv_reg30;
-	reg [C_S_AXI_DATA_WIDTH-1:0]	slv_reg31;
-	reg [C_S_AXI_DATA_WIDTH-1:0]	slv_reg32;
-	reg [C_S_AXI_DATA_WIDTH-1:0]	slv_reg33;
-	reg [C_S_AXI_DATA_WIDTH-1:0]	slv_reg34;
-	reg [C_S_AXI_DATA_WIDTH-1:0]	slv_reg35;
-	reg [C_S_AXI_DATA_WIDTH-1:0]	slv_reg36;
-	reg [C_S_AXI_DATA_WIDTH-1:0]	slv_reg37;
-	reg [C_S_AXI_DATA_WIDTH-1:0]	slv_reg38;
-	reg [C_S_AXI_DATA_WIDTH-1:0]	slv_reg39;
-	reg [C_S_AXI_DATA_WIDTH-1:0]	slv_reg40;
-	reg [C_S_AXI_DATA_WIDTH-1:0]	slv_reg41;
-	reg [C_S_AXI_DATA_WIDTH-1:0]	slv_reg42;
-	reg [C_S_AXI_DATA_WIDTH-1:0]	slv_reg43;
-	reg [C_S_AXI_DATA_WIDTH-1:0]	slv_reg44;
-	reg [C_S_AXI_DATA_WIDTH-1:0]	slv_reg45;
-	reg [C_S_AXI_DATA_WIDTH-1:0]	slv_reg46;
-	reg [C_S_AXI_DATA_WIDTH-1:0]	slv_reg47;
-	reg [C_S_AXI_DATA_WIDTH-1:0]	slv_reg48;
-	reg [C_S_AXI_DATA_WIDTH-1:0]	slv_reg49;
-	reg [C_S_AXI_DATA_WIDTH-1:0]	slv_reg50;
-	reg [C_S_AXI_DATA_WIDTH-1:0]	slv_reg51;
-	reg [C_S_AXI_DATA_WIDTH-1:0]	slv_reg52;
-	reg [C_S_AXI_DATA_WIDTH-1:0]	slv_reg53;
-	reg [C_S_AXI_DATA_WIDTH-1:0]	slv_reg54;
-	reg [C_S_AXI_DATA_WIDTH-1:0]	slv_reg55;
-	reg [C_S_AXI_DATA_WIDTH-1:0]	slv_reg56;
-	reg [C_S_AXI_DATA_WIDTH-1:0]	slv_reg57;
-	reg [C_S_AXI_DATA_WIDTH-1:0]	slv_reg58;
-	reg [C_S_AXI_DATA_WIDTH-1:0]	slv_reg59;
-	reg [C_S_AXI_DATA_WIDTH-1:0]	slv_reg60;
-	reg [C_S_AXI_DATA_WIDTH-1:0]	slv_reg61;
-	reg [C_S_AXI_DATA_WIDTH-1:0]	slv_reg62;
-	reg [C_S_AXI_DATA_WIDTH-1:0]	slv_reg63;
-	reg [C_S_AXI_DATA_WIDTH-1:0]	slv_reg64;
-	reg [C_S_AXI_DATA_WIDTH-1:0]	slv_reg65;
-	reg [C_S_AXI_DATA_WIDTH-1:0]	slv_reg66;
-	reg [C_S_AXI_DATA_WIDTH-1:0]	slv_reg67;
-	reg [C_S_AXI_DATA_WIDTH-1:0]	slv_reg68;
-	reg [C_S_AXI_DATA_WIDTH-1:0]	slv_reg69;
-	reg [C_S_AXI_DATA_WIDTH-1:0]	slv_reg70;
-	reg [C_S_AXI_DATA_WIDTH-1:0]	slv_reg71;
-	reg [C_S_AXI_DATA_WIDTH-1:0]	slv_reg72;
-	reg [C_S_AXI_DATA_WIDTH-1:0]	slv_reg73;
-	reg [C_S_AXI_DATA_WIDTH-1:0]	slv_reg74;
-	reg [C_S_AXI_DATA_WIDTH-1:0]	slv_reg75;
-	reg [C_S_AXI_DATA_WIDTH-1:0]	slv_reg76;
-	reg [C_S_AXI_DATA_WIDTH-1:0]	slv_reg77;
-	reg [C_S_AXI_DATA_WIDTH-1:0]	slv_reg78;
-	reg [C_S_AXI_DATA_WIDTH-1:0]	slv_reg79;
-	reg [C_S_AXI_DATA_WIDTH-1:0]	slv_reg80;
-	reg [C_S_AXI_DATA_WIDTH-1:0]	slv_reg81;
-	reg [C_S_AXI_DATA_WIDTH-1:0]	slv_reg82;
-	reg [C_S_AXI_DATA_WIDTH-1:0]	slv_reg83;
-	reg [C_S_AXI_DATA_WIDTH-1:0]	slv_reg84;
-	reg [C_S_AXI_DATA_WIDTH-1:0]	slv_reg85;
-	reg [C_S_AXI_DATA_WIDTH-1:0]	slv_reg86;
-	reg [C_S_AXI_DATA_WIDTH-1:0]	slv_reg87;
-	reg [C_S_AXI_DATA_WIDTH-1:0]	slv_reg88;
-	reg [C_S_AXI_DATA_WIDTH-1:0]	slv_reg89;
-	reg [C_S_AXI_DATA_WIDTH-1:0]	slv_reg90;
-	reg [C_S_AXI_DATA_WIDTH-1:0]	slv_reg91;
-	reg [C_S_AXI_DATA_WIDTH-1:0]	slv_reg92;
-	reg [C_S_AXI_DATA_WIDTH-1:0]	slv_reg93;
-	reg [C_S_AXI_DATA_WIDTH-1:0]	slv_reg94;
-	reg [C_S_AXI_DATA_WIDTH-1:0]	slv_reg95;
-	reg [C_S_AXI_DATA_WIDTH-1:0]	slv_reg96;
-	reg [C_S_AXI_DATA_WIDTH-1:0]	slv_reg97;
-	reg [C_S_AXI_DATA_WIDTH-1:0]	slv_reg98;
-	reg [C_S_AXI_DATA_WIDTH-1:0]	slv_reg99;
-	reg [C_S_AXI_DATA_WIDTH-1:0]	slv_reg100;
-	reg [C_S_AXI_DATA_WIDTH-1:0]	slv_reg101;
-	reg [C_S_AXI_DATA_WIDTH-1:0]	slv_reg102;
-	reg [C_S_AXI_DATA_WIDTH-1:0]	slv_reg103;
-	reg [C_S_AXI_DATA_WIDTH-1:0]	slv_reg104;
-	reg [C_S_AXI_DATA_WIDTH-1:0]	slv_reg105;
-	reg [C_S_AXI_DATA_WIDTH-1:0]	slv_reg106;
-	reg [C_S_AXI_DATA_WIDTH-1:0]	slv_reg107;
-	reg [C_S_AXI_DATA_WIDTH-1:0]	slv_reg108;
-	reg [C_S_AXI_DATA_WIDTH-1:0]	slv_reg109;
-	reg [C_S_AXI_DATA_WIDTH-1:0]	slv_reg110;
-	reg [C_S_AXI_DATA_WIDTH-1:0]	slv_reg111;
-	reg [C_S_AXI_DATA_WIDTH-1:0]	slv_reg112;
-	reg [C_S_AXI_DATA_WIDTH-1:0]	slv_reg113;
-	reg [C_S_AXI_DATA_WIDTH-1:0]	slv_reg114;
-	reg [C_S_AXI_DATA_WIDTH-1:0]	slv_reg115;
-	reg [C_S_AXI_DATA_WIDTH-1:0]	slv_reg116;
-	reg [C_S_AXI_DATA_WIDTH-1:0]	slv_reg117;
-	reg [C_S_AXI_DATA_WIDTH-1:0]	slv_reg118;
-	reg [C_S_AXI_DATA_WIDTH-1:0]	slv_reg119;
-	reg [C_S_AXI_DATA_WIDTH-1:0]	slv_reg120;
-	reg [C_S_AXI_DATA_WIDTH-1:0]	slv_reg121;
-	reg [C_S_AXI_DATA_WIDTH-1:0]	slv_reg122;
-	reg [C_S_AXI_DATA_WIDTH-1:0]	slv_reg123;
-	reg [C_S_AXI_DATA_WIDTH-1:0]	slv_reg124;
-	reg [C_S_AXI_DATA_WIDTH-1:0]	slv_reg125;
-	reg [C_S_AXI_DATA_WIDTH-1:0]	slv_reg126;
-	reg [C_S_AXI_DATA_WIDTH-1:0]	slv_reg127;
+
 	wire	 slv_reg_rden;
 	wire	 slv_reg_wren;
 	reg [C_S_AXI_DATA_WIDTH-1:0]	 reg_data_out;
