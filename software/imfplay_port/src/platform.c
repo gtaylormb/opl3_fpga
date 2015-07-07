@@ -1,6 +1,6 @@
 /******************************************************************************
 *
-* Copyright (C) 2002 - 2014 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2010 - 2014 Xilinx, Inc.  All rights reserved.
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy
 * of this software and associated documentation files (the "Software"), to deal
@@ -29,53 +29,75 @@
 * this Software without prior written authorization from Xilinx.
 *
 ******************************************************************************/
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <unistd.h>
-#include "xilmfs.h"
 
-int main(int argc, char *argv[]) {
-  char buf[512];
-  char *buf2;
-  int tmp;
-  int dro_file_handle;
-  int bytes_read = 0;
-  int ri;
+#include "xparameters.h"
+#include "xil_cache.h"
 
-  printf("Start\n");
+#include "platform_config.h"
 
-  mfs_init_genimage(2660000, (char *) 0x10000000, MFSINIT_IMAGE);
-  tmp = mfs_ls();
-  dro_file_handle = mfs_file_open("doom_000.dro", MFS_MODE_READ);
-  tmp = mfs_file_read(dro_file_handle, buf, 512);
+/*
+ * Uncomment the following line if ps7 init source files are added in the
+ * source directory for compiling example outside of SDK.
+ */
+/*#include "ps7_init.h"*/
 
-  printf("First 8 characters of doom_000.dro:");
-  for (int i = 0; i < 8; i++) {
-	  printf("%c", buf[i]);
-	  fflush(stdout);
-	  usleep(1000000);
-  }
-/*  for (int i = 0; i < 8; i++) {
-	mfs_file_read(dro_file_handle, buf, 1);
-	ri = buf[0];
-	printf("%c", ri);
-  }*/
-  printf("\n");
-  fflush(stdout);
+#ifdef STDOUT_IS_16550
+ #include "xuartns550_l.h"
 
-  buf2 = (char *) 0x40000000;
-  for (int i = 0; i < 8; i++) {
-	  printf("%x", buf2[i]);
-	  fflush(stdout);
-	  usleep(1000000);
-  }
+ #define UART_BAUD 9600
+#endif
 
-
-
-  return 0;
+void
+enable_caches()
+{
+#ifdef __PPC__
+    Xil_ICacheEnableRegion(CACHEABLE_REGION_MASK);
+    Xil_DCacheEnableRegion(CACHEABLE_REGION_MASK);
+#elif __MICROBLAZE__
+#ifdef XPAR_MICROBLAZE_USE_ICACHE
+    Xil_ICacheEnable();
+#endif
+#ifdef XPAR_MICROBLAZE_USE_DCACHE
+    Xil_DCacheEnable();
+#endif
+#endif
 }
 
+void
+disable_caches()
+{
+    Xil_DCacheDisable();
+    Xil_ICacheDisable();
+}
 
+void
+init_uart()
+{
+#ifdef STDOUT_IS_16550
+    XUartNs550_SetBaud(STDOUT_BASEADDR, XPAR_XUARTNS550_CLOCK_HZ, UART_BAUD);
+    XUartNs550_SetLineControlReg(STDOUT_BASEADDR, XUN_LCR_8_DATA_BITS);
+#endif
+#ifdef STDOUT_IS_PS7_UART
+    /* Bootrom/BSP configures PS7 UART to 115200 bps */
+#endif
+}
 
-/* testing testing */
+void
+init_platform()
+{
+    /*
+     * If you want to run this example outside of SDK,
+     * uncomment the following line and also #include "ps7_init.h" at the top.
+     * Make sure that the ps7_init.c and ps7_init.h files are included
+     * along with this example source files for compilation.
+     */
+    /* ps7_init();*/
+    enable_caches();
+    init_uart();
+}
+
+void
+cleanup_platform()
+{
+    disable_caches();
+}
