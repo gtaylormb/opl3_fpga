@@ -32,6 +32,8 @@ subject to the following restrictions:
 #include "xil_io.h"
 #include "xparameters.h"
 #include "opl3_fpga.h"
+#include "audio_demo.h"
+#include "timer_ps.h"
 
 #include "global.h"
 
@@ -83,6 +85,10 @@ void opl2_out(unsigned char reg, unsigned char data)
 		char char_array[4];
 	} actual_data;
 
+	/*
+	 * Write 8-bit value using 32-bit read/modify/write. Only 32-bit
+	 * word-aligned addresses are available (0, 4, 8, etc).
+	 */
 	actual_data.int_value = OPL3_FPGA_mReadReg(XPAR_OPL3_FPGA_0_S_AXI_BASEADDR, actual_reg);
 	actual_data.char_array[reg%4] = data;
 
@@ -329,9 +335,11 @@ int main(int argc, char **argv)
 {
 	fileinfo f;
 
+	AudioInitialize();
+
 	mfs_init_genimage(2660000, (char *) 0x10000000, MFSINIT_IMAGE);
 
-	file_open(&f, "doom_000.dro");
+	file_open(&f, "doom_001.dro");
 
 	//open IMF
 /*	if (argc > 1)
@@ -394,7 +402,8 @@ int main(int argc, char **argv)
 		while (run)
 		{
 			for (long clock_ticks = 0; clock_ticks < next_event; clock_ticks++)
-				usleep((1/freq_div)*1000000);
+			//	usleep((1/freq_div)*1000000);
+				TimerDelay(1000);
 
 			res = read_next_cmd(&f, &c);
 			if (res == CMD_EOF)
