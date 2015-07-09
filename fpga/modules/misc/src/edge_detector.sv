@@ -49,15 +49,16 @@
 
 module edge_detector #(
     parameter EDGE_LEVEL = 1, // 1 = positive edge, 0 = negative edge
-    parameter CLK_DLY = 0 // 0 = no clock delay, 1 = 1 clock delay
+    parameter CLK_DLY = 0, // 0 = no clock delay, 1 = 1 clock delay
+    parameter INITIAL_INPUT_LEVEL = 0
 ) (
     input wire clk,
     input wire clk_en,
     input wire in, 
-    output reg edge_detected = 0
+    output logic edge_detected = 0
 );
-    reg in_r0 = !EDGE_LEVEL;
-    reg in_r1 = !EDGE_LEVEL;
+    logic in_r0 = INITIAL_INPUT_LEVEL;
+    logic in_r1 = INITIAL_INPUT_LEVEL;
     
     always_ff @(posedge clk)
     	if (!CLK_DLY)

@@ -59,7 +59,7 @@ module opl3 #(
 );
     logic reset;
     wire clk_locked;
-    wire sample_clk_en;
+    (* mark_debug = "true" *) wire sample_clk_en;
     
     wire cs;
     wire rd;
@@ -147,8 +147,8 @@ module opl3 #(
      * the YAC512 DAC outputs. Here we'll just add and clamp to 16-bit
      */
     always_ff @(posedge clk) begin
-        sample_l_pre_clamp <= channel_a + channel_b;
-        sample_r_pre_clamp <= channel_c + channel_d;
+        sample_l_pre_clamp <= channel_a + channel_c;
+        sample_r_pre_clamp <= channel_b + channel_d;
     end
     
     always_ff @(posedge clk) begin
@@ -173,17 +173,22 @@ module opl3 #(
         .*
     );
     
-    always_comb led[0] = ac_mute_n;
-    always_comb led[1] = clk_locked;
-    always_comb led[2] = 1;
-    always_comb led[3] = 1;
+    always_comb led[0] = kon[0][0];
+    always_comb led[1] = kon[0][1];
+    always_comb led[2] = kon[0][2];
+    always_comb led[3] = kon[0][3];
         
     register_file_axi #(
         .C_S_AXI_DATA_WIDTH(C_S_AXI_DATA_WIDTH),
         .NUM_AXI_REGISTERS(NUM_AXI_REGISTERS)
     ) register_file_axi (
         .*
-    ); 
+    );
+    
+/*    ila_0 ila (
+        .clk(clk),
+        .probe0({sample_l, sample_r})
+    ); */
     
   /*  timers timers (
         .irq(IRQ_F2P),

@@ -1,7 +1,7 @@
 /*******************************************************************************
 #   +html+<pre>
 #
-#   FILENAME: top_level_tb.sv
+#   FILENAME: opl3_tb.sv
 #   AUTHOR: Greg Taylor     CREATION DATE: 18 Oct 2014
 # 
 #   DESCRIPTION:
@@ -41,59 +41,33 @@
 `default_nettype none  // disable implicit net type declarations
 `timescale 1ns / 1ps
   
-module top_level_tb;
+module opl3_tb;
     localparam CLK_FREQ = 125e6;
     localparam CLK_HALF_PERIOD = 1/real'(CLK_FREQ)*1000e6/2;
     localparam CLK_PS_FREQ = 50e6;
     localparam CLK_PS_HALF_PERIOD = 1/real'(CLK_FREQ)*1000e6/2;    
     
+    localparam NUM_AXI_REGISTERS = 128;
     localparam GATE_DELAY = 2; // in ns    
     
     bit clk125;
+    wire clk;
     wire i2s_sclk;
     wire i2s_ws;
     wire i2s_sd;
-    wire ac_mclk;
     wire ac_mute_n;
-    wire i2c_scl;
-    wire i2c_sda;
     wire [3:0] led;
-    
-    wire [53:0]MIO;
-    wire DDR_CAS_n;
-    wire DDR_CKE;
-    wire DDR_Clk_n;
-    wire DDR_Clk;
-    wire DDR_CS_n;
-    wire DDR_DRSTB;
-    wire DDR_ODT;
-    wire DDR_RAS_n;
-    wire DDR_WEB;
-    wire [2:0]DDR_BankAddr;
-    wire [14:0]DDR_Addr;
-    wire DDR_VRN;
-    wire DDR_VRP;
-    wire [3:0]DDR_DM;
-    wire [31:0]DDR_DQ;
-    wire [3:0]DDR_DQS_n;
-    wire [3:0]DDR_DQS;
-    wire PS_SRSTB;
-    wire PS_CLK;
-    wire PS_PORB;    
-    
-    pullup(i2c_scl);
-    pullup(i2c_sda);
+    logic [7:0] slv8_reg[NUM_AXI_REGISTERS*4] = '{default: '0};
     
     always begin
         #CLK_HALF_PERIOD clk125 = 0;
         #CLK_HALF_PERIOD clk125 = 1;
     end
-/*    always begin
-        #CLK_PS_HALF_PERIOD PS_CLK = 0;
-        #CLK_PS_HALF_PERIOD PS_CLK = 1;
-    end      */    
     
-    top_level top_level_inst (
+    opl3 #(
+        .C_S_AXI_DATA_WIDTH(32),
+        .NUM_AXI_REGISTERS(NUM_AXI_REGISTERS)                 
+    ) opl3 (
         .*
     );
     
@@ -102,9 +76,25 @@ module top_level_tb;
 		endclocking      
 		
         initial begin
-           // #(CLK_PS_HALF_PERIOD*2*5) PS_PORB = 1;
-            //#(CLK_PS_HALF_PERIOD*2*10) PS_SRSTB = 1;
-        	@(posedge ac_mute_n);
+            force opl3.fnum[0][0] = '1;
+            force opl3.mult[0][0] = '1;
+            force opl3.block[0][0] = '1;
+            force opl3.ws[0][0] = '1;
+            
+ /*           force opl3.ar[0][0] = '1;
+            force opl3.dr[0][0] = '1;
+            force opl3.sl[0][0] = '1;
+            force opl3.rr[0][0] = '1;
+            force opl3.tl[0][0] = '1;
+ */           
+            force opl3.cha[0][0] = '1;
+            force opl3.chb[0][0] = '1;
+            force opl3.cnt[0][0] = '1;
+        
+        	@(posedge opl3.clk_locked);
+            ##10000 force opl3.kon[0][0] = 1;
+            
+            ##1000000;
         end
     endprogram
 endmodule

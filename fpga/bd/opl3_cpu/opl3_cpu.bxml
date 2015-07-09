@@ -2,14 +2,14 @@
 <Root MajorVersion="0" MinorVersion="32">
   <CompositeFile CompositeFileTopName="opl3_cpu" CanBeSetAsTop="true" CanDisplayChildGraph="true">
     <Description>Composite Fileset</Description>
-    <Generation Name="SYNTHESIS" State="RESET"/>
-    <Generation Name="IMPLEMENTATION" State="RESET"/>
-    <Generation Name="SIMULATION" State="RESET"/>
+    <Generation Name="SYNTHESIS" State="GENERATED"/>
+    <Generation Name="IMPLEMENTATION" State="GENERATED"/>
+    <Generation Name="SIMULATION" State="GENERATED"/>
     <FileCollection Name="SOURCES" Type="SOURCES">
       <File Name="ip/opl3_cpu_processing_system7_0_0/opl3_cpu_processing_system7_0_0.xci" Type="IP">
         <Instance HierarchyPath="processing_system7_0"/>
         <Properties IsEditable="false" IsVisible="true" Timestamp="0" IsTrackable="true" IsStatusTracked="true"/>
-        <Library Name="xil_defaultlib"/>
+        <Library Name="work"/>
         <UsedIn Val="SYNTHESIS"/>
         <UsedIn Val="IMPLEMENTATION"/>
         <UsedIn Val="SIMULATION"/>
@@ -17,7 +17,7 @@
       <File Name="ip/opl3_cpu_processing_system7_0_axi_periph_1/opl3_cpu_processing_system7_0_axi_periph_1.xci" Type="IP">
         <Instance HierarchyPath="processing_system7_0_axi_periph"/>
         <Properties IsEditable="false" IsVisible="false" Timestamp="0" IsTrackable="true" IsStatusTracked="true"/>
-        <Library Name="xil_defaultlib"/>
+        <Library Name="work"/>
         <UsedIn Val="SYNTHESIS"/>
         <UsedIn Val="IMPLEMENTATION"/>
         <UsedIn Val="SIMULATION"/>
@@ -25,7 +25,7 @@
       <File Name="ip/opl3_cpu_rst_processing_system7_0_100M_1/opl3_cpu_rst_processing_system7_0_100M_1.xci" Type="IP">
         <Instance HierarchyPath="rst_processing_system7_0_100M"/>
         <Properties IsEditable="false" IsVisible="true" Timestamp="0" IsTrackable="true" IsStatusTracked="true"/>
-        <Library Name="xil_defaultlib"/>
+        <Library Name="work"/>
         <UsedIn Val="SYNTHESIS"/>
         <UsedIn Val="IMPLEMENTATION"/>
         <UsedIn Val="SIMULATION"/>
@@ -33,7 +33,7 @@
       <File Name="ip/opl3_cpu_xbar_1/opl3_cpu_xbar_1.xci" Type="IP">
         <Instance HierarchyPath="processing_system7_0_axi_periph/xbar"/>
         <Properties IsEditable="false" IsVisible="true" Timestamp="0" IsTrackable="true" IsStatusTracked="true"/>
-        <Library Name="xil_defaultlib"/>
+        <Library Name="work"/>
         <UsedIn Val="SYNTHESIS"/>
         <UsedIn Val="IMPLEMENTATION"/>
         <UsedIn Val="SIMULATION"/>
@@ -41,7 +41,14 @@
       <File Name="ip/opl3_cpu_opl3_fpga_0_5/opl3_cpu_opl3_fpga_0_5.xci" Type="IP">
         <Instance HierarchyPath="opl3_fpga_0"/>
         <Properties IsEditable="false" IsVisible="true" Timestamp="0" IsTrackable="true" IsStatusTracked="true"/>
-        <Library Name="xil_defaultlib"/>
+        <Library Name="work"/>
+        <UsedIn Val="SYNTHESIS"/>
+        <UsedIn Val="IMPLEMENTATION"/>
+        <UsedIn Val="SIMULATION"/>
+      </File>
+      <File Name="hdl/opl3_cpu.v" Type="Verilog">
+        <Properties IsEditable="false" IsVisible="true" Timestamp="0" IsTrackable="false" IsStatusTracked="false"/>
+        <Library Name="work"/>
         <UsedIn Val="SYNTHESIS"/>
         <UsedIn Val="IMPLEMENTATION"/>
         <UsedIn Val="SIMULATION"/>
@@ -49,17 +56,32 @@
       <File Name="ip/opl3_cpu_auto_pc_0/opl3_cpu_auto_pc_0.xci" Type="IP">
         <Instance HierarchyPath="processing_system7_0_axi_periph/s00_couplers/auto_pc"/>
         <Properties IsEditable="false" IsVisible="true" Timestamp="0" IsTrackable="true" IsStatusTracked="true"/>
-        <Library Name="xil_defaultlib"/>
+        <Library Name="work"/>
         <UsedIn Val="SYNTHESIS"/>
         <UsedIn Val="IMPLEMENTATION"/>
         <UsedIn Val="SIMULATION"/>
       </File>
-      <File Name="ip/opl3_cpu_opl3_fpga_1_0/opl3_cpu_opl3_fpga_1_0.xci" Type="IP">
-        <Properties IsEditable="false" IsVisible="false" Timestamp="0" IsTrackable="true" IsStatusTracked="true"/>
-        <Library Name="xil_defaultlib"/>
+      <File Name="opl3_cpu_ooc.xdc" Type="XDC">
+        <Properties IsEditable="false" IsVisible="true" Timestamp="0" IsTrackable="false" IsStatusTracked="false"/>
+        <Library Name="work"/>
         <UsedIn Val="SYNTHESIS"/>
         <UsedIn Val="IMPLEMENTATION"/>
-        <UsedIn Val="SIMULATION"/>
+        <UsedIn Val="OUT_OF_CONTEXT"/>
+      </File>
+      <File Name="hw_handoff/opl3_cpu.hwh" Type="HwHandoff">
+        <Properties IsEditable="false" IsVisible="true" Timestamp="0" IsTrackable="false" IsStatusTracked="false"/>
+        <Library Name="work"/>
+        <UsedIn Val="HW_HANDOFF"/>
+      </File>
+      <File Name="hw_handoff/opl3_cpu_bd.tcl">
+        <Properties IsEditable="false" IsVisible="true" Timestamp="0" IsTrackable="false" IsStatusTracked="false"/>
+        <Library Name="work"/>
+        <UsedIn Val="HW_HANDOFF"/>
+      </File>
+      <File Name="hdl/opl3_cpu.hwdef">
+        <Properties IsEditable="false" IsVisible="true" Timestamp="0" IsTrackable="false" IsStatusTracked="false"/>
+        <Library Name="work"/>
+        <UsedIn Val="HW_HANDOFF"/>
       </File>
     </FileCollection>
   </CompositeFile>

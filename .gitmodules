@@ -3,4 +3,4 @@
 	url = git://git.code.sf.net/p/peepeeplayer/code
 [submodule "docs/imfplay"]
 	path = docs/imfplay
-	url = ./docs/imfplay/
+	url = https://bitbucket.org/kvee/imfplay

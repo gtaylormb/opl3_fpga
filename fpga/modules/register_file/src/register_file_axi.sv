@@ -121,79 +121,83 @@ module register_file_axi #(
     genvar bank;
     genvar i;
     generate
-    for (bank = 0; bank < 2; bank++)    
-        for (i = 0; i < 'h16; i++)
+    for (bank = 0; bank < 2; bank++) begin
+        for (i = 0; i < 6; i++)
             always_comb begin
-                if (i < 6) begin
-                    am[bank][i]   = slv8_reg['h20+i+bank*BANK2_OFFSET][7];
-                    vib[bank][i]  = slv8_reg['h20+i+bank*BANK2_OFFSET][6];
-                    egt[bank][i]  = slv8_reg['h20+i+bank*BANK2_OFFSET][5];
-                    ksr[bank][i]  = slv8_reg['h20+i+bank*BANK2_OFFSET][4];
-                    mult[bank][i] = slv8_reg['h20+i+bank*BANK2_OFFSET][3:0];
+                am[bank][i]   = slv8_reg['h20+i+bank*BANK2_OFFSET][7];
+                vib[bank][i]  = slv8_reg['h20+i+bank*BANK2_OFFSET][6];
+                egt[bank][i]  = slv8_reg['h20+i+bank*BANK2_OFFSET][5];
+                ksr[bank][i]  = slv8_reg['h20+i+bank*BANK2_OFFSET][4];
+                mult[bank][i] = slv8_reg['h20+i+bank*BANK2_OFFSET][3:0];
                     
-                    ksl[bank][i] = slv8_reg['h40+i+bank*BANK2_OFFSET][7:6];
-                    tl[bank][i]  = slv8_reg['h40+i+bank*BANK2_OFFSET][5:0];
+                ksl[bank][i] = slv8_reg['h40+i+bank*BANK2_OFFSET][7:6];
+                tl[bank][i]  = slv8_reg['h40+i+bank*BANK2_OFFSET][5:0];
                     
-                    ar[bank][i] = slv8_reg['h60+i+bank*BANK2_OFFSET][7:4];
-                    dr[bank][i] = slv8_reg['h60+i+bank*BANK2_OFFSET][3:0]; 
+                ar[bank][i] = slv8_reg['h60+i+bank*BANK2_OFFSET][7:4];
+                dr[bank][i] = slv8_reg['h60+i+bank*BANK2_OFFSET][3:0]; 
                     
-                    sl[bank][i] = slv8_reg['h80+i+bank*BANK2_OFFSET][7:4];
-                    rr[bank][i] = slv8_reg['h80+i+bank*BANK2_OFFSET][3:0];
+                sl[bank][i] = slv8_reg['h80+i+bank*BANK2_OFFSET][7:4];
+                rr[bank][i] = slv8_reg['h80+i+bank*BANK2_OFFSET][3:0];
                     
-                    ws[bank][i] = slv8_reg['hE0+i+bank*BANK2_OFFSET][2:0];   
-                end
-                else if (i >= 8 && i < 14) begin
-                    am[bank][i-2]   = slv8_reg['h20+i+bank*BANK2_OFFSET][7];
-                    vib[bank][i-2]  = slv8_reg['h20+i+bank*BANK2_OFFSET][6];
-                    egt[bank][i-2]  = slv8_reg['h20+i+bank*BANK2_OFFSET][5];
-                    ksr[bank][i-2]  = slv8_reg['h20+i+bank*BANK2_OFFSET][4];
-                    mult[bank][i-2] = slv8_reg['h20+i+bank*BANK2_OFFSET][3:0];
-                    
-                    ksl[bank][i-2] = slv8_reg['h40+i+bank*BANK2_OFFSET][7:6];
-                    tl[bank][i-2]  = slv8_reg['h40+i+bank*BANK2_OFFSET][5:0];
-                    
-                    ar[bank][i-2] = slv8_reg['h60+i+bank*BANK2_OFFSET][7:4];
-                    dr[bank][i-2] = slv8_reg['h60+i+bank*BANK2_OFFSET][3:0];
-                    
-                    sl[bank][i-2] = slv8_reg['h80+i+bank*BANK2_OFFSET][7:4];
-                    rr[bank][i-2] = slv8_reg['h80+i+bank*BANK2_OFFSET][3:0];                      
-                    
-                    ws[bank][i-2] = slv8_reg['hE0+i+bank*BANK2_OFFSET][2:0];                   
-                end    
-                else if (i >= 16) begin
-                    am[bank][i-4]   = slv8_reg['h20+i+bank*BANK2_OFFSET][7];
-                    vib[bank][i-4]  = slv8_reg['h20+i+bank*BANK2_OFFSET][6];
-                    egt[bank][i-4]  = slv8_reg['h20+i+bank*BANK2_OFFSET][5];
-                    ksr[bank][i-4]  = slv8_reg['h20+i+bank*BANK2_OFFSET][4];
-                    mult[bank][i-4] = slv8_reg['h20+i+bank*BANK2_OFFSET][3:0];
-                    
-                    ksl[bank][i-4] = slv8_reg['h40+i+bank*BANK2_OFFSET][7:6];
-                    tl[bank][i-4]  = slv8_reg['h40+i+bank*BANK2_OFFSET][5:0];
-                    
-                    ar[bank][i-4] = slv8_reg['h60+i+bank*BANK2_OFFSET][7:4];
-                    dr[bank][i-4] = slv8_reg['h60+i+bank*BANK2_OFFSET][3:0];
-                    
-                    sl[bank][i-4] = slv8_reg['h80+i+bank*BANK2_OFFSET][7:4];
-                    rr[bank][i-4] = slv8_reg['h80+i+bank*BANK2_OFFSET][3:0];
-                    
-                    ws[bank][i-4] = slv8_reg['hE0+i+bank*BANK2_OFFSET][2:0];                   
-                end
+                ws[bank][i] = slv8_reg['hE0+i+bank*BANK2_OFFSET][2:0];                   
+            end
+        
+        for (i = 8; i < 14; i++)
+            always_comb begin            
+                am[bank][i-2]   = slv8_reg['h20+i+bank*BANK2_OFFSET][7];
+                vib[bank][i-2]  = slv8_reg['h20+i+bank*BANK2_OFFSET][6];
+                egt[bank][i-2]  = slv8_reg['h20+i+bank*BANK2_OFFSET][5];
+                ksr[bank][i-2]  = slv8_reg['h20+i+bank*BANK2_OFFSET][4];
+                mult[bank][i-2] = slv8_reg['h20+i+bank*BANK2_OFFSET][3:0];
+                        
+                ksl[bank][i-2] = slv8_reg['h40+i+bank*BANK2_OFFSET][7:6];
+                tl[bank][i-2]  = slv8_reg['h40+i+bank*BANK2_OFFSET][5:0];
+                        
+                ar[bank][i-2] = slv8_reg['h60+i+bank*BANK2_OFFSET][7:4];
+                dr[bank][i-2] = slv8_reg['h60+i+bank*BANK2_OFFSET][3:0];
+                        
+                sl[bank][i-2] = slv8_reg['h80+i+bank*BANK2_OFFSET][7:4];
+                rr[bank][i-2] = slv8_reg['h80+i+bank*BANK2_OFFSET][3:0];                      
+                        
+                ws[bank][i-2] = slv8_reg['hE0+i+bank*BANK2_OFFSET][2:0];                 
+            end
+        
+        for (i = 16; i < 22; i++)
+            always_comb begin            
+                am[bank][i-4]   = slv8_reg['h20+i+bank*BANK2_OFFSET][7];
+                vib[bank][i-4]  = slv8_reg['h20+i+bank*BANK2_OFFSET][6];
+                egt[bank][i-4]  = slv8_reg['h20+i+bank*BANK2_OFFSET][5];
+                ksr[bank][i-4]  = slv8_reg['h20+i+bank*BANK2_OFFSET][4];
+                mult[bank][i-4] = slv8_reg['h20+i+bank*BANK2_OFFSET][3:0];
+                        
+                ksl[bank][i-4] = slv8_reg['h40+i+bank*BANK2_OFFSET][7:6];
+                tl[bank][i-4]  = slv8_reg['h40+i+bank*BANK2_OFFSET][5:0];
+                        
+                ar[bank][i-4] = slv8_reg['h60+i+bank*BANK2_OFFSET][7:4];
+                dr[bank][i-4] = slv8_reg['h60+i+bank*BANK2_OFFSET][3:0];
+                        
+                sl[bank][i-4] = slv8_reg['h80+i+bank*BANK2_OFFSET][7:4];
+                rr[bank][i-4] = slv8_reg['h80+i+bank*BANK2_OFFSET][3:0];
+                        
+                ws[bank][i-4] = slv8_reg['hE0+i+bank*BANK2_OFFSET][2:0];                 
+            end
+        
+        for (i = 0; i < 9; i++)
+            always_comb begin
+                fnum[bank][i][7:0] = slv8_reg['hA0+i+bank*BANK2_OFFSET];
                 
-                if (i < 9) begin
-                    fnum[bank][i][7:0] = slv8_reg['hA0+i+bank*BANK2_OFFSET];
-                    
-                    kon[bank][i]       = slv8_reg['hB0+i+bank*BANK2_OFFSET][5];
-                    block[bank][i]     = slv8_reg['hB0+i+bank*BANK2_OFFSET][4:2];
-                    fnum[bank][i][9:8] = slv8_reg['hB0+i+bank*BANK2_OFFSET][1:0];
-                    
-                    chd[bank][i] = slv8_reg['hC0+i+bank*BANK2_OFFSET][7];
-                    chc[bank][i] = slv8_reg['hC0+i+bank*BANK2_OFFSET][6];
-                    chb[bank][i] = slv8_reg['hC0+i+bank*BANK2_OFFSET][5];
-                    cha[bank][i] = slv8_reg['hC0+i+bank*BANK2_OFFSET][4];
-                    fb[bank][i]  = slv8_reg['hC0+i+bank*BANK2_OFFSET][3:1];
-                    cnt[bank][i] = slv8_reg['hC0+i+bank*BANK2_OFFSET][0];                                
-                end
-            end                
+                kon[bank][i]       = slv8_reg['hB0+i+bank*BANK2_OFFSET][5];
+                block[bank][i]     = slv8_reg['hB0+i+bank*BANK2_OFFSET][4:2];
+                fnum[bank][i][9:8] = slv8_reg['hB0+i+bank*BANK2_OFFSET][1:0];
+                
+                chd[bank][i] = slv8_reg['hC0+i+bank*BANK2_OFFSET][7];
+                chc[bank][i] = slv8_reg['hC0+i+bank*BANK2_OFFSET][6];
+                chb[bank][i] = slv8_reg['hC0+i+bank*BANK2_OFFSET][5];
+                cha[bank][i] = slv8_reg['hC0+i+bank*BANK2_OFFSET][4];
+                fb[bank][i]  = slv8_reg['hC0+i+bank*BANK2_OFFSET][3:1];
+                cnt[bank][i] = slv8_reg['hC0+i+bank*BANK2_OFFSET][0];                                
+            end
+    end                
     endgenerate   
 endmodule
 `default_nettype wire  // re-enable implicit net type declarations

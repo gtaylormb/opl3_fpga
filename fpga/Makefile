@@ -70,13 +70,14 @@ RTL_SRC = \
 #	modules/register_file/src/opl3_axi_wrapper.sv \
 	
 SIM_SRC = \
-	modules/top_level/sim/top_level_tb.sv \
+	modules/top_level/sim/opl3_tb.sv \
 	modules/clks/ip/clk_gen/clk_gen_funcsim.v \
-	modules/operator/sim/save_dac_input.sv
+	modules/operator/sim/save_dac_input.sv \
+	modules/ila/ip/ila_0/ila_0_stub.v
 	
 IP_SRC = \
-	modules/clks/ip/clk_gen/clk_gen.xci
-#	modules/ila/ip/ila_0/ila_0.xci \
+	modules/clks/ip/clk_gen/clk_gen.xci \
+	modules/ila/ip/ila_0/ila_0.xci
 #	modules/ila/ip/jtag_axi_0/jtag_axi_0.xci
 	
 BD_SRC = \
@@ -99,14 +100,14 @@ compile_sim_lib:
 	test -e sim_lib || (vlib sim_lib && vlog -work sim_lib -incr $(SIM_LIB))	
 		 
 sim: compile-eval
-	vsim -L sim_lib -c top_level_tb glbl -do "run -a"
+	vsim -L sim_lib -c opl3_tb glbl -do "run -a"
 	
 # Launch the Modelsim GUI for debugging design		
 sim-debug: compile
 ifneq (, $(findstring Cygwin, $(uname_O)))
-	cygstart vsim -L sim_lib top_level_tb glbl -voptargs=+acc
+	cygstart vsim -L sim_lib opl3_tb glbl -voptargs=+acc
 else
-	vsim -L sim_lib top_level_tb glbl -voptargs=+acc
+	vsim -L sim_lib opl3_tb glbl -voptargs=+acc
 endif
 	
 syn: build/post_syn.dcp
