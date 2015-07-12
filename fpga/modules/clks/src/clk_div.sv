@@ -61,9 +61,7 @@ module clk_div #(
             counter <= counter + 1;
         
     always_ff @(posedge clk)
-        if (counter == CLK_DIV_COUNT - 1)
-            clk_en <= 1;
-        else
-            clk_en <= 0;
+        clk_en <= (counter == CLK_DIV_COUNT - 1);
+
 endmodule
 `default_nettype wire  // re-enable implicit net type declarations

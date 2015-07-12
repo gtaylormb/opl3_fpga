@@ -55,21 +55,14 @@ module calc_phase_inc (
     input wire vib,
     input wire dvb,
     input wire [ENV_WIDTH-1:0] env,
-    output logic [PHASE_ACC_WIDTH-1:0] phase_inc = 0
-);
-    localparam VIBRATO_INDEX_WIDTH = 13;
+    output logic signed [PHASE_ACC_WIDTH-1:0] phase_inc = 0
+);   
+    logic signed [PHASE_ACC_WIDTH-1:0] pre_mult;
+    logic signed [PHASE_ACC_WIDTH-1:0] post_mult = 0;
     
-    logic [PHASE_ACC_WIDTH-1:0] phase_inc_p0 = 0;
-    logic [PHASE_ACC_WIDTH-1:0] pre_mult = 0;
-    logic [PHASE_ACC_WIDTH-1:0] post_mult = 0;
+    wire signed [REG_FNUM_WIDTH-1:0] vib_val;
     
-    logic [VIBRATO_INDEX_WIDTH-1:0] vibrato_index = 0;
-    logic [REG_FNUM_WIDTH-1:0] delta0 = 0;
-    logic [REG_FNUM_WIDTH-1:0] delta1 = 0;
-    logic [REG_FNUM_WIDTH-1:0] delta2 = 0;
-    wire [REG_FNUM_WIDTH-1:0] vib_val;
-    
-    always_comb pre_mult = fnum << block; // might be - 1 here; 
+    always_comb pre_mult = fnum << block;
     
 	always_ff @(posedge clk)
 		unique case (mult)

@@ -68,11 +68,11 @@ module operator (
     input wire nts,                     // keyboard split selection
     input wire use_feedback,
     input wire [REG_FB_WIDTH-1:0] fb,
-    input wire signed [OP_OUT_WIDTH-1:0] modulation,
+    input wire [OP_OUT_WIDTH-1:0] modulation,
+    input wire latch_feedback,
     output logic signed [OP_OUT_WIDTH-1:0] out
 );   
-    wire signed [PHASE_ACC_WIDTH-1:0] phase_inc;
-    logic signed [PHASE_ACC_WIDTH-1:0] phase_inc_post_add = 0;    
+    wire [PHASE_ACC_WIDTH-1:0] phase_inc;
     logic key_on_pulse;
     wire key_on_pulse_array [NUM_BANKS][NUM_OPERATORS_PER_BANK];
     logic key_off_pulse;
@@ -80,7 +80,7 @@ module operator (
     wire [ENV_WIDTH-1:0] env;
     logic signed [OP_OUT_WIDTH-1:0] feedback [NUM_BANKS][NUM_OPERATORS_PER_BANK][2] =
      '{default: 0};
-    logic signed [PHASE_ACC_WIDTH-1:0] feedback_result = 0; 
+    logic signed [OP_OUT_WIDTH-1:0] feedback_result = 0; 
     
     genvar i, j;
     generate
@@ -114,8 +114,13 @@ module operator (
     always_comb key_on_pulse = key_on_pulse_array[bank_num][op_num];
     always_comb key_off_pulse = key_off_pulse_array[bank_num][op_num];          
     
+    
+    /*
+     * latch_feedback comes in the last cycle of the time slot so out has had a
+     * chance to propagate through
+     */
     always_ff @(posedge clk)
-        if (sample_clk_en) begin
+        if (latch_feedback) begin
             feedback[bank_num][op_num][0] <= out;
             feedback[bank_num][op_num][1] <= feedback[bank_num][op_num][0];
         end
@@ -123,16 +128,6 @@ module operator (
     always_comb
         feedback_result = ((feedback[bank_num][op_num][0] +
          feedback[bank_num][op_num][1]) << fb) >> 9;
-        
-    /*
-     * An operator that implements feedback does not take any modulation
-     * input (it is always operator 1 in any channel scheme)
-     */            
-    always_ff @(posedge clk)
-        if (use_feedback)
-            phase_inc_post_add <= phase_inc + feedback_result;
-        else
-            phase_inc_post_add <= phase_inc + modulation;
     
     calc_phase_inc calc_phase_inc (
         .*
@@ -141,9 +136,13 @@ module operator (
     envelope_generator envelope_generator (
         .*
     );
-        
+
+    /*
+     * An operator that implements feedback does not take any modulation
+     * input (it is always operator 1 in any channel scheme)
+     */             
     phase_generator phase_generator (
-        .phase_inc(phase_inc_post_add),
+        .modulation(use_feedback ? feedback_result : modulation),
         .*
     );
 endmodule

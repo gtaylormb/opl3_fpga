@@ -76,8 +76,8 @@ SIM_SRC = \
 	modules/ila/ip/ila_0/ila_0_stub.v
 	
 IP_SRC = \
-	modules/clks/ip/clk_gen/clk_gen.xci \
-	modules/ila/ip/ila_0/ila_0.xci
+	modules/clks/ip/clk_gen/clk_gen.xci
+#	modules/ila/ip/ila_0/ila_0.xci
 #	modules/ila/ip/jtag_axi_0/jtag_axi_0.xci
 	
 BD_SRC = \

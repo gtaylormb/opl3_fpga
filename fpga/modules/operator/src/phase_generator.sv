@@ -52,6 +52,7 @@ module phase_generator (
     input wire [REG_WS_WIDTH-1:0] ws,
     input wire [ENV_WIDTH-1:0] env,
     input wire key_on_pulse,
+    input wire signed [OP_OUT_WIDTH-1:0] modulation,
     output logic signed [OP_OUT_WIDTH-1:0] out = 0
 );	
     localparam LOG_SIN_OUT_WIDTH = 12;
@@ -62,6 +63,7 @@ module phase_generator (
     
     logic [PIPELINE_DELAY-1:0] sample_clk_en_delayed = 0;
 	logic [PHASE_ACC_WIDTH-1:0] phase_acc [NUM_BANKS][NUM_OPERATORS_PER_BANK] = '{ default: '0 };
+    logic [PHASE_ACC_WIDTH-1:0] final_phase [NUM_BANKS][NUM_OPERATORS_PER_BANK] = '{ default: '0 };
     
     logic is_odd_period [NUM_BANKS][NUM_OPERATORS_PER_BANK] = '{ default: '0 };
     logic phase_acc_msb_pos_edge_pulse [NUM_BANKS][NUM_OPERATORS_PER_BANK];
@@ -74,23 +76,36 @@ module phase_generator (
     logic signed [OP_OUT_WIDTH-1:0] tmp_ws4;  
     logic [LOG_SIN_OUT_WIDTH-1:0] tmp_ws7; 
     
+    /*
+     * sample_clk_en must be delayed so the phase is correct when it is added
+     * to the phase accumulator (inputs must settle for this time slot)
+     */
     always_ff @(posedge clk) begin
         sample_clk_en_delayed <= sample_clk_en_delayed << 1;
         sample_clk_en_delayed[0] <= sample_clk_en;
     end          
         
     /*
-     * Phase Accumulator
+     * Phase Accumulator. Modulation gets added to the final phase but not
+     * back into the accumulator.
      */
 	always_ff @(posedge clk)
 		if (sample_clk_en_delayed[PIPELINE_DELAY-1])
-            if (key_on_pulse)
+            if (key_on_pulse) begin
                 phase_acc[bank_num][op_num] <= 0;
-            else if (ws == 4 || ws == 5)
+                final_phase[bank_num][op_num] <= 0;
+            end
+            else if (ws == 4 || ws == 5) begin
                 // double the frequency
 		        phase_acc[bank_num][op_num] <= phase_acc[bank_num][op_num] + (phase_inc << 1);
-            else
-                phase_acc[bank_num][op_num] <= phase_acc[bank_num][op_num] + phase_inc;           
+                final_phase[bank_num][op_num] <= phase_acc[bank_num][op_num] + (phase_inc << 1)
+                 + (modulation << (PHASE_ACC_WIDTH - OP_OUT_WIDTH));
+            end    
+            else begin
+                phase_acc[bank_num][op_num] <= phase_acc[bank_num][op_num] + phase_inc;
+                final_phase[bank_num][op_num] <= phase_acc[bank_num][op_num] + phase_inc
+                 + (modulation << (PHASE_ACC_WIDTH - OP_OUT_WIDTH));
+            end    
         
     always_comb tmp_ws2 = tmp_out1 < 0 ? ~tmp_out1 : tmp_out1;
     always_comb tmp_ws4 = is_odd_period[bank_num][op_num] ? tmp_out1 : 0;
@@ -105,7 +120,7 @@ module phase_generator (
             ) phase_acc_msb_edge_detect (
                 .clk,
                 .clk_en(1'b1),
-                .in(phase_acc[i][j][19]),
+                .in(final_phase[bank_num][op_num][19]),
                 .edge_detected(phase_acc_msb_pos_edge_pulse[i][j])
             );   
     
@@ -123,7 +138,7 @@ module phase_generator (
         0: out <= tmp_out1;
         1: out <= tmp_out1 < 0 ? 0 : tmp_out1;
         2: out <= tmp_ws2;
-        3: out <= phase_acc[bank_num][op_num][PHASE_ACC_WIDTH-2] ? 0 : tmp_ws2;
+        3: out <= final_phase[bank_num][op_num][PHASE_ACC_WIDTH-2] ? 0 : tmp_ws2;
         4: out <= tmp_ws4;
         5: out <= tmp_ws4 < 0 ? ~tmp_ws4 : tmp_ws4;
         6: out <= tmp_out1 > 0 ? 2**(OP_OUT_WIDTH-1) - 1 : -2**(OP_OUT_WIDTH-1);
@@ -131,7 +146,8 @@ module phase_generator (
         endcase
 	
     opl3_log_sine_lut log_sine_lut_inst (
-        .theta(phase_acc[bank_num][op_num][18] ? ~phase_acc[bank_num][op_num][17:10] : phase_acc[bank_num][op_num][17:10]),
+        .theta(final_phase[bank_num][op_num][18] ? ~final_phase[bank_num][op_num][17:10]
+         : final_phase[bank_num][op_num][17:10]),
         .out(log_sin_out),
     	.*
     );
@@ -140,16 +156,15 @@ module phase_generator (
      * Setting the msb effectively mutes. Mute 2nd and 3rd quadrant.
      */
     always_comb
-        unique case (phase_acc[bank_num][op_num][19:18])
+        unique case (final_phase[bank_num][op_num][19:18])
         0: tmp_ws7[11] = 0;
         1: tmp_ws7[11] = 1;
         2: tmp_ws7[11] = 1;
         3: tmp_ws7[11] = 0;
         endcase
         
-    always_comb tmp_ws7[10:0] = phase_acc[bank_num][op_num][19] ?
-     ~phase_acc[bank_num][op_num][17:10] << 3 :
-     phase_acc[bank_num][op_num][17:10] << 3;        
+    always_comb tmp_ws7[10:0] = final_phase[bank_num][op_num][19] ?
+     ~final_phase[bank_num][op_num][17:10] << 3 : final_phase[bank_num][op_num][17:10] << 3;        
     
     always_comb log_sin_plus_gain = (ws == 7 ? tmp_ws7 : log_sin_out) + (env << 3);
         
@@ -162,7 +177,7 @@ module phase_generator (
     always_comb tmp_out0 = (2**10 + exp_out) << 1;
         
     always_comb
-        if (phase_acc[bank_num][op_num][19])
+        if (final_phase[bank_num][op_num][19])
             tmp_out1 = ~(tmp_out0 >> log_sin_plus_gain[LOG_SIN_PLUS_GAIN_WIDTH-1:8]);
         else
             tmp_out1 = tmp_out0 >> log_sin_plus_gain[LOG_SIN_PLUS_GAIN_WIDTH-1:8]; 
