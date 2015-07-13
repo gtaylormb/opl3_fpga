@@ -64,9 +64,9 @@ module calc_phase_inc (
     
     always_comb pre_mult = fnum << block;
     
-	always_ff @(posedge clk)
-		unique case (mult)
-		'h0: post_mult <= pre_mult >> 1;
+    always_ff @(posedge clk)
+        unique case (mult)
+        'h0: post_mult <= pre_mult >> 1;
         'h1: post_mult <= pre_mult;
         'h2: post_mult <= pre_mult*2;
         'h3: post_mult <= pre_mult*3;

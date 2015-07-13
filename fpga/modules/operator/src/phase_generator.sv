@@ -52,7 +52,7 @@ module phase_generator (
     input wire [REG_WS_WIDTH-1:0] ws,
     input wire [ENV_WIDTH-1:0] env,
     input wire key_on_pulse,
-    input wire signed [OP_OUT_WIDTH-1:0] modulation,
+    input wire [OP_OUT_WIDTH-1:0] modulation,
     output logic signed [OP_OUT_WIDTH-1:0] out = 0
 );	
     localparam LOG_SIN_OUT_WIDTH = 12;
@@ -77,7 +77,7 @@ module phase_generator (
     logic [LOG_SIN_OUT_WIDTH-1:0] tmp_ws7; 
     
     /*
-     * sample_clk_en must be delayed so the phase is correct when it is added
+     * sample_clk_en must be delayed so the phase_inc is correct when it is added
      * to the phase accumulator (inputs must settle for this time slot)
      */
     always_ff @(posedge clk) begin
@@ -99,12 +99,12 @@ module phase_generator (
                 // double the frequency
 		        phase_acc[bank_num][op_num] <= phase_acc[bank_num][op_num] + (phase_inc << 1);
                 final_phase[bank_num][op_num] <= phase_acc[bank_num][op_num] + (phase_inc << 1)
-                 + (modulation << (PHASE_ACC_WIDTH - OP_OUT_WIDTH));
+                 + (modulation << 10);
             end    
             else begin
                 phase_acc[bank_num][op_num] <= phase_acc[bank_num][op_num] + phase_inc;
                 final_phase[bank_num][op_num] <= phase_acc[bank_num][op_num] + phase_inc
-                 + (modulation << (PHASE_ACC_WIDTH - OP_OUT_WIDTH));
+                 + (modulation << 10);
             end    
         
     always_comb tmp_ws2 = tmp_out1 < 0 ? ~tmp_out1 : tmp_out1;
@@ -128,7 +128,7 @@ module phase_generator (
             if (phase_acc_msb_pos_edge_pulse[i][j])
                 is_odd_period[i][j] <= !is_odd_period[i][j]; 
     end            
-    endgenerate         
+    endgenerate
         
     /*
      * Select waveform, do proper transformations to the wave

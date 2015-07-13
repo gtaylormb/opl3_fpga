@@ -126,8 +126,11 @@ module operator (
         end
     
     always_comb
-        feedback_result = ((feedback[bank_num][op_num][0] +
-         feedback[bank_num][op_num][1]) << fb) >> 9;
+        if (fb == 0)
+            feedback_result = 0;
+        else
+            feedback_result = ((feedback[bank_num][op_num][0] +
+             feedback[bank_num][op_num][1]) <<< fb) >>> 9;
     
     calc_phase_inc calc_phase_inc (
         .*
