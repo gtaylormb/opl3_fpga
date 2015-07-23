@@ -6,7 +6,7 @@ d:
 imfplay.exe DRO_FILE
 
 To create filesystem.mfs, run:
-mfsgen -c doom_000.dro
+mfsgen -c *.dro
 
 This can be loaded into memory at a specific location using JTAG prior to
 starting program execution
