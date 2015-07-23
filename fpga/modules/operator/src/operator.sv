@@ -69,7 +69,7 @@ module operator (
     input wire use_feedback,
     input wire [REG_FB_WIDTH-1:0] fb,
     input wire [OP_OUT_WIDTH-1:0] modulation,
-    input wire latch_feedback,
+    input wire latch_feedback_pulse,
     output logic signed [OP_OUT_WIDTH-1:0] out
 );   
     wire [PHASE_ACC_WIDTH-1:0] phase_inc;
@@ -80,7 +80,8 @@ module operator (
     wire [ENV_WIDTH-1:0] env;
     logic signed [OP_OUT_WIDTH-1:0] feedback [NUM_BANKS][NUM_OPERATORS_PER_BANK][2] =
      '{default: 0};
-    logic signed [OP_OUT_WIDTH-1:0] feedback_result = 0; 
+    logic signed [OP_OUT_WIDTH-1:0] feedback_result;
+    logic signed [OP_OUT_WIDTH+1+2**REG_FB_WIDTH-1:0] feedback_result_p0; 
     
     genvar i, j;
     generate
@@ -116,21 +117,23 @@ module operator (
     
     
     /*
-     * latch_feedback comes in the last cycle of the time slot so out has had a
+     * latch_feedback_pulse comes in the last cycle of the time slot so out has had a
      * chance to propagate through
      */
     always_ff @(posedge clk)
-        if (latch_feedback) begin
+        if (latch_feedback_pulse) begin
             feedback[bank_num][op_num][0] <= out;
             feedback[bank_num][op_num][1] <= feedback[bank_num][op_num][0];
         end
     
     always_comb
         if (fb == 0)
-            feedback_result = 0;
+            feedback_result_p0 = 0;
         else
-            feedback_result = ((feedback[bank_num][op_num][0] +
-             feedback[bank_num][op_num][1]) <<< fb) >>> 9;
+            feedback_result_p0 = ((feedback[bank_num][op_num][0] +
+             feedback[bank_num][op_num][1]) <<< fb);
+        
+    always_comb feedback_result = feedback_result_p0 >>> 9;
     
     calc_phase_inc calc_phase_inc (
         .*

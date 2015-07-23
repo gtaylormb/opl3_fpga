@@ -100,7 +100,7 @@ module control_operators (
     logic use_feedback [NUM_BANKS][NUM_OPERATORS_PER_BANK];
     logic signed [OP_OUT_WIDTH-1:0] modulation [NUM_BANKS][NUM_OPERATORS_PER_BANK]; 
     wire signed [OP_OUT_WIDTH-1:0] operator_out_tmp;
-    logic latch_feedback = 0;
+    logic latch_feedback_pulse = 0;
     
     always_comb begin
         /*
@@ -523,7 +523,7 @@ module control_operators (
         .nts,      
         .use_feedback(use_feedback[bank_num][op_num]),
         .fb(fb_tmp[bank_num][op_num]),
-        .latch_feedback,
+        .latch_feedback_pulse,
         .modulation(modulation[bank_num][op_num]),
         .out(operator_out_tmp)
     ); 
@@ -545,8 +545,8 @@ module control_operators (
     /*
      * Signals to operator to latch output for feedback register
      */
-    always_ff @(posedge clk)
-        latch_feedback <= delay_counter == OPERATOR_PIPELINE_DELAY - 1;                 
+    always_comb
+        latch_feedback_pulse = delay_counter == OPERATOR_PIPELINE_DELAY - 1;                 
     
 endmodule
 `default_nettype wire  // re-enable implicit net type declarations
