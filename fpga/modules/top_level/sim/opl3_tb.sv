@@ -90,6 +90,8 @@ module opl3_tb;
             force opl3.cha[0][0] = '1;
             force opl3.chb[0][0] = '1;
             force opl3.cnt[0][0] = '1;
+            
+            force opl3.ryt = '1;
         
         	@(posedge opl3.clk_locked);
             ##10000 force opl3.kon[0][0] = 1;

@@ -120,23 +120,32 @@ module channels (
          */
         always_comb begin
             channel_2_op[i][0] = cnt[i][0] ? operator_out[i][0] + operator_out[i][3]
-                : operator_out[i][3];
+             : operator_out[i][3];
             channel_2_op[i][1] = cnt[i][1] ? operator_out[i][1] + operator_out[i][4]
-                : operator_out[i][4];
+             : operator_out[i][4];
             channel_2_op[i][2] = cnt[i][2] ? operator_out[i][2] + operator_out[i][5]
-                : operator_out[i][5];        
+             : operator_out[i][5];        
             channel_2_op[i][3] = cnt[i][3] ? operator_out[i][6] + operator_out[i][9]
-                : operator_out[i][9];
+             : operator_out[i][9];
             channel_2_op[i][4] = cnt[i][4] ? operator_out[i][7] + operator_out[i][10]
-                : operator_out[i][10];
+             : operator_out[i][10];
             channel_2_op[i][5] = cnt[i][5] ? operator_out[i][8] + operator_out[i][11]
-                : operator_out[i][11];        
-            channel_2_op[i][6] = cnt[i][6] ? operator_out[i][12] + operator_out[i][15]
-                : operator_out[i][15];
-            channel_2_op[i][7] = cnt[i][7] ? operator_out[i][13] + operator_out[i][16]
-                : operator_out[i][16];
-            channel_2_op[i][8] = cnt[i][8] ? operator_out[i][14] + operator_out[i][17]
-                : operator_out[i][17];
+             : operator_out[i][11];
+            
+            if (ryt && i == 0)               
+                // bass drum is special (bank 0)
+                channel_2_op[i][6] = cnt[i][6] ? operator_out[i][15] : operator_out[i][12];
+            else
+                channel_2_op[i][6] = cnt[i][6] ? operator_out[i][12] + operator_out[i][15]
+                 : operator_out[i][15];
+            
+            // aka hi hat and snare drum in bank 0
+            channel_2_op[i][7] = cnt[i][7] || (ryt && i == 0) ? operator_out[i][13] + operator_out[i][16]
+             : operator_out[i][16];   
+            
+            // aka tom tom and top cymbal in bank 0
+            channel_2_op[i][8] = cnt[i][8] || (ryt && i == 0)  ? operator_out[i][14] + operator_out[i][17]
+             : operator_out[i][17];
         end
     
         /*

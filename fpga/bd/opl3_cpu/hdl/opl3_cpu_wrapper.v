@@ -1,7 +1,7 @@
 //Copyright 1986-2015 Xilinx, Inc. All Rights Reserved.
 //--------------------------------------------------------------------------------
 //Tool Version: Vivado v.2015.1 (lin64) Build 1215546 Mon Apr 27 19:07:21 MDT 2015
-//Date        : Mon Jul 13 18:55:01 2015
+//Date        : Sat Jul 25 13:30:38 2015
 //Host        : edinburgh running 64-bit Ubuntu 15.04
 //Command     : generate_target opl3_cpu_wrapper.bd
 //Design      : opl3_cpu_wrapper

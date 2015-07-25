@@ -55,6 +55,7 @@ RTL_SRC = \
 	modules/i2s/src/i2s.sv \
 	modules/operator/src/operator.sv \
 	modules/operator/src/calc_phase_inc.sv \
+	modules/operator/src/calc_rhythm_phase.sv \
 	modules/operator/src/phase_generator.sv \
 	modules/operator/src/vibrato.sv \
 	modules/operator/src/envelope_generator.sv \

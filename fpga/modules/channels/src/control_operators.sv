@@ -101,6 +101,7 @@ module control_operators (
     logic signed [OP_OUT_WIDTH-1:0] modulation [NUM_BANKS][NUM_OPERATORS_PER_BANK]; 
     wire signed [OP_OUT_WIDTH-1:0] operator_out_tmp;
     logic latch_feedback_pulse = 0;
+    operator_t op_type_tmp [NUM_BANKS][NUM_OPERATORS_PER_BANK] = '{default: OP_NORMAL};
     
     always_comb begin
         /*
@@ -194,50 +195,59 @@ module control_operators (
         use_feedback[1][5] = 0;
         modulation[1][5] = cnt[1][2] ? 0 : operator_out[1][2];
         
-        /*
-         * Todo: implement rhythm mode
-         */
+        // aka bass drum operator 1
         fnum_tmp[0][12] = fnum[0][6];
         block_tmp[0][12] = block[0][6];
         kon_tmp[0][12] = kon[0][6];
         fb_tmp[0][12] = fb[0][6];
+        op_type_tmp[0][12] = ryt ? OP_BASS_DRUM : OP_NORMAL;
         use_feedback[0][12] = 1;
         modulation[0][12] = 0;
         
+        // aka bass drum operator 2
         fnum_tmp[0][15] = fnum[0][6];
         block_tmp[0][15] = block[0][6];
         kon_tmp[0][15] = kon[0][6];
         fb_tmp[0][15] = 0;
+        op_type_tmp[0][15] = ryt ? OP_BASS_DRUM : OP_NORMAL;
         use_feedback[0][15] = 0;
         modulation[0][15] = cnt[0][6] ? 0 : operator_out[0][12];
         
+        // aka hi hat operator
         fnum_tmp[0][13] = fnum[0][7];
         block_tmp[0][13] = block[0][7];
         kon_tmp[0][13] = kon[0][7];
-        fb_tmp[0][13] = fb[0][7];
-        use_feedback[0][13] = 1;
+        fb_tmp[0][13] = ryt ? 0 : fb[0][7];
+        op_type_tmp[0][13] = ryt ? OP_HI_HAT : OP_NORMAL;
+        use_feedback[0][13] = ryt ? 0 : 1;
         modulation[0][13] = 0;
         
+        // aka snare drum operator
         fnum_tmp[0][16] = fnum[0][7];
         block_tmp[0][16] = block[0][7];
         kon_tmp[0][16] = kon[0][7];
         fb_tmp[0][16] = 0;
+        op_type_tmp[0][16] = ryt ? OP_SNARE_DRUM : OP_NORMAL;        
         use_feedback[0][16] = 0;
-        modulation[0][16] = cnt[0][7] ? 0 : operator_out[0][13];
+        modulation[0][16] = cnt[0][7] || ryt ? 0 : operator_out[0][13];
         
+        // aka tom tom operator
         fnum_tmp[0][14] = fnum[0][8];
         block_tmp[0][14] = block[0][8];
         kon_tmp[0][14] = kon[0][8];
-        fb_tmp[0][14] = fb[0][8];
-        use_feedback[0][14] = 1;
+        fb_tmp[0][14] = ryt ? 0 : fb[0][8];
+        op_type_tmp[0][14] = ryt ? OP_TOM_TOM : OP_NORMAL;        
+        use_feedback[0][14] = ryt ? 0 : 1;
         modulation[0][14] = 0;
         
+        // aka top cymbal operator
         fnum_tmp[0][17] = fnum[0][8];
         block_tmp[0][17] = block[0][8];
         kon_tmp[0][17] = kon[0][8];
         fb_tmp[0][17] = 0;
+        op_type_tmp[0][17] = ryt ? OP_TOP_CYMBAL : OP_NORMAL;
         use_feedback[0][17] = 0;
-        modulation[0][17] = cnt[0][8] ? 0 : operator_out[0][14];
+        modulation[0][17] = cnt[0][8] || ryt ? 0 : operator_out[0][14];
         
         fnum_tmp[1][12] = fnum[1][6];
         block_tmp[1][12] = block[1][6];
@@ -520,11 +530,17 @@ module control_operators (
         .egt(egt[bank_num][op_num]),                    
         .am(am[bank_num][op_num]),                    
         .dam,                     
-        .nts,      
+        .nts,  
+        .bd,
+        .sd,
+        .tom,
+        .tc,
+        .hh,
         .use_feedback(use_feedback[bank_num][op_num]),
         .fb(fb_tmp[bank_num][op_num]),
         .latch_feedback_pulse,
         .modulation(modulation[bank_num][op_num]),
+        .op_type(op_type_tmp[bank_num][op_num]),   
         .out(operator_out_tmp)
     ); 
         
@@ -539,7 +555,6 @@ module control_operators (
                 if (i == bank_num && j == op_num &&
                  delay_counter == OPERATOR_PIPELINE_DELAY - 1)
                     operator_out[i][j] <= operator_out_tmp;
-
     endgenerate 
     
     /*

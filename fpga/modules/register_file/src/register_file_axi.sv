@@ -87,7 +87,8 @@ module register_file_axi #(
     output logic chc [2][9],
     output logic chd [2][9],
     output logic [REG_FB_WIDTH-1:0] fb [2][9],
-    output logic cnt [2][9]
+    output logic cnt [2][9],
+    output logic ac_mute_n
 );  
     localparam BANK2_OFFSET = 256;
     
@@ -97,6 +98,8 @@ module register_file_axi #(
     always_comb begin
         timer1 = slv8_reg[2];
         timer2 = slv8_reg[3];
+        
+        ac_mute_n = slv8_reg[BANK2_OFFSET+2][0];
         
         irq_rst = slv8_reg[4][7];
         mt1 = slv8_reg[4][6];

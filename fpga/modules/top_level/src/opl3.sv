@@ -59,7 +59,7 @@ module opl3 #(
 );
     logic reset;
     wire clk_locked;
-    (* mark_debug = "true" *) wire sample_clk_en;
+    wire sample_clk_en;
     
     wire cs;
     wire rd;
@@ -109,6 +109,7 @@ module opl3 #(
     wire chd [2][9];
     wire [REG_FB_WIDTH-1:0] fb [2][9];
     wire cnt [2][9];
+    wire irq;
 
     logic signed [SAMPLE_WIDTH-1:0] sample_l = 0;
     logic signed [SAMPLE_WIDTH-1:0] sample_r = 0;
@@ -184,17 +185,9 @@ module opl3 #(
     ) register_file_axi (
         .*
     );
-    
-/*    ila_0 ila (
-        .clk(clk),
-        .probe0({sample_l, sample_r})
-    ); */
-    
-  /*  timers timers (
-        .irq(IRQ_F2P),
+        
+    timers timers (
         .*
-    );       */
-    
-    always_comb ac_mute_n = 1;
+    );   
 endmodule
 `default_nettype wire  // re-enable implicit net type declarations

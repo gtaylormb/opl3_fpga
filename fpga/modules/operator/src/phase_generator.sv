@@ -53,6 +53,7 @@ module phase_generator (
     input wire [ENV_WIDTH-1:0] env,
     input wire key_on_pulse,
     input wire [OP_OUT_WIDTH-1:0] modulation,
+    input operator_t op_type,    
     output logic signed [OP_OUT_WIDTH-1:0] out = 0
 );	
     localparam LOG_SIN_OUT_WIDTH = 12;
@@ -64,14 +65,16 @@ module phase_generator (
     logic [PIPELINE_DELAY-1:0] sample_clk_en_delayed = 0;
 	logic [PHASE_ACC_WIDTH-1:0] phase_acc [NUM_BANKS][NUM_OPERATORS_PER_BANK] = '{ default: '0 };
     logic [PHASE_ACC_WIDTH-1:0] final_phase [NUM_BANKS][NUM_OPERATORS_PER_BANK] = '{ default: '0 };
+    logic [PHASE_ACC_WIDTH-1:0] rhythm_phase;
     
     logic is_odd_period [NUM_BANKS][NUM_OPERATORS_PER_BANK] = '{ default: '0 };
     logic phase_acc_msb_pos_edge_pulse [NUM_BANKS][NUM_OPERATORS_PER_BANK];
     wire [LOG_SIN_OUT_WIDTH-1:0] log_sin_out; 
     logic [LOG_SIN_PLUS_GAIN_WIDTH-1:0] log_sin_plus_gain = 0;     
     wire [EXP_OUT_WIDTH-1:0] exp_out;
-	logic [OP_OUT_WIDTH-1:0] tmp_out0 = 0;
-    logic signed [OP_OUT_WIDTH-1:0] tmp_out1 = 0;
+	logic [OP_OUT_WIDTH-1:0] tmp_out0;
+    logic signed [OP_OUT_WIDTH-1:0] tmp_out1;
+    logic signed [OP_OUT_WIDTH-1:0] tmp_out2;    
     logic signed [OP_OUT_WIDTH-1:0] tmp_ws2;
     logic signed [OP_OUT_WIDTH-1:0] tmp_ws4;  
     logic [LOG_SIN_OUT_WIDTH-1:0] tmp_ws7; 
@@ -83,7 +86,15 @@ module phase_generator (
     always_ff @(posedge clk) begin
         sample_clk_en_delayed <= sample_clk_en_delayed << 1;
         sample_clk_en_delayed[0] <= sample_clk_en;
-    end          
+    end       
+    
+    /*
+     * Some rhythm instruments require further transformations to the phase.
+     * Pass through phase_acc[bank_num][op_num] normally.
+     */
+    calc_rhythm_phase calc_rhythm_phase (
+        .*
+    );
         
     /*
      * Phase Accumulator. Modulation gets added to the final phase but not
@@ -98,12 +109,12 @@ module phase_generator (
             else if (ws == 4 || ws == 5) begin
                 // double the frequency
 		        phase_acc[bank_num][op_num] <= phase_acc[bank_num][op_num] + (phase_inc << 1);
-                final_phase[bank_num][op_num] <= phase_acc[bank_num][op_num] + (phase_inc << 1)
+                final_phase[bank_num][op_num] <= rhythm_phase + (phase_inc << 1)
                  + (modulation << 10);
             end    
             else begin
                 phase_acc[bank_num][op_num] <= phase_acc[bank_num][op_num] + phase_inc;
-                final_phase[bank_num][op_num] <= phase_acc[bank_num][op_num] + phase_inc
+                final_phase[bank_num][op_num] <= rhythm_phase + phase_inc
                  + (modulation << 10);
             end    
         
@@ -129,21 +140,6 @@ module phase_generator (
                 is_odd_period[i][j] <= !is_odd_period[i][j]; 
     end            
     endgenerate
-        
-    /*
-     * Select waveform, do proper transformations to the wave
-     */
-    always_ff @(posedge clk)
-        unique case (ws)
-        0: out <= tmp_out1;
-        1: out <= tmp_out1 < 0 ? 0 : tmp_out1;
-        2: out <= tmp_ws2;
-        3: out <= final_phase[bank_num][op_num][PHASE_ACC_WIDTH-2] ? 0 : tmp_ws2;
-        4: out <= tmp_ws4;
-        5: out <= tmp_ws4 < 0 ? ~tmp_ws4 : tmp_ws4;
-        6: out <= tmp_out1 > 0 ? 2**(OP_OUT_WIDTH-1) - 1 : -2**(OP_OUT_WIDTH-1);
-        7: out <= tmp_out1;
-        endcase
 	
     opl3_log_sine_lut log_sine_lut_inst (
         .theta(final_phase[bank_num][op_num][18] ? ~final_phase[bank_num][op_num][17:10]
@@ -181,7 +177,28 @@ module phase_generator (
             tmp_out1 = ~(tmp_out0 >> log_sin_plus_gain[LOG_SIN_PLUS_GAIN_WIDTH-1:8]);
         else
             tmp_out1 = tmp_out0 >> log_sin_plus_gain[LOG_SIN_PLUS_GAIN_WIDTH-1:8]; 
-    
+        
+    /*
+     * Select waveform, do proper transformations to the wave
+     */
+    always_comb
+        unique case (ws)
+        0: tmp_out2 = tmp_out1;
+        1: tmp_out2 = tmp_out1 < 0 ? 0 : tmp_out1;
+        2: tmp_out2 = tmp_ws2;
+        3: tmp_out2 = final_phase[bank_num][op_num][PHASE_ACC_WIDTH-2] ? 0 : tmp_ws2;
+        4: tmp_out2 = tmp_ws4;
+        5: tmp_out2 = tmp_ws4 < 0 ? ~tmp_ws4 : tmp_ws4;
+        6: tmp_out2 = tmp_out1 > 0 ? 2**(OP_OUT_WIDTH-1) - 1 : -2**(OP_OUT_WIDTH-1);
+        7: tmp_out2 = tmp_out1;
+        endcase 
+            
+    always_ff @(posedge clk)
+        unique case (op_type)
+        OP_NORMAL:    out <= tmp_out2;
+        OP_BASS_DRUM: out <= tmp_out2;
+        default:      out <= tmp_out2 << 1;
+        endcase      
 endmodule
 `default_nettype wire  // re-enable implicit net type declarations
 	

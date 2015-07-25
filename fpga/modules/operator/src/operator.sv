@@ -66,10 +66,16 @@ module operator (
     input wire am,                      // amplitude modulation (tremolo)
     input wire dam,                     // depth of tremolo
     input wire nts,                     // keyboard split selection
+    input wire bd,
+    input wire sd,
+    input wire tom,
+    input wire tc,
+    input wire hh,        
     input wire use_feedback,
     input wire [REG_FB_WIDTH-1:0] fb,
     input wire [OP_OUT_WIDTH-1:0] modulation,
     input wire latch_feedback_pulse,
+    input operator_t op_type,
     output logic signed [OP_OUT_WIDTH-1:0] out
 );   
     wire [PHASE_ACC_WIDTH-1:0] phase_inc;
@@ -81,7 +87,13 @@ module operator (
     logic signed [OP_OUT_WIDTH-1:0] feedback [NUM_BANKS][NUM_OPERATORS_PER_BANK][2] =
      '{default: 0};
     logic signed [OP_OUT_WIDTH-1:0] feedback_result;
-    logic signed [OP_OUT_WIDTH+1+2**REG_FB_WIDTH-1:0] feedback_result_p0; 
+    logic signed [OP_OUT_WIDTH+1+2**REG_FB_WIDTH-1:0] feedback_result_p0;
+    wire bd_on_pulse;
+    wire sd_on_pulse;
+    wire tom_on_pulse;
+    wire tc_on_pulse;
+    wire hh_on_pulse;
+    logic rhythm_kon_pulse;
     
     genvar i, j;
     generate
@@ -104,17 +116,69 @@ module operator (
                     .EDGE_LEVEL(0), 
                     .CLK_DLY(1)
                 ) key_off_edge_detect (
-                    .clk_en(i == bank_num && j == op_num && sample_clk_en),
+                    .clk_en(i == bank_num && j == op_num && sample_clk_en && op_type == OP_NORMAL),
                     .in(kon[i][j]), 
                     .edge_detected(key_off_pulse_array[i][j]),
                     .*
                 );                                   
             end            
-    endgenerate 
+    endgenerate  
     
-    always_comb key_on_pulse = key_on_pulse_array[bank_num][op_num];
-    always_comb key_off_pulse = key_off_pulse_array[bank_num][op_num];          
+    edge_detector #(
+        .EDGE_LEVEL(1), 
+        .CLK_DLY(1)
+    ) bd_edge_detect (
+        .clk_en(op_type == OP_BASS_DRUM && sample_clk_en),
+        .in(bd), 
+        .edge_detected(bd_on_pulse),
+        .*
+    );
+    edge_detector #(
+        .EDGE_LEVEL(1), 
+        .CLK_DLY(1)
+    ) sd_edge_detect (
+        .clk_en(op_type == OP_SNARE_DRUM && sample_clk_en),
+        .in(sd), 
+        .edge_detected(sd_on_pulse),
+        .*
+    );
+    edge_detector #(
+        .EDGE_LEVEL(1), 
+        .CLK_DLY(1)
+    ) tom_edge_detect (
+        .clk_en(op_type == OP_TOM_TOM && sample_clk_en),
+        .in(tom), 
+        .edge_detected(tom_on_pulse),
+        .*
+    );       
+    edge_detector #(
+        .EDGE_LEVEL(1), 
+        .CLK_DLY(1)
+    ) tc_edge_detect (
+        .clk_en(op_type == OP_TOP_CYMBAL && sample_clk_en),
+        .in(tc), 
+        .edge_detected(tc_on_pulse),
+        .*
+    );
+    edge_detector #(
+        .EDGE_LEVEL(1), 
+        .CLK_DLY(1)
+    ) hh_edge_detect (
+        .clk_en(op_type == OP_HI_HAT && sample_clk_en),
+        .in(hh), 
+        .edge_detected(hh_on_pulse),
+        .*
+    ); 
     
+    always_comb rhythm_kon_pulse =
+     (op_type == OP_BASS_DRUM && bd_on_pulse) ||
+     (op_type == OP_SNARE_DRUM && sd_on_pulse) ||
+     (op_type == OP_TOM_TOM && tom_on_pulse) ||
+     (op_type == OP_TOP_CYMBAL && tc_on_pulse) ||
+     (op_type == OP_HI_HAT && hh_on_pulse);
+    
+    always_comb key_on_pulse = key_on_pulse_array[bank_num][op_num] || rhythm_kon_pulse;
+    always_comb key_off_pulse = key_off_pulse_array[bank_num][op_num];
     
     /*
      * latch_feedback_pulse comes in the last cycle of the time slot so out has had a

@@ -42,6 +42,8 @@ subject to the following restrictions:
 #define CMD_FULL				1		//cmd + delay
 #define CMD_DELAY_ONLY	2		//delay
 
+#define TIMER_DEVICE_ID 	XPAR_SCUTIMER_DEVICE_ID
+
 long freq_div;
 long last_slow_tick;
 const int opl2_base = 0x388;
@@ -74,12 +76,12 @@ typedef struct
 	filetype type;
 } fileinfo;
 
-void opl2_out(unsigned char reg, unsigned char data)
+void opl2_out(unsigned char reg, unsigned char data, unsigned char bank = 0)
 {
 /*	outportb(opl2_base, reg);
 	outportb(opl2_base + 1, data); */
 
-	int actual_reg = reg - reg%4;
+	int actual_reg = reg - reg%4 + (bank ? 256 : 0);
 	union {
 		u32 int_value;
 		char char_array[4];
@@ -335,7 +337,19 @@ int main(int argc, char **argv)
 {
 	fileinfo f;
 
+	TimerInitialize(TIMER_DEVICE_ID);
+
+	// mute output
+	opl2_out(2, 0, 1);
+	TimerDelay(100000);
+
 	AudioInitialize();
+//	AudioInitialize();
+	TimerDelay(100000);
+
+	// unmute output
+	opl2_out(2, 1, 1);
+
 
 	mfs_init_genimage(2660000, (char *) 0x10000000, MFSINIT_IMAGE);
 

@@ -82,5 +82,14 @@ package opl3_pkg;
     
     parameter TIMER1_TICK_INTERVAL = 80e-6;  // in seconds
     parameter TIMER2_TICK_INTERVAL = 320e-6; // in seconds
+    
+    typedef enum {
+        OP_NORMAL,
+        OP_BASS_DRUM,
+        OP_HI_HAT,
+        OP_TOM_TOM,
+        OP_SNARE_DRUM,
+        OP_TOP_CYMBAL
+    } operator_t;
 
 endpackage
