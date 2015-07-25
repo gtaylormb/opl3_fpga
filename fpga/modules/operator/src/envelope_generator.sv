@@ -92,7 +92,7 @@ module envelope_generator #(
     wire [AM_VAL_WIDTH-1:0] am_val;
     logic [REG_ENV_WIDTH-1:0] requested_rate;
     wire [ENV_RATE_COUNTER_OVERFLOW_WIDTH-1:0] rate_counter_overflow;
-    logic [ENV_WIDTH:0] env_tmp; // one more bit wide than env for >, < comparison
+    logic signed [ENV_WIDTH+1:0] env_tmp; // two more bits wide than env for >, < comparison
     logic [PIPELINE_DELAY-1:0] sample_clk_en_delayed = 0;
     
     ksl_add_rom ksl_add_rom (
