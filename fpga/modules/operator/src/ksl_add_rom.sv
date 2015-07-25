@@ -54,10 +54,14 @@ module ksl_add_rom # (
     output logic [KSL_ADD_WIDTH-1:0] ksl_add = 0
 );
     logic [6:0] rom_out = 0;
-    logic [KSL_ADD_WIDTH-1:0] tmp;
+    logic signed [KSL_ADD_WIDTH-1:0] tmp0;
+    logic signed [KSL_ADD_WIDTH-1:0] tmp1;
+    logic [REG_FNUM_WIDTH-6-1:0] fnum_shifted;
+    
+    always_comb fnum_shifted = fnum >> 6;
     
     always_ff @(posedge clk)
-        unique case (fnum >> 6)
+        unique case (fnum_shifted)
         0: rom_out <= 0;
         1: rom_out <= 32;
         2: rom_out <= 40;
@@ -75,15 +79,16 @@ module ksl_add_rom # (
         14: rom_out <= 63;
         15: rom_out <= 64;
         endcase
-            
-    always_comb tmp = rom_out + ((block - 8) << 3);
+    
+    always_comb tmp0 = block - 8;            
+    always_comb tmp1 = rom_out + (tmp0 << 3);
     
     always_ff @(posedge clk)
         unique case (ksl)
         0: ksl_add <= 0;
-        1: ksl_add <= tmp << 1;
-        2: ksl_add <= tmp;
-        3: ksl_add <= tmp << 2;
+        1: ksl_add <= tmp1 <= 0 ? 0 : tmp1 << 1;
+        2: ksl_add <= tmp1 <= 0 ? 0 : tmp1;
+        3: ksl_add <= tmp1 <= 0 ? 0 : tmp1 << 2;
         endcase
 endmodule
 `default_nettype wire  // re-enable implicit net type declarations
