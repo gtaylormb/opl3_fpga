@@ -48,7 +48,7 @@ module phase_generator (
     input wire sample_clk_en,
     input wire [BANK_NUM_WIDTH-1:0] bank_num,
     input wire [OP_NUM_WIDTH-1:0] op_num,  
-	input wire [PHASE_ACC_WIDTH-1:0] phase_inc,
+    input wire [PHASE_ACC_WIDTH-1:0] phase_inc,
     input wire [REG_WS_WIDTH-1:0] ws,
     input wire [ENV_WIDTH-1:0] env,
     input wire key_on_pulse,
@@ -63,7 +63,7 @@ module phase_generator (
     localparam PIPELINE_DELAY = 2;     
     
     logic [PIPELINE_DELAY-1:0] sample_clk_en_delayed = 0;
-	logic [PHASE_ACC_WIDTH-1:0] phase_acc [NUM_BANKS][NUM_OPERATORS_PER_BANK] = '{ default: '0 };
+    logic [PHASE_ACC_WIDTH-1:0] phase_acc [NUM_BANKS][NUM_OPERATORS_PER_BANK] = '{ default: '0 };
     logic [PHASE_ACC_WIDTH-1:0] final_phase [NUM_BANKS][NUM_OPERATORS_PER_BANK] = '{ default: '0 };
     logic [PHASE_ACC_WIDTH-1:0] rhythm_phase;
     
@@ -72,7 +72,7 @@ module phase_generator (
     wire [LOG_SIN_OUT_WIDTH-1:0] log_sin_out; 
     logic [LOG_SIN_PLUS_GAIN_WIDTH-1:0] log_sin_plus_gain = 0;     
     wire [EXP_OUT_WIDTH-1:0] exp_out;
-	logic [OP_OUT_WIDTH-1:0] tmp_out0;
+    logic [OP_OUT_WIDTH-1:0] tmp_out0;
     logic signed [OP_OUT_WIDTH-1:0] tmp_out1;
     logic signed [OP_OUT_WIDTH-1:0] tmp_out2;    
     logic signed [OP_OUT_WIDTH-1:0] tmp_ws2;
@@ -100,8 +100,8 @@ module phase_generator (
      * Phase Accumulator. Modulation gets added to the final phase but not
      * back into the accumulator.
      */
-	always_ff @(posedge clk)
-		if (sample_clk_en_delayed[PIPELINE_DELAY-1])
+    always_ff @(posedge clk)
+        if (sample_clk_en_delayed[PIPELINE_DELAY-1])
             if (key_on_pulse) begin
                 phase_acc[bank_num][op_num] <= 0;
                 final_phase[bank_num][op_num] <= 0;
