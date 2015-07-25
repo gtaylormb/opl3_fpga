@@ -1,8 +1,9 @@
 opl3_fpga
 =========
 Reverse engineered SystemVerilog RTL version of the 
-<a href="http://en.wikipedia.org/wiki/Yamaha_YMF262">Yamaha OPL3 (YMF262)</a> FM Synthesizer. Currently in progress.
-Follow the progress and discussion in http://forums.submarine.org.uk/phpBB/viewtopic.php?f=9&t=58132
+<a href="http://en.wikipedia.org/wiki/Yamaha_YMF262">Yamaha OPL3 (YMF262)</a> FM Synthesizer.
+Design is complete and working on the Digilent ZYBO board. Further testing is needed to verify
+full functionality and coverage. I'll mostly be adding and working on the software at this point.
 
 There are some minor differences between this version and the original chip, mainly due to the hardware on
 the board that I'm using. The design is targeted to the <a href="https://www.digilentinc.com/Products/Detail.cfm?Prod=ZYBO">Digilent ZYBO board</a>
@@ -29,4 +30,37 @@ Several other very smart people put in a lot of work before me to get as close a
 software implementations of the chip, and this FPGA design would not be possible without their work. They're
 all over at http://forums.submarine.org.uk/phpBB/viewforum.php?f=9
 
-Tools used are Modelsim, Vivado, Octave (for sample analysis), and SVEditor (for SystemVerilog file editing).
+Tools used are Modelsim, Vivado 2015.1, Octave (for sample analysis), and SVEditor (for SystemVerilog file editing).
+
+## Final utilization in xc7z010:
+
+    +----------------------------+-------+-------+-----------+-------+
+    |          Site Type         |  Used | Fixed | Available | Util% |
+    +----------------------------+-------+-------+-----------+-------+
+    | Slice LUTs                 |  8012 |     0 |     17600 | 45.52 |
+    |   LUT as Logic             |  7946 |     0 |     17600 | 45.15 |
+    |   LUT as Memory            |    66 |     0 |      6000 |  1.10 |
+    |     LUT as Distributed RAM |     0 |     0 |           |       |
+    |     LUT as Shift Register  |    66 |     0 |           |       |
+    | Slice Registers            | 11119 |     0 |     35200 | 31.59 |
+    |   Register as Flip Flop    | 11119 |     0 |     35200 | 31.59 |
+    |   Register as Latch        |     0 |     0 |     35200 |  0.00 |
+    | F7 Muxes                   |   385 |     0 |      8800 |  4.38 |
+    | F8 Muxes                   |     0 |     0 |      4400 |  0.00 |
+    +----------------------------+-------+-------+-----------+-------+
+    
+    +-------------------+------+-------+-----------+-------+
+    |     Site Type     | Used | Fixed | Available | Util% |
+    +-------------------+------+-------+-----------+-------+
+    | Block RAM Tile    |    1 |     0 |        60 |  1.67 |
+    |   RAMB36/FIFO*    |    0 |     0 |        60 |  0.00 |
+    |   RAMB18          |    2 |     0 |       120 |  1.67 |
+    |     RAMB18E1 only |    2 |       |           |       |
+    +-------------------+------+-------+-----------+-------+
+    
+    +----------------+------+-------+-----------+-------+
+    |    Site Type   | Used | Fixed | Available | Util% |
+    +----------------+------+-------+-----------+-------+
+    | DSPs           |    1 |     0 |        80 |  1.25 |
+    |   DSP48E1 only |    1 |       |           |       |
+    +----------------+------+-------+-----------+-------+
