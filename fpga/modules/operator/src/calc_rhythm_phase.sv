@@ -50,7 +50,7 @@ module calc_rhythm_phase (
     input wire sample_clk_en,
     input wire [BANK_NUM_WIDTH-1:0] bank_num,
     input wire [OP_NUM_WIDTH-1:0] op_num,          
-	input wire [PHASE_ACC_WIDTH-1:0] phase_acc [NUM_BANKS][NUM_OPERATORS_PER_BANK],
+    input wire [PHASE_ACC_WIDTH-1:0] phase_acc [NUM_BANKS][NUM_OPERATORS_PER_BANK],
     input operator_t op_type,    
     output logic [PHASE_ACC_WIDTH-1:0] rhythm_phase
 );	
