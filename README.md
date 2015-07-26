@@ -32,7 +32,7 @@ all over at http://forums.submarine.org.uk/phpBB/viewforum.php?f=9
 
 Tools used are Modelsim, Vivado 2015.1, Octave (for sample analysis), and SVEditor (for SystemVerilog file editing).
 
-## Final utilization in xc7z010:
+## Current utilization in xc7z010:
 
     +----------------------------+-------+-------+-----------+-------+
     |          Site Type         |  Used | Fixed | Available | Util% |
