@@ -7,6 +7,7 @@ full functionality and coverage. I'll mostly be adding and working on the softwa
 
 See it in action: 
 https://www.youtube.com/watch?v=KoSF4ZoDuRI
+
 https://www.youtube.com/watch?v=i9vEKyJScYw
 
 There are some minor differences between this version and the original chip, mainly due to the hardware on
