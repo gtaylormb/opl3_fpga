@@ -5,7 +5,9 @@ Reverse engineered SystemVerilog RTL version of the
 Design is complete and working on the Digilent ZYBO board. Further testing is needed to verify
 full functionality and coverage. I'll mostly be adding and working on the software at this point.
 
-See it in action: https://www.youtube.com/watch?v=KoSF4ZoDuRI
+See it in action: 
+https://www.youtube.com/watch?v=KoSF4ZoDuRI
+https://www.youtube.com/watch?v=i9vEKyJScYw
 
 There are some minor differences between this version and the original chip, mainly due to the hardware on
 the board that I'm using. The design is targeted to the <a href="https://www.digilentinc.com/Products/Detail.cfm?Prod=ZYBO">Digilent ZYBO board</a>
