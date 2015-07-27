@@ -353,7 +353,7 @@ int main(int argc, char **argv)
 
 	mfs_init_genimage(2660000, (char *) 0x10000000, MFSINIT_IMAGE);
 
-	file_open(&f, "doom_001.dro");
+	file_open(&f, "descent_opl3.dro");
 
 	//open IMF
 /*	if (argc > 1)
@@ -432,6 +432,9 @@ int main(int argc, char **argv)
 				{
 					opl2_out(c.reg, c.data);
 					shadow_opl_written[c.reg] = 1;
+				}
+				else {
+					opl2_out(c.reg, c.data, 1);
 				}
 			}
 
