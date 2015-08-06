@@ -2,6 +2,9 @@
 imfplay
 Copyright (c) 2014 Tom Grus
 
+Ported to 32-bit ARM Cortex on Xilinx Zynq using Xilinx In-Memory Filesystem
+by Greg Taylor
+
 This software is provided 'as-is', without any express or implied warranty.
 In no event will the authors be held liable for any damages arising from the
 use of this software.
@@ -78,9 +81,6 @@ typedef struct
 
 void opl2_out(unsigned char reg, unsigned char data, unsigned char bank = 0)
 {
-/*	outportb(opl2_base, reg);
-	outportb(opl2_base + 1, data); */
-
 	int actual_reg = reg - reg%4 + (bank ? 256 : 0);
 	union {
 		u32 int_value;
@@ -101,8 +101,13 @@ void opl2_out(unsigned char reg, unsigned char data, unsigned char bank = 0)
 void opl2_clear(void)
 {
 	int i;
-	for (i = 0; i < 256; i++)
+	for (i = 0; i < 256; i++) {
 		opl2_out(i, 0);
+		opl2_out(i, 0, 1);
+	}
+
+	// unmute output
+	opl2_out(2, 1, 1);
 }
 
 void mute_toggle(int channel)
@@ -160,30 +165,26 @@ int read_next_cmd(fileinfo *fi, cmd *c)
 
 		case FT_DRO1:
 			c->reg = c->data = c->delay = 0;
-			mfs_file_read(fi->stream, rb, 1);
-			ri = rb[0];
-			if (ri == EOF)
+			if (mfs_file_read(fi->stream, rb, 1) != 1)
 				return CMD_EOF;
+			ri = rb[0];
 			switch(ri)
 			{
 				case 0:	//1B delay
-					mfs_file_read(fi->stream, rb, 1);
-					ri = rb[0];
-					if (ri == EOF)
+					if (mfs_file_read(fi->stream, rb, 1) != 1)
 						return CMD_EOF;
+					ri = rb[0];
 					c->delay = ri + 1;
 					return CMD_DELAY_ONLY;
 
 				case 1:	//2B delay
-					mfs_file_read(fi->stream, rb, 1);
-					ri = rb[0];
-					if (ri == EOF)
+					if (mfs_file_read(fi->stream, rb, 1) != 1)
 						return CMD_EOF;
+					ri = rb[0];
 					c->delay = ri;
-					mfs_file_read(fi->stream, rb, 1);
-					ri = rb[0];
-					if (ri == EOF)
+					if (mfs_file_read(fi->stream, rb, 1) != 1)
 						return CMD_EOF;
+					ri = rb[0];
 					c->delay |= ri << 8;
 					c->delay++;
 					return CMD_DELAY_ONLY;
@@ -201,35 +202,31 @@ int read_next_cmd(fileinfo *fi, cmd *c)
 
 				default:
 					c->reg = ri | dro1_high;
-					mfs_file_read(fi->stream, rb, 1);
-					ri = rb[0];
-					if (ri == EOF)
+					if (mfs_file_read(fi->stream, rb, 1) != 1)
 						return CMD_EOF;
+					ri = rb[0];
 					c->data = ri;
 					return CMD_FULL;
 			}
 
 		case FT_DRO2:
 			c->reg = c->data = c->delay = 0;
-			mfs_file_read(fi->stream, rb, 1);
-			ri = rb[0];
-			if (ri == EOF)
+			if (mfs_file_read(fi->stream, rb, 1) != 1)
 				return CMD_EOF;
+			ri = rb[0];
 			if (ri == dro2_delaycodes[0])
 			{
-				mfs_file_read(fi->stream, rb, 1);
-				ri = rb[0];
-				if (ri == EOF)
+				if (mfs_file_read(fi->stream, rb, 1) != 1)
 					return CMD_EOF;
+				ri = rb[0];
 				c->delay = ri + 1;
 				return CMD_DELAY_ONLY;
 			}
 			else if (ri == dro2_delaycodes[1])
 			{
-				mfs_file_read(fi->stream, rb, 1);
-				ri = rb[0];
-				if (ri == EOF)
+				if (mfs_file_read(fi->stream, rb, 1) != 1)
 					return CMD_EOF;
+				ri = rb[0];
 				c->delay = 256 * (ri + 1);
 				return CMD_DELAY_ONLY;
 			}
@@ -237,10 +234,9 @@ int read_next_cmd(fileinfo *fi, cmd *c)
 			{
 				c->reg = dro2_codetable[ri & 0x7F];
 				c->reg |= (ri & 0x80) << 1;
-				mfs_file_read(fi->stream, rb, 1);
-				ri = rb[0];
-				if (ri == EOF)
+				if (mfs_file_read(fi->stream, rb, 1) != 1)
 					return CMD_EOF;
+				ri = rb[0];
 				c->data = ri;
 				return CMD_FULL;
 			}
@@ -253,9 +249,7 @@ int file_open(fileinfo *fi, char *fname)
 {
 	char rb[16];
 	char drosig[] = "DBRAWOPL";
-	int fb;
 
-	mfs_ls();
 	fi->stream = mfs_file_open(fname, MFS_MODE_READ);
 
 	if (mfs_file_read(fi->stream, rb, 2) != 2)
@@ -269,7 +263,8 @@ int file_open(fileinfo *fi, char *fname)
 			&& (memcmp(rb, drosig, 8) == 0))
 		{
 			//it is!
-			mfs_file_read(fi->stream, rb, 4);
+			if (mfs_file_read(fi->stream, rb, 4) != 4)
+				return 0;
 			if (rb[0] == 0 && rb[1] == 0 && rb[2] == 1 && rb[3] == 0)
 			{
 				//DRO 1.0
@@ -333,27 +328,14 @@ void file_close(fileinfo *fi)
 	mfs_file_close(fi->stream);
 }
 
-int main(int argc, char **argv)
+int imfplay(char *filename)
 {
 	fileinfo f;
-
-	TimerInitialize(TIMER_DEVICE_ID);
-
-	// mute output
-	opl2_out(2, 0, 1);
-	TimerDelay(100000);
-
-	AudioInitialize();
-//	AudioInitialize();
-	TimerDelay(100000);
 
 	// unmute output
 	opl2_out(2, 1, 1);
 
-
-	mfs_init_genimage(2660000, (char *) 0x10000000, MFSINIT_IMAGE);
-
-	file_open(&f, "descent_opl3.dro");
+	file_open(&f, filename);
 
 	//open IMF
 /*	if (argc > 1)
@@ -404,7 +386,6 @@ int main(int argc, char **argv)
 
 	//clear OPL2
 	opl2_clear();
-
 
 	//play
 	{

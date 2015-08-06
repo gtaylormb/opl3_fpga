@@ -8,17 +8,19 @@ LD_SRCS += \
 
 C_SRCS += \
 ../src/audio_demo.c \
+../src/imfplay.c \
 ../src/mfs_filesys.c \
 ../src/mfs_filesys_util.c \
 ../src/platform.c \
 ../src/timer_ps.c 
 
 CPP_SRCS += \
-../src/imfplay.cpp 
+../src/main.cpp 
 
 OBJS += \
 ./src/audio_demo.o \
 ./src/imfplay.o \
+./src/main.o \
 ./src/mfs_filesys.o \
 ./src/mfs_filesys_util.o \
 ./src/platform.o \
@@ -26,13 +28,14 @@ OBJS += \
 
 C_DEPS += \
 ./src/audio_demo.d \
+./src/imfplay.d \
 ./src/mfs_filesys.d \
 ./src/mfs_filesys_util.d \
 ./src/platform.d \
 ./src/timer_ps.d 
 
 CPP_DEPS += \
-./src/imfplay.d 
+./src/main.d 
 
 
 # Each subdirectory must supply rules for building sources it contributes
