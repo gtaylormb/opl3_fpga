@@ -68,3 +68,32 @@ Tools used are Modelsim, Vivado 2015.1, Octave (for sample analysis), and SVEdit
     | DSPs           |    1 |     0 |        80 |  1.25 |
     |   DSP48E1 only |    1 |       |           |       |
     +----------------+------+-------+-----------+-------+
+    
+## Serial command line interface
+
+I've just added a simple command line interface. Set your terminal to 115200
+baud, 8-N-1.
+    
+    Welcome to the OPL3 FPGA
+    
+    Type 'help' for a list of commands
+    >ls
+    descent.dro 381376
+    doom_000.dro 73778
+    doom_001.dro 54434
+    doom_002.dro 81288
+    doom_035.dro 50934
+    doom_036.dro 58198
+    doom2_000.dro 16554
+    doom2_001.dro 74836
+    doom2_002.dro 115962
+    doom2_003.dro 162264
+    doom2_031.dro 45292
+    doom2_032.dro 54584
+    doom2.dro 47328
+    doom.dro 90077
+    duke3d.dro 136862
+    hexen.dro 122449
+    war_000.dro 120658
+    >play doom_000.dro
+    DRO 2.0 file 
