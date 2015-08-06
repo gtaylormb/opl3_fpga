@@ -58,7 +58,7 @@ int main(int argc, char **argv) {
 	mfs_init_genimage(2660000, (char *) 0x10000000, MFSINIT_IMAGE);
 
 	cout << "Welcome to the OPL3 FPGA" << endl << endl;
-	cout << "Type \nhelp\n for a list of commands" << endl;
+	cout << "Type 'help' for a list of commands" << endl;
 
 	while (1) {
 		memset(cmd, 0, CMD_BUF_LEN);

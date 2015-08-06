@@ -64,6 +64,10 @@ module i2s (
     logic [1:0][SAMPLE_WIDTH-1:0] right_channel_r = 0; 
     logic i2s_sclk_p0 = 0;
     
+    /*
+     * Double buffer so output doesn't get corrupted in the middle of outputting
+     * a sample
+     */
     always_ff @(posedge clk)
         if (sample_clk_en) begin
             left_channel_r[0] <= left_channel;

@@ -108,7 +108,7 @@ module phase_generator (
             end
             else if (ws == 4 || ws == 5) begin
                 // double the frequency
-		        phase_acc[bank_num][op_num] <= phase_acc[bank_num][op_num] + (phase_inc << 1);
+                phase_acc[bank_num][op_num] <= phase_acc[bank_num][op_num] + (phase_inc << 1);
                 final_phase[bank_num][op_num] <= rhythm_phase + (phase_inc << 1)
                  + (modulation << 10);
             end    
