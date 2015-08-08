@@ -11,8 +11,7 @@
 #           source /opt/Xilinx/SDK/2015.1/settings64.sh
 #	   
 #	2. Run 'make' to build all the FPGA and software necessary to run the OPL3
-#	   and create an SD card image. You must source the Vivado and SDK settings
-#	   first so the build tools are in your path.
+#	   and create an SD card image.
 #
 #	3. Copy the resulting BOOT.bin to an SD card, insert it into the ZYBO.
 #
@@ -62,8 +61,6 @@
 #   Copyright (C) 2010-2013 by carbon14 and opl3    
 #   
 #******************************************************************************
-VIVADO_VERSION = 2015.1
-	
 sd: all BOOT.bin
 	
 all:
@@ -74,10 +71,6 @@ clean:
 	cd fpga && make clean
 	cd software && make clean
 	rm -f BOOT.bin
-	
-source_settings:
-	source /opt/Xilinx/Vivado/$(VIVADO_VERSION)/settings64.sh
-	source /opt/Xilinx/SDK/$(VIVADO_VERSION)/settings64.sh
 	
 BOOT.bin:
 	bootgen -image software/bif/sd.bif -o BOOT.bin

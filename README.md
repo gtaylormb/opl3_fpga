@@ -71,8 +71,8 @@ Tools used are Modelsim, Vivado 2015.1, Octave (for sample analysis), and SVEdit
     
 ## Serial command line interface
 
-I've just added a simple command line interface. Set your terminal to 115200
-baud, 8-N-1.
+I've added a simple command line interface for playing songs. 
+Set your terminal to 115200 baud, 8-N-1.
     
     Welcome to the OPL3 FPGA
     
@@ -97,3 +97,31 @@ baud, 8-N-1.
     war_000.dro 120658
     >play doom_000.dro
     DRO 2.0 file 
+    
+## Build/run instructions
+1. If you want to add any .dro files, you may place them in software/opl3dro.
+They will be included in the in-memory filesystem for playback.
+
+2. Source the Vivado and SDK settings so all the build tools are in your path.
+Example: 
+   source /opt/Xilinx/Vivado/2015.1/settings64.sh
+   source /opt/Xilinx/SDK/2015.1/settings64.sh
+      
+3. Run 'make' to build all the FPGA and software necessary to run the OPL3
+and create an SD card image.
+
+4. Copy the resulting BOOT.bin to an SD card, insert it into the ZYBO.
+
+5. Set JP5 to SD.
+
+6. Connect the USB cable to PROG/UART, connect to PC.
+
+7. Run a terminal program, use 115200 baud, 8-N-1.
+
+8. Power on the ZYBO. In your terminal you should see:
+   Welcome to the OPL3 FPGA
+
+   Type 'help' for a list of commands
+   >
+
+Enjoy!
