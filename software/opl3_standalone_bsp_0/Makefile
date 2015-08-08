@@ -29,3 +29,5 @@ $(PROCESSOR)/lib/libxil.a: $(PROCESSOR)/lib/libxil_init.a
 
 clean:
 	rm -f ${PROCESSOR}/lib/libxil.a
+	rm -f ${PROCESSOR}/lib/librsa.a
+	rm -f ${PROCESSOR}/lib/libxilffs.a
