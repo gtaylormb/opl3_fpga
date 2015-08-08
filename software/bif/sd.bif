@@ -1,0 +1,7 @@
+the_ROM_image:
+{
+	[bootloader]software/fsbl/Release/fsbl.elf
+	fpga/build/opl3.bit
+	software/imfplay_port/Release/imfplay_port.elf
+	[load = 0x10000000]software/opl3dro/filesystem.mfs
+}

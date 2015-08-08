@@ -5,7 +5,30 @@
 #   AUTHOR: Greg Taylor      CREATION DATE: 8 Aug 2015
 #
 #   DESCRIPTION: 
-#	Run 'make' to build all the software necessary to run the OPL3
+#	1. Source the Vivado and SDK settings so all the build tools are in your
+#      path. 
+#      E.g. source /opt/Xilinx/Vivado/2015.1/settings64.sh
+#           source /opt/Xilinx/SDK/2015.1/settings64.sh
+#	   
+#	2. Run 'make' to build all the FPGA and software necessary to run the OPL3
+#	   and create an SD card image. You must source the Vivado and SDK settings
+#	   first so the build tools are in your path.
+#
+#	3. Copy the resulting BOOT.bin to an SD card, insert it into the ZYBO.
+#
+#	4. Set JP5 to SD.
+#
+#	5. Connect the USB cable to PROG/UART, connect to PC.
+#
+#	6. Run a terminal program, use 115200 baud, 8-N-1.
+#
+#	7. Power on the ZYBO. In your terminal you should see:
+#          Welcome to the OPL3 FPGA
+#        
+#          Type 'help' for a list of commands
+#          >
+#
+#	   Enjoy!
 #
 #   CHANGE HISTORY:
 #   8 Aug 2015        Greg Taylor
@@ -39,16 +62,22 @@
 #   Copyright (C) 2010-2013 by carbon14 and opl3    
 #   
 #******************************************************************************
+VIVADO_VERSION = 2015.1
 	
-compile: 
-	cd opl3_standalone_bsp_0 && make all
-	cd fsbl/Release && make all
-	cd imfplay_port/Release && make all
-	cd opl3dro && mfsgen -c *.dro
+sd: all BOOT.bin
+	
+all:
+	cd fpga && make bitstream
+	cd software && make
 	
 clean:
-	cd opl3_standalone_bsp_0 && make clean
-	cd fsbl/Release && make clean
-	cd imfplay_port/Release && make clean
-	cd opl3dro && rm -f filesystem.mfs
-	cd hw_def && rm -f opl3.hdf
+	cd fpga && make clean
+	cd software && make clean
+	rm -f BOOT.bin
+	
+source_settings:
+	source /opt/Xilinx/Vivado/$(VIVADO_VERSION)/settings64.sh
+	source /opt/Xilinx/SDK/$(VIVADO_VERSION)/settings64.sh
+	
+BOOT.bin:
+	bootgen -image software/bif/sd.bif -o BOOT.bin
