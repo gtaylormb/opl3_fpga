@@ -33,6 +33,7 @@ subject to the following restrictions:
 #include <sys/resource.h>
 #include "xilmfs.h"
 #include "xil_io.h"
+#include "xuartps_hw.h"
 #include "xparameters.h"
 #include "opl3_fpga.h"
 #include "audio_demo.h"
@@ -402,6 +403,9 @@ int imfplay(char *filename)
 
 			res = read_next_cmd(&f, &c);
 			if (res == CMD_EOF)
+				run = 0;
+
+			if (XUartPs_IsReceiveData(XPAR_PS7_UART_1_BASEADDR))
 				run = 0;
 
 			if (run == 0)

@@ -98,13 +98,13 @@ Set your terminal to 115200 baud, 8-N-1.
     >play doom_000.dro
     DRO 2.0 file 
     
-## Build/run instructions
+## Build/run instructions (Linux)
 1. If you want to add any .dro files, you may place them in software/opl3dro.
 They will be included in the in-memory filesystem for playback.
 
 2. Source the Vivado and SDK settings so all the build tools are in your path.
-Example:
- 
+Example: 
+
    source /opt/Xilinx/Vivado/2015.1/settings64.sh
    source /opt/Xilinx/SDK/2015.1/settings64.sh
       
