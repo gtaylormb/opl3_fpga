@@ -105,25 +105,25 @@ They will be included in the in-memory filesystem for playback.
 2. Source the Vivado and SDK settings so all the build tools are in your path.
 Example: 
 
-   source /opt/Xilinx/Vivado/2015.1/settings64.sh
-   source /opt/Xilinx/SDK/2015.1/settings64.sh
+        source /opt/Xilinx/Vivado/2015.1/settings64.sh
+        source /opt/Xilinx/SDK/2015.1/settings64.sh
       
-3. Run 'make' to build all the FPGA and software necessary to run the OPL3
+3. Run 'make' to build the FPGA and software necessary to run the OPL3
 and create an SD card image.
 
 4. Copy the resulting BOOT.bin to an SD card, insert it into the ZYBO.
 
 5. Set JP5 to SD.
 
-6. Connect the USB cable to PROG/UART, connect to PC.
+6. Connect a USB cable to PROG/UART on the ZYBO. Power on the ZYBO. Your PC should detect the USB serial port device.
 
 7. Run a terminal program, use 115200 baud, 8-N-1.
 
-8. Power on the ZYBO. In your terminal you should see:
+8. Reset the ZYBO by pressing PS-SRST. In your terminal you should see:
 
-   Welcome to the OPL3 FPGA
+        Welcome to the OPL3 FPGA
 
-   Type 'help' for a list of commands
-   >
+        Type 'help' for a list of commands
+        >
 
 Enjoy!
