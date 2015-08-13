@@ -41,15 +41,15 @@ Tools used are Modelsim, Vivado 2015.1, Octave (for sample analysis), and SVEdit
     +----------------------------+-------+-------+-----------+-------+
     |          Site Type         |  Used | Fixed | Available | Util% |
     +----------------------------+-------+-------+-----------+-------+
-    | Slice LUTs                 |  8012 |     0 |     17600 | 45.52 |
-    |   LUT as Logic             |  7946 |     0 |     17600 | 45.15 |
+    | Slice LUTs                 |  7930 |     0 |     17600 | 45.06 |
+    |   LUT as Logic             |  7864 |     0 |     17600 | 44.68 |
     |   LUT as Memory            |    66 |     0 |      6000 |  1.10 |
     |     LUT as Distributed RAM |     0 |     0 |           |       |
     |     LUT as Shift Register  |    66 |     0 |           |       |
-    | Slice Registers            | 11119 |     0 |     35200 | 31.59 |
-    |   Register as Flip Flop    | 11119 |     0 |     35200 | 31.59 |
+    | Slice Registers            | 11083 |     0 |     35200 | 31.49 |
+    |   Register as Flip Flop    | 11083 |     0 |     35200 | 31.49 |
     |   Register as Latch        |     0 |     0 |     35200 |  0.00 |
-    | F7 Muxes                   |   385 |     0 |      8800 |  4.38 |
+    | F7 Muxes                   |   368 |     0 |      8800 |  4.18 |
     | F8 Muxes                   |     0 |     0 |      4400 |  0.00 |
     +----------------------------+-------+-------+-----------+-------+
     
