@@ -188,6 +188,35 @@ module opl3 #(
         
     timers timers (
         .*
-    );   
+    );  
+    
+/*    logic [109:0] probe0;
+    
+    genvar i, j;
+    generate
+        for (i = 0; i < 2; i++)
+            for (j = 0; j < 9; j++)       
+                always_comb begin
+                    probe0[i*8+j] = cha[i][j];
+                    probe0[i*8+j+18] = chb[i][j];
+                    probe0[i*8+j+36] = chc[i][j];
+                    probe0[i*8+j+54] = chd[i][j];
+                end                                   
+        
+        always_comb
+            probe0[77:72] = connection_sel;
+        
+        always_comb
+            probe0[93:78] = sample_l_pre_clamp;         
+            
+        always_comb 
+            probe0[109:94] = sample_r_pre_clamp;                     
+   
+    endgenerate
+    
+    ila_0 ila (
+        .clk,
+        .probe0                
+    );*/
 endmodule
 `default_nettype wire  // re-enable implicit net type declarations

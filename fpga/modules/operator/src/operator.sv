@@ -46,6 +46,7 @@ import opl3_pkg::*;
 module operator (
     input wire clk,
     input wire sample_clk_en,
+    input wire is_new,    
     input wire [BANK_NUM_WIDTH-1:0] bank_num,
     input wire [OP_NUM_WIDTH-1:0] op_num,              
     input wire [REG_FNUM_WIDTH-1:0] fnum,

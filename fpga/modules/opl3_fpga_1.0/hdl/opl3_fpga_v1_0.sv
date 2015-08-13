@@ -37,27 +37,27 @@
 
 
 		// Ports of Axi Slave Bus Interface S_AXI
-		(* mark_debug = "true" *)input wire  s_axi_aclk,
-		(* mark_debug = "true" *)input wire  s_axi_aresetn,
-		(* mark_debug = "true" *)input wire [C_S_AXI_ADDR_WIDTH-1 : 0] s_axi_awaddr,
-		(* mark_debug = "true" *)input wire [2 : 0] s_axi_awprot,
-		(* mark_debug = "true" *)input wire  s_axi_awvalid,
-		(* mark_debug = "true" *)output wire  s_axi_awready,
-		(* mark_debug = "true" *)input wire [C_S_AXI_DATA_WIDTH-1 : 0] s_axi_wdata,
-		(* mark_debug = "true" *)input wire [(C_S_AXI_DATA_WIDTH/8)-1 : 0] s_axi_wstrb,
-		(* mark_debug = "true" *)input wire  s_axi_wvalid,
-		(* mark_debug = "true" *)output wire  s_axi_wready,
-		(* mark_debug = "true" *)output wire [1 : 0] s_axi_bresp,
-		(* mark_debug = "true" *)output wire  s_axi_bvalid,
-		(* mark_debug = "true" *)input wire  s_axi_bready,
-		(* mark_debug = "true" *)input wire [C_S_AXI_ADDR_WIDTH-1 : 0] s_axi_araddr,
-		(* mark_debug = "true" *)input wire [2 : 0] s_axi_arprot,
-		(* mark_debug = "true" *)input wire  s_axi_arvalid,
-		(* mark_debug = "true" *)output wire  s_axi_arready,
-		(* mark_debug = "true" *)output wire [C_S_AXI_DATA_WIDTH-1 : 0] s_axi_rdata,
-		(* mark_debug = "true" *)output wire [1 : 0] s_axi_rresp,
-		(* mark_debug = "true" *)output wire  s_axi_rvalid,
-		(* mark_debug = "true" *)input wire  s_axi_rready,
+		input wire  s_axi_aclk,
+		input wire  s_axi_aresetn,
+		input wire [C_S_AXI_ADDR_WIDTH-1 : 0] s_axi_awaddr,
+		input wire [2 : 0] s_axi_awprot,
+		input wire  s_axi_awvalid,
+		output wire  s_axi_awready,
+		input wire [C_S_AXI_DATA_WIDTH-1 : 0] s_axi_wdata,
+		input wire [(C_S_AXI_DATA_WIDTH/8)-1 : 0] s_axi_wstrb,
+		input wire  s_axi_wvalid,
+		output wire  s_axi_wready,
+		output wire [1 : 0] s_axi_bresp,
+		output wire  s_axi_bvalid,
+		input wire  s_axi_bready,
+		input wire [C_S_AXI_ADDR_WIDTH-1 : 0] s_axi_araddr,
+		input wire [2 : 0] s_axi_arprot,
+		input wire  s_axi_arvalid,
+		output wire  s_axi_arready,
+		output wire [C_S_AXI_DATA_WIDTH-1 : 0] s_axi_rdata,
+		output wire [1 : 0] s_axi_rresp,
+		output wire  s_axi_rvalid,
+		input wire  s_axi_rready,
 
 		// Ports of Axi Slave Bus Interface S_AXI_INTR
 		input wire  s_axi_intr_aclk,
@@ -85,59 +85,6 @@
 	);
         
     localparam NUM_AXI_REGISTERS = 128;        
-        
-/*    logic [103:0] probe0;
-        
-    ila_0 ila (
-        .clk(clk125),
-        .probe0
-    );
-    
-    always_comb begin
-        probe0[103:96] = s_axi_awaddr;
-        probe0[95:93] = s_axi_awprot;
-        probe0[92] = s_axi_awvalid;
-        probe0[91] = s_axi_awready;
-        probe0[90:59] = s_axi_wdata;
-        probe0[58:55] = s_axi_wstrb;
-        probe0[54] = s_axi_wvalid;
-        probe0[53] = s_axi_wready;
-        probe0[52:51] = s_axi_bresp;
-        probe0[50] = s_axi_bvalid;
-        probe0[49] = s_axi_bready;
-        probe0[48:41] = s_axi_araddr;
-        probe0[40:38] = s_axi_arprot;
-        probe0[37] = s_axi_arvalid;
-        probe0[36] = s_axi_arready;
-        probe0[35:4] = s_axi_rdata;
-        probe0[3:2] = s_axi_rresp;
-        probe0[1] = s_axi_rvalid;
-        probe0[0] = s_axi_rready;
-    end */
-    
-/*    jtag_axi_0 jtag_axi (
-        .aclk(s_axi_aclk),
-        .aresetn(s_axi_aresetn),
-        .m_axi_awaddr(s_axi_awaddr),
-        .m_axi_awprot(s_axi_awprot),
-        .m_axi_awvalid(s_axi_awvalid),
-        .m_axi_awready(s_axi_awready),
-        .m_axi_wdata(s_axi_wdata),
-        .m_axi_wstrb(s_axi_wstrb),
-        .m_axi_wvalid(s_axi_wvalid),
-        .m_axi_wready(s_axi_wready),
-        .m_axi_bresp(s_axi_bresp),
-        .m_axi_bvalid(s_axi_bvalid),
-        .m_axi_bready(s_axi_bready),
-        .m_axi_araddr(s_axi_araddr),
-        .m_axi_arprot(s_axi_arprot),
-        .m_axi_arvalid(s_axi_arvalid),
-        .m_axi_arready(s_axi_arready),
-        .m_axi_rdata(s_axi_rdata),
-        .m_axi_rresp(s_axi_rresp),
-        .m_axi_rvalid(s_axi_rvalid),
-        .m_axi_rready(s_axi_rready)
-    );   */
 	
 	//----------------------------------------------
     //-- Signals for user logic register space example

@@ -82,13 +82,9 @@ module channels (
     output logic signed [SAMPLE_WIDTH-1:0] channel_b = 0,
     output logic signed [SAMPLE_WIDTH-1:0] channel_c = 0,
     output logic signed [SAMPLE_WIDTH-1:0] channel_d = 0
-);  
-    localparam NUM_CHANNEL_ADD_STATES = 19; // 18 channels + idle state
-    
+);      
     logic signed [SAMPLE_WIDTH-1:0] channel_2_op [2][9];
     logic signed [SAMPLE_WIDTH-1:0] channel_4_op [2][3];
-    logic [$clog2(NUM_CHANNEL_ADD_STATES)-1:0] state = 0;
-    logic [$clog2(NUM_CHANNEL_ADD_STATES)-1:0] next_state;
     logic signed [OP_OUT_WIDTH-1:0] operator_out [NUM_BANKS][NUM_OPERATORS_PER_BANK];
     
     /*
@@ -175,40 +171,25 @@ module channels (
         end
     end 
     endgenerate        
-    
-    always_ff @(posedge clk)
-        state <= next_state;
-    
-    /* 
-     * State 0 is idle, states 1-18 represent that channel 
-     * is_new specifies OPL3 mode vs. OPL2 mode. Only 9 channels in OPL2.
-     */
-    always_comb
-        if (state == 0)
-            next_state = sample_clk_en ? 1 : 0;
-        else if ((is_new && state == 18) || (!is_new && state == 9))
-            next_state = 0;
-        else
-            next_state = state + 1;
         
     generate
     for (i = 0; i < 3; i++) 
         always_ff @(posedge clk)
-            if (cha[0][i])
-                channel_a_acc_pre_clamp_p[0][i] <= connection_sel[i] ? channel_4_op[0][i] : channel_2_op[0][i];
+            if (cha[0][i] || !is_new)
+                channel_a_acc_pre_clamp_p[0][i] <= connection_sel[i] && is_new ? channel_4_op[0][i] : channel_2_op[0][i];
             else
                 channel_a_acc_pre_clamp_p[0][i] <= 0;
                 
     for (i = 3; i < 6; i++)
         always_ff @(posedge clk)
-            if (cha[0][i])
-                channel_a_acc_pre_clamp_p[0][i] <= connection_sel[i-3] ? channel_4_op[0][i] : channel_2_op[0][i];
+            if (cha[0][i] || !is_new)
+                channel_a_acc_pre_clamp_p[0][i] <= connection_sel[i-3] && is_new ? channel_4_op[0][i] : channel_2_op[0][i];
             else
                 channel_a_acc_pre_clamp_p[0][i] <= 0;
         
     for (i = 6; i < 9; i++)
         always_ff @(posedge clk)
-            if (cha[0][i])
+            if (cha[0][i] || !is_new)
                 channel_a_acc_pre_clamp_p[0][i] <= channel_2_op[0][i];
             else
                 channel_a_acc_pre_clamp_p[0][i] <= 0;
@@ -216,14 +197,14 @@ module channels (
     for (i = 0; i < 3; i++) 
         always_ff @(posedge clk)
             if (cha[1][i])
-                channel_a_acc_pre_clamp_p[1][i] <= connection_sel[i+3] ? channel_4_op[1][i] : channel_2_op[1][i];
+                channel_a_acc_pre_clamp_p[1][i] <= connection_sel[i+3] && is_new ? channel_4_op[1][i] : channel_2_op[1][i];
             else
                 channel_a_acc_pre_clamp_p[1][i] <= 0;
             
     for (i = 3; i < 6; i++)
         always_ff @(posedge clk)
             if (cha[1][i])
-                channel_a_acc_pre_clamp_p[1][i] <= connection_sel[i] ? channel_4_op[1][i] : channel_2_op[1][i];
+                channel_a_acc_pre_clamp_p[1][i] <= connection_sel[i] && is_new ? channel_4_op[1][i] : channel_2_op[1][i];
             else
                 channel_a_acc_pre_clamp_p[1][i] <= 0;
     
@@ -259,21 +240,21 @@ module channels (
     generate
         for (i = 0; i < 3; i++) 
             always_ff @(posedge clk)
-                if (chb[0][i])
-                    channel_b_acc_pre_clamp_p[0][i] <= connection_sel[i] ? channel_4_op[0][i] : channel_2_op[0][i];
+                if (chb[0][i] || !is_new)
+                    channel_b_acc_pre_clamp_p[0][i] <= connection_sel[i] && is_new ? channel_4_op[0][i] : channel_2_op[0][i];
                 else
                     channel_b_acc_pre_clamp_p[0][i] <= 0;
             
         for (i = 3; i < 6; i++)
             always_ff @(posedge clk)
-                if (chb[0][i])
-                    channel_b_acc_pre_clamp_p[0][i] <= connection_sel[i-3] ? channel_4_op[0][i] : channel_2_op[0][i];
+                if (chb[0][i] || !is_new)
+                    channel_b_acc_pre_clamp_p[0][i] <= connection_sel[i-3] && is_new ? channel_4_op[0][i] : channel_2_op[0][i];
                 else
                     channel_b_acc_pre_clamp_p[0][i] <= 0;
     
         for (i = 6; i < 9; i++)
             always_ff @(posedge clk)
-                if (chb[0][i])
+                if (chb[0][i] || !is_new)
                     channel_b_acc_pre_clamp_p[0][i] <= channel_2_op[0][i];
                 else
                     channel_b_acc_pre_clamp_p[0][i] <= 0;
@@ -281,14 +262,14 @@ module channels (
         for (i = 0; i < 3; i++) 
             always_ff @(posedge clk)
                 if (chb[1][i])
-                    channel_b_acc_pre_clamp_p[1][i] <= connection_sel[i+3] ? channel_4_op[1][i] : channel_2_op[1][i];
+                    channel_b_acc_pre_clamp_p[1][i] <= connection_sel[i+3] && is_new ? channel_4_op[1][i] : channel_2_op[1][i];
                 else
                     channel_b_acc_pre_clamp_p[1][i] <= 0;
         
         for (i = 3; i < 6; i++)
             always_ff @(posedge clk)
                 if (chb[1][i])
-                    channel_b_acc_pre_clamp_p[1][i] <= connection_sel[i] ? channel_4_op[1][i] : channel_2_op[1][i];
+                    channel_b_acc_pre_clamp_p[1][i] <= connection_sel[i] && is_new ? channel_4_op[1][i] : channel_2_op[1][i];
                 else
                     channel_b_acc_pre_clamp_p[1][i] <= 0;
 
@@ -324,21 +305,21 @@ module channels (
     generate
         for (i = 0; i < 3; i++) 
             always_ff @(posedge clk)
-                if (chc[0][i])
-                    channel_c_acc_pre_clamp_p[0][i] <= connection_sel[i] ? channel_4_op[0][i] : channel_2_op[0][i];
+                if (chc[0][i] || !is_new)
+                    channel_c_acc_pre_clamp_p[0][i] <= connection_sel[i] && is_new ? channel_4_op[0][i] : channel_2_op[0][i];
                 else
                     channel_c_acc_pre_clamp_p[0][i] <= 0;
         
         for (i = 3; i < 6; i++)
             always_ff @(posedge clk)
-                if (chc[0][i])
-                    channel_c_acc_pre_clamp_p[0][i] <= connection_sel[i-3] ? channel_4_op[0][i] : channel_2_op[0][i];
+                if (chc[0][i] || !is_new)
+                    channel_c_acc_pre_clamp_p[0][i] <= connection_sel[i-3] && is_new ? channel_4_op[0][i] : channel_2_op[0][i];
                 else
                     channel_c_acc_pre_clamp_p[0][i] <= 0;
 
         for (i = 6; i < 9; i++)
             always_ff @(posedge clk)
-                if (chc[0][i])
+                if (chc[0][i] || !is_new)
                     channel_c_acc_pre_clamp_p[0][i] <= channel_2_op[0][i];
                 else
                     channel_c_acc_pre_clamp_p[0][i] <= 0;
@@ -346,14 +327,14 @@ module channels (
         for (i = 0; i < 3; i++) 
             always_ff @(posedge clk)
                 if (chc[1][i])
-                    channel_c_acc_pre_clamp_p[1][i] <= connection_sel[i+3] ? channel_4_op[1][i] : channel_2_op[1][i];
+                    channel_c_acc_pre_clamp_p[1][i] <= connection_sel[i+3] && is_new ? channel_4_op[1][i] : channel_2_op[1][i];
                 else
                     channel_c_acc_pre_clamp_p[1][i] <= 0;
     
         for (i = 3; i < 6; i++)
             always_ff @(posedge clk)
                 if (chc[1][i])
-                    channel_c_acc_pre_clamp_p[1][i] <= connection_sel[i] ? channel_4_op[1][i] : channel_2_op[1][i];
+                    channel_c_acc_pre_clamp_p[1][i] <= connection_sel[i] && is_new ? channel_4_op[1][i] : channel_2_op[1][i];
                 else
                     channel_c_acc_pre_clamp_p[1][i] <= 0;
 
@@ -389,21 +370,21 @@ module channels (
     generate
         for (i = 0; i < 3; i++) 
             always_ff @(posedge clk)
-                if (chd[0][i])
-                    channel_d_acc_pre_clamp_p[0][i] <= connection_sel[i] ? channel_4_op[0][i] : channel_2_op[0][i];
+                if (chd[0][i] || !is_new)
+                    channel_d_acc_pre_clamp_p[0][i] <= connection_sel[i] && is_new ? channel_4_op[0][i] : channel_2_op[0][i];
                 else
                     channel_d_acc_pre_clamp_p[0][i] <= 0;
     
         for (i = 3; i < 6; i++)
             always_ff @(posedge clk)
-                if (chd[0][i])
-                    channel_d_acc_pre_clamp_p[0][i] <= connection_sel[i-3] ? channel_4_op[0][i] : channel_2_op[0][i];
+                if (chd[0][i] || !is_new)
+                    channel_d_acc_pre_clamp_p[0][i] <= connection_sel[i-3] && is_new ? channel_4_op[0][i] : channel_2_op[0][i];
                 else
                     channel_d_acc_pre_clamp_p[0][i] <= 0;
 
         for (i = 6; i < 9; i++)
             always_ff @(posedge clk)
-                if (chd[0][i])
+                if (chd[0][i] || !is_new)
                     channel_d_acc_pre_clamp_p[0][i] <= channel_2_op[0][i];
                 else
                     channel_d_acc_pre_clamp_p[0][i] <= 0;
@@ -411,14 +392,14 @@ module channels (
         for (i = 0; i < 3; i++) 
             always_ff @(posedge clk)
                 if (chd[1][i])
-                    channel_d_acc_pre_clamp_p[1][i] <= connection_sel[i+3] ? channel_4_op[1][i] : channel_2_op[1][i];
+                    channel_d_acc_pre_clamp_p[1][i] <= connection_sel[i+3] && is_new ? channel_4_op[1][i] : channel_2_op[1][i];
                 else
                     channel_d_acc_pre_clamp_p[1][i] <= 0;
 
         for (i = 3; i < 6; i++)
             always_ff @(posedge clk)
                 if (chd[1][i])
-                    channel_d_acc_pre_clamp_p[1][i] <= connection_sel[i] ? channel_4_op[1][i] : channel_2_op[1][i];
+                    channel_d_acc_pre_clamp_p[1][i] <= connection_sel[i] && is_new ? channel_4_op[1][i] : channel_2_op[1][i];
                 else
                     channel_d_acc_pre_clamp_p[1][i] <= 0;
 

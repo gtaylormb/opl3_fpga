@@ -46,6 +46,7 @@ import opl3_pkg::*;
 module phase_generator (
     input wire clk,
     input wire sample_clk_en,
+    input wire is_new,    
     input wire [BANK_NUM_WIDTH-1:0] bank_num,
     input wire [OP_NUM_WIDTH-1:0] op_num,  
     input wire [PHASE_ACC_WIDTH-1:0] phase_inc,
@@ -179,10 +180,11 @@ module phase_generator (
             tmp_out1 = tmp_out0 >> log_sin_plus_gain[LOG_SIN_PLUS_GAIN_WIDTH-1:8]; 
         
     /*
-     * Select waveform, do proper transformations to the wave
+     * Select waveform, do proper transformations to the wave. OPL2 only
+     * supports first 4 waveforms
      */
     always_comb
-        unique case (ws)
+        unique case (ws & (is_new ? 'h7 : 'h3))
         0: tmp_out2 = tmp_out1;
         1: tmp_out2 = tmp_out1 < 0 ? 0 : tmp_out1;
         2: tmp_out2 = tmp_ws2;
