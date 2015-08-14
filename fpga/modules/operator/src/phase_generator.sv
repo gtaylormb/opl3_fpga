@@ -78,7 +78,13 @@ module phase_generator (
     logic signed [OP_OUT_WIDTH-1:0] tmp_out2;    
     logic signed [OP_OUT_WIDTH-1:0] tmp_ws2;
     logic signed [OP_OUT_WIDTH-1:0] tmp_ws4;  
-    logic [LOG_SIN_OUT_WIDTH-1:0] tmp_ws7; 
+    logic [LOG_SIN_OUT_WIDTH-1:0] tmp_ws7;
+    logic [REG_WS_WIDTH-1:0] ws_post_opl;
+    
+    /*
+     * OPL2 only supports first 4 waveforms
+     */
+    always_comb ws_post_opl = ws & (is_new ? 'h7 : 'h3);
     
     /*
      * sample_clk_en must be delayed so the phase_inc is correct when it is added
@@ -87,7 +93,7 @@ module phase_generator (
     always_ff @(posedge clk) begin
         sample_clk_en_delayed <= sample_clk_en_delayed << 1;
         sample_clk_en_delayed[0] <= sample_clk_en;
-    end       
+    end
     
     /*
      * Some rhythm instruments require further transformations to the phase.
@@ -107,7 +113,7 @@ module phase_generator (
                 phase_acc[bank_num][op_num] <= 0;
                 final_phase[bank_num][op_num] <= 0;
             end
-            else if (ws == 4 || ws == 5) begin
+            else if (ws_post_opl == 4 || ws_post_opl == 5) begin
                 // double the frequency
                 phase_acc[bank_num][op_num] <= phase_acc[bank_num][op_num] + (phase_inc << 1);
                 final_phase[bank_num][op_num] <= rhythm_phase + (phase_inc << 1)
@@ -163,7 +169,7 @@ module phase_generator (
     always_comb tmp_ws7[10:0] = final_phase[bank_num][op_num][19] ?
      ~final_phase[bank_num][op_num][17:10] << 3 : final_phase[bank_num][op_num][17:10] << 3;        
     
-    always_comb log_sin_plus_gain = (ws == 7 ? tmp_ws7 : log_sin_out) + (env << 3);
+    always_comb log_sin_plus_gain = (ws_post_opl == 7 ? tmp_ws7 : log_sin_out) + (env << 3);
         
     opl3_exp_lut exp_lut_inst (
         .in(~log_sin_plus_gain[7:0]),
@@ -180,11 +186,10 @@ module phase_generator (
             tmp_out1 = tmp_out0 >> log_sin_plus_gain[LOG_SIN_PLUS_GAIN_WIDTH-1:8]; 
         
     /*
-     * Select waveform, do proper transformations to the wave. OPL2 only
-     * supports first 4 waveforms
+     * Select waveform, do proper transformations to the wave
      */
     always_comb
-        unique case (ws & (is_new ? 'h7 : 'h3))
+        unique case (ws_post_opl)
         0: tmp_out2 = tmp_out1;
         1: tmp_out2 = tmp_out1 < 0 ? 0 : tmp_out1;
         2: tmp_out2 = tmp_ws2;

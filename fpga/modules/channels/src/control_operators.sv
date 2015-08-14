@@ -511,6 +511,7 @@ module control_operators (
     operator operator (
         .clk,
         .sample_clk_en(state != 0 && delay_counter == 0),
+        .is_new,
         .bank_num,
         .op_num,
         .fnum(fnum_tmp[bank_num][op_num]),
