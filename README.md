@@ -4,7 +4,7 @@ Reverse engineered SystemVerilog RTL version of the
 <a href="http://en.wikipedia.org/wiki/Yamaha_YMF262">Yamaha OPL3 (YMF262)</a> FM Synthesizer.
 Design is complete and working on the Digilent ZYBO board. The software needs a bit of cleaning up.
 
-See it in action:
+Hear it in action:
 * https://www.youtube.com/watch?v=KoSF4ZoDuRI
 * https://www.youtube.com/watch?v=i9vEKyJScYw
 
