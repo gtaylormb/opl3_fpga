@@ -2,12 +2,13 @@ opl3_fpga
 =========
 Reverse engineered SystemVerilog RTL version of the 
 <a href="http://en.wikipedia.org/wiki/Yamaha_YMF262">Yamaha OPL3 (YMF262)</a> FM Synthesizer.
-Design is complete and working on the Digilent ZYBO board. Further testing is needed to verify
-full functionality and coverage. I'll mostly be adding and working on the software at this point.
+Design is complete and working on the Digilent ZYBO board. The software needs a bit of cleaning up.
 
 See it in action:
 * https://www.youtube.com/watch?v=KoSF4ZoDuRI
 * https://www.youtube.com/watch?v=i9vEKyJScYw
+
+Every effort possible has been made to replicate, bit-true, the math of the original OPL3 chip. Several other very smart people put in a lot of work before me to get as close as possible this goal, and this FPGA design would not be possible without their work. Their efforts included <a href="https://docs.google.com/document/d/18IGx18NQY_Q1PJVZ-bHywao9bhsDoAqoIn1rIm42nwo/edit">de-lidding the chip to extract the actual values out of the ROMs</a>. They're all over at http://forums.submarine.org.uk/phpBB/viewforum.php?f=9. You can follow the progression of some of the reverse engineering--it's quite interesting.
 
 There are some minor differences between this version and the original chip, mainly due to the hardware on
 the board that I'm using. The design is targeted to the <a href="https://www.digilentinc.com/Products/Detail.cfm?Prod=ZYBO">Digilent ZYBO board</a>
@@ -29,11 +30,38 @@ sample rate at 49.7148KHz. Updating 36 operator slots using my slower master clo
 cycles per sample instead of 8, but that's okay because I can stack tons of combinational logic up with
 few pipeline registers with this slow clock speed and modern FPGA.
 
-Every effort possible has been made to replicate, bit-true, the math of the original OPL3 chip. Several other very smart people put in a lot of work before me to get as close as possible this goal, and this FPGA design would not be possible without their work. Their efforts included <a href="https://docs.google.com/document/d/18IGx18NQY_Q1PJVZ-bHywao9bhsDoAqoIn1rIm42nwo/edit">de-lidding the chip to extract the actual values out of the ROMs</a>. They're all over at http://forums.submarine.org.uk/phpBB/viewforum.php?f=9. You can follow the progression of some of the reverse engineering--it's quite interesting.
-
 In doing the project, I was very impressed with what the original chip designers were able to accomplish. They used some very clever techniques to squeeze maximum functionality out of very limited resources--particularly using the combination of an exponential lookup table and a log-sine lookup table to <a href="https://github.com/gtaylormb/opl3_fpga/blob/master/docs/opl3math.pdf">apply gain to the sine wave without the use of multipliers</a>, and the clever use of time sharing the operator resources among 36 slots.
 
 Tools used are Modelsim, Vivado 2015.1, Octave (for sample analysis), and SVEditor (for SystemVerilog file editing).
+
+## Digital waveform images
+These were produced by writing the actual binary output values of the operator logic in simulation to a file and plotting them using Octave.
+
+The 6 basic waveform outputs:
+
+<img src="http://i.imgur.com/ysmm3Sp.png?1">
+
+<img src="http://i.imgur.com/ze8W5wU.png?1">
+
+<img src="http://i.imgur.com/DHMkYkb.png?1">
+
+<img src="http://i.imgur.com/t8UO1Xz.png?1">
+
+<img src="http://i.imgur.com/0fmTRXg.png?1">
+
+<img src="http://i.imgur.com/o1EIYDZ.png?1">
+
+<img src="http://i.imgur.com/LKeYdRh.png?1">
+
+<img src="http://i.imgur.com/5JEmWyz.png?1">
+
+Demonstration of the envelope being applied (attack, decay, sustain, release):
+
+<img src="http://i.imgur.com/Of8oeui.png?1">
+
+Close up of the attack phase:
+
+<img src="http://i.imgur.com/GVkxXhn.png?1">
 
 ## Current utilization in xc7z010:
 
@@ -126,3 +154,10 @@ and create an SD card image.
         >
 
 Enjoy!
+
+## Future work
+I'd really love to make the board appear as a USB peripheral when plugged into PC. If DOSBox/ScummVM could be made aware of the device, they could direct all OPL3 writes to the board. Digital PCM output could be made available as well.
+
+Another idea is to port DOSBox/ScummVM directly to the ARM CPU on the board.
+
+Let me know if you have other ideas or are interested into doing either of these projects, I'll help out as much as I can.
