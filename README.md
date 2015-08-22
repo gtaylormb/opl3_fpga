@@ -37,7 +37,7 @@ Tools used are Modelsim, Vivado 2015.1, Octave (for sample analysis), and SVEdit
 ## Digital waveform images
 These were produced by writing the actual binary output values of the operator logic in simulation to a file and plotting them using Octave.
 
-The 6 basic waveform outputs:
+The 6 basic unmodulated waveform outputs:
 
 <img src="http://i.imgur.com/ysmm3Sp.png?1">
 
