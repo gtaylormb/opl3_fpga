@@ -10,12 +10,12 @@ See it in action:
 
 Every effort possible has been made to replicate, bit-true, the math of the original OPL3 chip. Several other very smart people put in a lot of work before me to get as close as possible this goal, and this FPGA design would not be possible without their work. Their efforts included <a href="https://docs.google.com/document/d/18IGx18NQY_Q1PJVZ-bHywao9bhsDoAqoIn1rIm42nwo/edit">de-lidding the chip to extract the actual values out of the ROMs</a>. They're all over at http://forums.submarine.org.uk/phpBB/viewforum.php?f=9. You can follow the progression of some of the reverse engineering--it's quite interesting.
 
-There are some minor differences between this version and the original chip, mainly due to the hardware on
+There are some differences between this version and the original chip in the external interface due to the hardware on
 the board that I'm using. The design is targeted to the <a href="https://www.digilentinc.com/Products/Detail.cfm?Prod=ZYBO">Digilent ZYBO board</a>
 which has the <a href="http://www.xilinx.com/products/silicon-devices/soc/zynq-7000.html">Xilinx Zynq-7000
 SoC</a> containing an ARM dual-core Cortex-A9 and an FPGA. The board also has an 
 <a href="http://www.analog.com/en/products/audio-video/audio-codecs/ssm2603.html#product-overview">Analog Devices SSM2603
-audio codec</a> with dual 24-bit DACs. So the external interfaces are different--the interface to the CPU is AXI4-Lite
+audio codec</a> with dual 24-bit DACs. The interface to the CPU is AXI4-Lite
 and the interface to the DAC is I<sup>2</sup>S, matching the particular hardware I have to work with. These
 interfaces are wrapped in the design and would be easy to swap out.
 
