@@ -67,9 +67,8 @@ RTL_SRC = \
 	modules/timers/src/timers.sv \
 	modules/timers/src/timer.sv \
 	modules/misc/src/edge_detector.sv \
-	modules/register_file/src/register_file_axi.sv
-#	modules/register_file/src/opl3_axi_wrapper.sv \
-	
+    modules/register_file/src/register_file_axi.sv
+
 SIM_SRC = \
 	modules/top_level/sim/opl3_tb.sv \
 	modules/clks/ip/clk_gen/clk_gen_funcsim.v \
@@ -77,9 +76,8 @@ SIM_SRC = \
 	modules/ila/ip/ila_0/ila_0_stub.v
 	
 IP_SRC = \
-	modules/clks/ip/clk_gen/clk_gen.xci \
-	modules/ila/ip/ila_0/ila_0.xci
-#	modules/ila/ip/jtag_axi_0/jtag_axi_0.xci
+	modules/clks/ip/clk_gen/clk_gen.xci
+#	modules/ila/ip/ila_0/ila_0.xci
 	
 BD_SRC = \
 	bd/opl3_cpu/opl3_cpu.bd

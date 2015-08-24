@@ -80,6 +80,7 @@ package opl3_pkg;
     parameter BANK_NUM_WIDTH = $clog2(NUM_BANKS);
     parameter OP_NUM_WIDTH = $clog2(NUM_OPERATORS_PER_BANK);
     
+    parameter INSTANTIATE_TIMERS = 0; // set to 1 to use timers
     parameter TIMER1_TICK_INTERVAL = 80e-6;  // in seconds
     parameter TIMER2_TICK_INTERVAL = 320e-6; // in seconds
     

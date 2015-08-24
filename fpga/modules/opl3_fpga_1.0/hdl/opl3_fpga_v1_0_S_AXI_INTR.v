@@ -1,4 +1,6 @@
-
+/*
+ * This module was automatically created by the Xilinx AXI Peripheral wizard.
+ */
 `timescale 1 ns / 1 ps
 
 	module opl3_fpga_v1_0_S_AXI_INTR #

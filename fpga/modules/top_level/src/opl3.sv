@@ -61,15 +61,6 @@ module opl3 #(
     wire clk_locked;
     wire sample_clk_en;
     
-    wire cs;
-    wire rd;
-    wire wr;
-    wire bank_select; // A1
-    wire [REG_FILE_ADDRESS_WIDTH-1:0] address;
-    wire [REG_FILE_DATA_WIDTH-1:0] data_in;
-    wire [REG_FILE_DATA_WIDTH-1:0] data_out;
-    wire rd_valid;
-    
     wire [REG_TIMER_WIDTH-1:0] timer1;
     wire [REG_TIMER_WIDTH-1:0] timer2;
     wire irq_rst;
@@ -178,45 +169,24 @@ module opl3 #(
     always_comb led[1] = kon[0][1];
     always_comb led[2] = kon[0][2];
     always_comb led[3] = kon[0][3];
+    
+    always_comb ac_mute_n = 1;
         
     register_file_axi #(
         .C_S_AXI_DATA_WIDTH(C_S_AXI_DATA_WIDTH),
         .NUM_AXI_REGISTERS(NUM_AXI_REGISTERS)
     ) register_file_axi (
         .*
-    );
+    ); 
         
-    timers timers (
-        .*
-    );  
-    
-/*    logic [109:0] probe0;
-    
-    genvar i, j;
+    /*
+     * If we don't need timers, don't instantiate to save area
+     */    
     generate
-        for (i = 0; i < 2; i++)
-            for (j = 0; j < 9; j++)       
-                always_comb begin
-                    probe0[i*8+j] = cha[i][j];
-                    probe0[i*8+j+18] = chb[i][j];
-                    probe0[i*8+j+36] = chc[i][j];
-                    probe0[i*8+j+54] = chd[i][j];
-                end                                   
-        
-        always_comb
-            probe0[77:72] = connection_sel;
-        
-        always_comb
-            probe0[93:78] = sample_l_pre_clamp;         
-            
-        always_comb 
-            probe0[109:94] = sample_r_pre_clamp;                     
-   
-    endgenerate
-    
-    ila_0 ila (
-        .clk,
-        .probe0                
-    );*/
+    if (INSTANTIATE_TIMERS)
+        timers timers (
+            .*
+        );
+    endgenerate        
 endmodule
 `default_nettype wire  // re-enable implicit net type declarations

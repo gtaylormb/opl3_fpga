@@ -1,4 +1,6 @@
-
+/*
+ * This module was automatically created by the Xilinx AXI Peripheral wizard.
+ */
 `timescale 1 ns / 1 ps
 
 	module opl3_fpga_v1_0 #
@@ -283,7 +285,7 @@
 		.S_AXI_RVALID(s_axi_intr_rvalid),
 		.S_AXI_RREADY(s_axi_intr_rready),
 		.irq(irq)
-	);
+	); 
 
 	// Add user logic here
     
@@ -422,6 +424,10 @@
          slv_reg[127] = slv_reg127;                   
     end 
     
+    /*
+     * Convert array of 32-bit data into array of 8-bit data, digestible by
+     * the OPL3
+     */
     genvar i;    
     generate
     for (i = 0; i < NUM_AXI_REGISTERS; i++)

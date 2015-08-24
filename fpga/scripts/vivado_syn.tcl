@@ -10,6 +10,10 @@ create_project -part xc7z010clg400-1 -in_memory
 set_property target_language Verilog [current_project]
 set_property default_lib work [current_project]
 
+# Reduce severity of information regarding generated file not found--we regen
+# each IP block anyway
+set_msg_config -id "IP_Flow 19-3664" -new_severity "INFO"
+
 set_property IP_REPO_PATHS modules [current_fileset]
 update_ip_catalog -rebuild
 
