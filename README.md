@@ -63,6 +63,10 @@ Close up of the attack phase:
 
 <img src="http://i.imgur.com/GVkxXhn.png?1">
 
+## Vivado block design
+
+<img src="https://github.com/gtaylormb/opl3_fpga/blob/master/docs/block_design.png">
+
 ## Current utilization in xc7z010:
 
     +----------------------------+------+-------+-----------+-------+
