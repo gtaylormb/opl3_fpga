@@ -28,7 +28,7 @@ chip. The ZYBO provides the FPGA with an external clock of 125MHz. Using a mixed
 I'm able to synthesize a 12.727MHz clock from that, which divided by 256 gets me very close to the original
 sample rate at 49.7148KHz. Updating 36 operator slots using my slower master clock only gives me 7 clock
 cycles per sample instead of 8, but that's okay because I can stack tons of combinational logic up with
-few pipeline registers with this slow clock speed and modern FPGA.
+few pipeline registers with this slow clock speed and modern FPGA. The build meets timing with 53.1ns of slack :O
 
 As far as software, so far I've ported over <a href="http://software.kvee.cz/imfplay/">imfplay</a> from x86 DOS to the ARM running bare metal. It can playback .dro files captured in DOSBox while playing the original games. They are essentially OPL3 register writes using a 1000Hz timer tick (I used the built in timer in the ARM). The files are stored in an in-memory filesystem. The whole package including the FPGA bitstream, front stage boot loader, imfplay executable, and filesystem image can be built using one command and placed on an SD card.
 
