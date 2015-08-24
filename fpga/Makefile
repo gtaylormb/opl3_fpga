@@ -68,7 +68,7 @@ RTL_SRC = \
 	modules/timers/src/timer.sv \
 	modules/misc/src/edge_detector.sv \
     modules/register_file/src/register_file_axi.sv
-
+	
 SIM_SRC = \
 	modules/top_level/sim/opl3_tb.sv \
 	modules/clks/ip/clk_gen/clk_gen_funcsim.v \

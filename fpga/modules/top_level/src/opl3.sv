@@ -55,10 +55,10 @@ module opl3 #(
     output wire i2s_sd,
     output logic ac_mute_n,
     output logic [3:0] led,
+    output logic clk_locked,
     input wire [7:0] slv8_reg[NUM_AXI_REGISTERS*4]
 );
     logic reset;
-    wire clk_locked;
     wire sample_clk_en;
     
     wire [REG_TIMER_WIDTH-1:0] timer1;

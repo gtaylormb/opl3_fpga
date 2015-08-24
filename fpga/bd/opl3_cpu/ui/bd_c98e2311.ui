@@ -1,41 +1,40 @@
 {
    guistr: "# # String gsaved with Nlview 6.4.12  2014-12-16 bk=1.3272 VDI=35 GEI=35 GUI=JA:1.8
 #  -string -flagsOSRD
-preplace port DDR -pg 1 -y 80 -defaultsOSRD
-preplace port i2s_ws -pg 1 -y 460 -defaultsOSRD
-preplace port clk125 -pg 1 -y 280 -defaultsOSRD
-preplace port i2s_sclk -pg 1 -y 440 -defaultsOSRD
-preplace port IIC_0 -pg 1 -y 120 -defaultsOSRD
-preplace port FIXED_IO -pg 1 -y 100 -defaultsOSRD
-preplace port ac_mclk -pg 1 -y 420 -defaultsOSRD
-preplace port ac_mute_n -pg 1 -y 500 -defaultsOSRD
-preplace port i2s_sd -pg 1 -y 480 -defaultsOSRD
-preplace portBus led -pg 1 -y 520 -defaultsOSRD
-preplace inst rst_processing_system7_0_100M -pg 1 -lvl 1 -y 370 -defaultsOSRD
-preplace inst opl3_fpga_0 -pg 1 -lvl 3 -y 480 -defaultsOSRD
-preplace inst processing_system7_0_axi_periph -pg 1 -lvl 2 -y 430 -defaultsOSRD
-preplace inst processing_system7_0 -pg 1 -lvl 3 -y 130 -defaultsOSRD
-preplace netloc processing_system7_0_DDR 1 3 1 N
-preplace netloc opl3_fpga_0_led 1 3 1 N
+preplace port DDR -pg 1 -y 70 -defaultsOSRD
+preplace port i2s_ws -pg 1 -y 400 -defaultsOSRD
+preplace port clk125 -pg 1 -y 270 -defaultsOSRD
+preplace port i2s_sclk -pg 1 -y 380 -defaultsOSRD
+preplace port IIC_0 -pg 1 -y 110 -defaultsOSRD
+preplace port FIXED_IO -pg 1 -y 90 -defaultsOSRD
+preplace port ac_mclk -pg 1 -y 240 -defaultsOSRD
+preplace port ac_mute_n -pg 1 -y 440 -defaultsOSRD
+preplace port i2s_sd -pg 1 -y 420 -defaultsOSRD
+preplace portBus led -pg 1 -y 460 -defaultsOSRD
+preplace inst opl3_fpga_0 -pg 1 -lvl 3 -y 420 -defaultsOSRD
+preplace inst rst_clk_wiz_100M -pg 1 -lvl 1 -y 360 -defaultsOSRD
+preplace inst processing_system7_0_axi_periph -pg 1 -lvl 2 -y 390 -defaultsOSRD
+preplace inst processing_system7_0 -pg 1 -lvl 3 -y 120 -defaultsOSRD
+preplace netloc processing_system7_0_DDR 1 3 1 NJ
+preplace netloc opl3_fpga_0_led 1 3 1 NJ
 preplace netloc processing_system7_0_axi_periph_M00_AXI 1 2 1 N
-preplace netloc opl3_fpga_0_irq 1 2 2 790 10 1210
-preplace netloc opl3_fpga_0_clk12 1 0 4 120 460 470 570 770 370 1220
-preplace netloc processing_system7_0_M_AXI_GP0 1 1 3 470 250 NJ 250 1200
-preplace netloc opl3_fpga_0_i2s_sclk 1 3 1 N
-preplace netloc opl3_fpga_0_i2s_sd 1 3 1 N
-preplace netloc opl3_fpga_0_ac_mute_n 1 3 1 N
-preplace netloc clk125_1 1 0 3 100 580 NJ 580 NJ
-preplace netloc processing_system7_0_FCLK_RESET0_N 1 0 4 110 260 NJ 260 NJ 260 1190
-preplace netloc processing_system7_0_IIC_0 1 3 1 N
-preplace netloc rst_processing_system7_0_100M_peripheral_aresetn 1 1 2 460 590 790
-preplace netloc processing_system7_0_FIXED_IO 1 3 1 N
-preplace netloc opl3_fpga_0_i2s_ws 1 3 1 N
-preplace netloc rst_processing_system7_0_100M_interconnect_aresetn 1 1 1 N
-preplace netloc processing_system7_0_axi_periph_M01_AXI 1 2 1 N
-levelinfo -pg 1 80 290 620 990 1240
+preplace netloc processing_system7_0_M_AXI_GP0 1 1 3 460 250 NJ 250 1200
+preplace netloc opl3_fpga_0_i2s_sd 1 3 1 NJ
+preplace netloc opl3_fpga_0_i2s_sclk 1 3 1 NJ
+preplace netloc clk125_1 1 0 3 NJ 270 NJ 270 NJ
+preplace netloc opl3_fpga_0_ac_mute_n 1 3 1 NJ
+preplace netloc processing_system7_0_FCLK_RESET0_N 1 0 4 100 260 NJ 260 NJ 260 1190
+preplace netloc processing_system7_0_IIC_0 1 3 1 NJ
+preplace netloc rst_clk_wiz_100M_interconnect_aresetn 1 1 1 460
+preplace netloc processing_system7_0_FIXED_IO 1 3 1 NJ
+preplace netloc opl3_fpga_0_i2s_ws 1 3 1 NJ
+preplace netloc opl3_fpga_0_clk_locked 1 0 4 120 530 NJ 530 NJ 530 1190
+preplace netloc rst_clk_wiz_100M_peripheral_aresetn 1 1 2 480 520 NJ
+preplace netloc clk_wiz_clk_out1 1 0 4 110 450 470 510 780 240 1210
+levelinfo -pg 1 80 290 630 990 1230
 ",
 }
 {
-   da_axi4_cnt: "6",
+   da_axi4_cnt: "1",
    da_ps7_cnt: "1",
 }
