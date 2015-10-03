@@ -128,11 +128,11 @@ int AudioInitialize()
 	Status |= AudioRegSet(&Iic, 6, 0b000110000); //Power up
 	Status |= AudioRegSet(&Iic, 0, 0b000010111);
 	Status |= AudioRegSet(&Iic, 1, 0b000010111);
-	Status |= AudioRegSet(&Iic, 2, 0b001110000);
-	Status |= AudioRegSet(&Iic, 3, 0b001110000);
+	Status |= AudioRegSet(&Iic, 2, 0b001111000);
+	Status |= AudioRegSet(&Iic, 3, 0b001111000);
 	Status |= AudioRegSet(&Iic, 4, 0b000010000);
 	Status |= AudioRegSet(&Iic, 5, 0b000000000);
-	Status |= AudioRegSet(&Iic, 7, 0b000000010); //Changed so Word length is 16
+	Status |= AudioRegSet(&Iic, 7, 0b000001010);
 	Status |= AudioRegSet(&Iic, 8, 0b000000000); //Changed so no CLKDIV2
 	TimerDelay(75000);
 	Status |= AudioRegSet(&Iic, 9, 0b000000001);

@@ -64,6 +64,7 @@ set_property IOSTANDARD LVCMOS33 [get_ports {led[3]}]
 ##IO_L12N_T1_MRCC_35
 set_property PACKAGE_PIN K18 [get_ports i2s_sclk]
 set_property IOSTANDARD LVCMOS33 [get_ports i2s_sclk]
+set_property IOB TRUE [get_ports i2s_sclk]
 
 ##IO_25_34
 set_property PACKAGE_PIN T19 [get_ports ac_mclk]
@@ -76,10 +77,12 @@ set_property IOSTANDARD LVCMOS33 [get_ports ac_mute_n]
 ##IO_L8P_T1_AD10P_35
 set_property PACKAGE_PIN M17 [get_ports i2s_sd]
 set_property IOSTANDARD LVCMOS33 [get_ports i2s_sd]
+set_property IOB TRUE [get_ports i2s_sd]
 
 ##IO_L11N_T1_SRCC_35
 set_property PACKAGE_PIN L17 [get_ports i2s_ws]
 set_property IOSTANDARD LVCMOS33 [get_ports i2s_ws]
+set_property IOB TRUE [get_ports i2s_ws]
 
 ##IO_L12P_T1_MRCC_35
 #set_property PACKAGE_PIN K17 [get_ports ac_recdat]
