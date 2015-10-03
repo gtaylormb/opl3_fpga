@@ -48,7 +48,8 @@ module register_file_axi #(
     parameter NUM_AXI_REGISTERS = 0
 ) (
     input wire clk,
-    input wire [7:0] slv8_reg[NUM_AXI_REGISTERS*4],        
+    input wire [7:0] slv8_reg[NUM_AXI_REGISTERS*4],
+    input wire sample_clk_en,
     output logic [REG_TIMER_WIDTH-1:0] timer1,
     output logic [REG_TIMER_WIDTH-1:0] timer2,
     output logic irq_rst,
@@ -94,109 +95,114 @@ module register_file_axi #(
     /*
      * Registers that are not specific to a particular bank
      */
-    always_comb begin
-        timer1 = slv8_reg[2];
-        timer2 = slv8_reg[3];
-        
-        irq_rst = slv8_reg[4][7];
-        mt1 = slv8_reg[4][6];
-        mt2 = slv8_reg[4][5];
-        st2 = slv8_reg[4][1];
-        st1 = slv8_reg[4][0];
-        connection_sel = slv8_reg[BANK2_OFFSET+4][REG_CONNECTION_SEL_WIDTH-1:0];
-        
-        is_new = slv8_reg[BANK2_OFFSET+5][0];
-        nts = slv8_reg[8][6];
-        
-        dam <= slv8_reg['hBD][7];
-        dvb <= slv8_reg['hBD][6];
-        ryt <= slv8_reg['hBD][5];
-        bd  <= slv8_reg['hBD][4];
-        sd  <= slv8_reg['hBD][3];
-        tom <= slv8_reg['hBD][2];
-        tc  <= slv8_reg['hBD][1];
-        hh  <= slv8_reg['hBD][0];                               
-    end
+    always_ff @(posedge clk)
+        if (sample_clk_en) begin
+            timer1 <= slv8_reg[2];
+            timer2 <= slv8_reg[3];
+            
+            irq_rst <= slv8_reg[4][7];
+            mt1 <= slv8_reg[4][6];
+            mt2 <= slv8_reg[4][5];
+            st2 <= slv8_reg[4][1];
+            st1 <= slv8_reg[4][0];
+            connection_sel <= slv8_reg[BANK2_OFFSET+4][REG_CONNECTION_SEL_WIDTH-1:0];
+            
+            is_new <= slv8_reg[BANK2_OFFSET+5][0];
+            nts <= slv8_reg[8][6];
+            
+            dam <= slv8_reg['hBD][7];
+            dvb <= slv8_reg['hBD][6];
+            ryt <= slv8_reg['hBD][5];
+            bd  <= slv8_reg['hBD][4];
+            sd  <= slv8_reg['hBD][3];
+            tom <= slv8_reg['hBD][2];
+            tc  <= slv8_reg['hBD][1];
+            hh  <= slv8_reg['hBD][0];                               
+        end
            
     genvar bank;
     genvar i;
     generate
     for (bank = 0; bank < 2; bank++) begin
         for (i = 0; i < 6; i++)
-            always_comb begin
-                am[bank][i]   = slv8_reg['h20+i+bank*BANK2_OFFSET][7];
-                vib[bank][i]  = slv8_reg['h20+i+bank*BANK2_OFFSET][6];
-                egt[bank][i]  = slv8_reg['h20+i+bank*BANK2_OFFSET][5];
-                ksr[bank][i]  = slv8_reg['h20+i+bank*BANK2_OFFSET][4];
-                mult[bank][i] = slv8_reg['h20+i+bank*BANK2_OFFSET][3:0];
-                    
-                ksl[bank][i] = slv8_reg['h40+i+bank*BANK2_OFFSET][7:6];
-                tl[bank][i]  = slv8_reg['h40+i+bank*BANK2_OFFSET][5:0];
-                    
-                ar[bank][i] = slv8_reg['h60+i+bank*BANK2_OFFSET][7:4];
-                dr[bank][i] = slv8_reg['h60+i+bank*BANK2_OFFSET][3:0]; 
-                    
-                sl[bank][i] = slv8_reg['h80+i+bank*BANK2_OFFSET][7:4];
-                rr[bank][i] = slv8_reg['h80+i+bank*BANK2_OFFSET][3:0];
-                    
-                ws[bank][i] = slv8_reg['hE0+i+bank*BANK2_OFFSET][2:0];                   
-            end
+            always_ff @(posedge clk)
+                if (sample_clk_en) begin
+                    am[bank][i]   <= slv8_reg['h20+i+bank*BANK2_OFFSET][7];
+                    vib[bank][i]  <= slv8_reg['h20+i+bank*BANK2_OFFSET][6];
+                    egt[bank][i]  <= slv8_reg['h20+i+bank*BANK2_OFFSET][5];
+                    ksr[bank][i]  <= slv8_reg['h20+i+bank*BANK2_OFFSET][4];
+                    mult[bank][i] <= slv8_reg['h20+i+bank*BANK2_OFFSET][3:0];
+                        
+                    ksl[bank][i] <= slv8_reg['h40+i+bank*BANK2_OFFSET][7:6];
+                    tl[bank][i]  <= slv8_reg['h40+i+bank*BANK2_OFFSET][5:0];
+                        
+                    ar[bank][i] <= slv8_reg['h60+i+bank*BANK2_OFFSET][7:4];
+                    dr[bank][i] <= slv8_reg['h60+i+bank*BANK2_OFFSET][3:0]; 
+                        
+                    sl[bank][i] <= slv8_reg['h80+i+bank*BANK2_OFFSET][7:4];
+                    rr[bank][i] <= slv8_reg['h80+i+bank*BANK2_OFFSET][3:0];
+                        
+                    ws[bank][i] <= slv8_reg['hE0+i+bank*BANK2_OFFSET][2:0];                   
+                end
         
         for (i = 8; i < 14; i++)
-            always_comb begin            
-                am[bank][i-2]   = slv8_reg['h20+i+bank*BANK2_OFFSET][7];
-                vib[bank][i-2]  = slv8_reg['h20+i+bank*BANK2_OFFSET][6];
-                egt[bank][i-2]  = slv8_reg['h20+i+bank*BANK2_OFFSET][5];
-                ksr[bank][i-2]  = slv8_reg['h20+i+bank*BANK2_OFFSET][4];
-                mult[bank][i-2] = slv8_reg['h20+i+bank*BANK2_OFFSET][3:0];
-                        
-                ksl[bank][i-2] = slv8_reg['h40+i+bank*BANK2_OFFSET][7:6];
-                tl[bank][i-2]  = slv8_reg['h40+i+bank*BANK2_OFFSET][5:0];
-                        
-                ar[bank][i-2] = slv8_reg['h60+i+bank*BANK2_OFFSET][7:4];
-                dr[bank][i-2] = slv8_reg['h60+i+bank*BANK2_OFFSET][3:0];
-                        
-                sl[bank][i-2] = slv8_reg['h80+i+bank*BANK2_OFFSET][7:4];
-                rr[bank][i-2] = slv8_reg['h80+i+bank*BANK2_OFFSET][3:0];                      
-                        
-                ws[bank][i-2] = slv8_reg['hE0+i+bank*BANK2_OFFSET][2:0];                 
-            end
+            always_ff @(posedge clk)
+                if (sample_clk_en) begin               
+                    am[bank][i-2]   <= slv8_reg['h20+i+bank*BANK2_OFFSET][7];
+                    vib[bank][i-2]  <= slv8_reg['h20+i+bank*BANK2_OFFSET][6];
+                    egt[bank][i-2]  <= slv8_reg['h20+i+bank*BANK2_OFFSET][5];
+                    ksr[bank][i-2]  <= slv8_reg['h20+i+bank*BANK2_OFFSET][4];
+                    mult[bank][i-2] <= slv8_reg['h20+i+bank*BANK2_OFFSET][3:0];
+                            
+                    ksl[bank][i-2] <= slv8_reg['h40+i+bank*BANK2_OFFSET][7:6];
+                    tl[bank][i-2]  <= slv8_reg['h40+i+bank*BANK2_OFFSET][5:0];
+                            
+                    ar[bank][i-2] <= slv8_reg['h60+i+bank*BANK2_OFFSET][7:4];
+                    dr[bank][i-2] <= slv8_reg['h60+i+bank*BANK2_OFFSET][3:0];
+                            
+                    sl[bank][i-2] <= slv8_reg['h80+i+bank*BANK2_OFFSET][7:4];
+                    rr[bank][i-2] <= slv8_reg['h80+i+bank*BANK2_OFFSET][3:0];                      
+                            
+                    ws[bank][i-2] <= slv8_reg['hE0+i+bank*BANK2_OFFSET][2:0];                 
+                end
         
         for (i = 16; i < 22; i++)
-            always_comb begin            
-                am[bank][i-4]   = slv8_reg['h20+i+bank*BANK2_OFFSET][7];
-                vib[bank][i-4]  = slv8_reg['h20+i+bank*BANK2_OFFSET][6];
-                egt[bank][i-4]  = slv8_reg['h20+i+bank*BANK2_OFFSET][5];
-                ksr[bank][i-4]  = slv8_reg['h20+i+bank*BANK2_OFFSET][4];
-                mult[bank][i-4] = slv8_reg['h20+i+bank*BANK2_OFFSET][3:0];
-                        
-                ksl[bank][i-4] = slv8_reg['h40+i+bank*BANK2_OFFSET][7:6];
-                tl[bank][i-4]  = slv8_reg['h40+i+bank*BANK2_OFFSET][5:0];
-                        
-                ar[bank][i-4] = slv8_reg['h60+i+bank*BANK2_OFFSET][7:4];
-                dr[bank][i-4] = slv8_reg['h60+i+bank*BANK2_OFFSET][3:0];
-                        
-                sl[bank][i-4] = slv8_reg['h80+i+bank*BANK2_OFFSET][7:4];
-                rr[bank][i-4] = slv8_reg['h80+i+bank*BANK2_OFFSET][3:0];
-                        
-                ws[bank][i-4] = slv8_reg['hE0+i+bank*BANK2_OFFSET][2:0];                 
-            end
+            always_ff @(posedge clk)
+                if (sample_clk_en) begin                        
+                    am[bank][i-4]   <= slv8_reg['h20+i+bank*BANK2_OFFSET][7];
+                    vib[bank][i-4]  <= slv8_reg['h20+i+bank*BANK2_OFFSET][6];
+                    egt[bank][i-4]  <= slv8_reg['h20+i+bank*BANK2_OFFSET][5];
+                    ksr[bank][i-4]  <= slv8_reg['h20+i+bank*BANK2_OFFSET][4];
+                    mult[bank][i-4] <= slv8_reg['h20+i+bank*BANK2_OFFSET][3:0];
+                            
+                    ksl[bank][i-4] <= slv8_reg['h40+i+bank*BANK2_OFFSET][7:6];
+                    tl[bank][i-4]  <= slv8_reg['h40+i+bank*BANK2_OFFSET][5:0];
+                            
+                    ar[bank][i-4] <= slv8_reg['h60+i+bank*BANK2_OFFSET][7:4];
+                    dr[bank][i-4] <= slv8_reg['h60+i+bank*BANK2_OFFSET][3:0];
+                            
+                    sl[bank][i-4] <= slv8_reg['h80+i+bank*BANK2_OFFSET][7:4];
+                    rr[bank][i-4] <= slv8_reg['h80+i+bank*BANK2_OFFSET][3:0];
+                            
+                    ws[bank][i-4] <= slv8_reg['hE0+i+bank*BANK2_OFFSET][2:0];                 
+                end
         
         for (i = 0; i < 9; i++)
-            always_comb begin
-                fnum[bank][i][7:0] = slv8_reg['hA0+i+bank*BANK2_OFFSET];
-                
-                kon[bank][i]       = slv8_reg['hB0+i+bank*BANK2_OFFSET][5];
-                block[bank][i]     = slv8_reg['hB0+i+bank*BANK2_OFFSET][4:2];
-                fnum[bank][i][9:8] = slv8_reg['hB0+i+bank*BANK2_OFFSET][1:0];
-                
-                chd[bank][i] = slv8_reg['hC0+i+bank*BANK2_OFFSET][7];
-                chc[bank][i] = slv8_reg['hC0+i+bank*BANK2_OFFSET][6];
-                chb[bank][i] = slv8_reg['hC0+i+bank*BANK2_OFFSET][5];
-                cha[bank][i] = slv8_reg['hC0+i+bank*BANK2_OFFSET][4];
-                fb[bank][i]  = slv8_reg['hC0+i+bank*BANK2_OFFSET][3:1];
-                cnt[bank][i] = slv8_reg['hC0+i+bank*BANK2_OFFSET][0];                                
-            end
+            always_ff @(posedge clk)
+                if (sample_clk_en) begin
+                    fnum[bank][i][7:0] <= slv8_reg['hA0+i+bank*BANK2_OFFSET];
+                    
+                    kon[bank][i]       <= slv8_reg['hB0+i+bank*BANK2_OFFSET][5];
+                    block[bank][i]     <= slv8_reg['hB0+i+bank*BANK2_OFFSET][4:2];
+                    fnum[bank][i][9:8] <= slv8_reg['hB0+i+bank*BANK2_OFFSET][1:0];
+                    
+                    chd[bank][i] <= slv8_reg['hC0+i+bank*BANK2_OFFSET][7];
+                    chc[bank][i] <= slv8_reg['hC0+i+bank*BANK2_OFFSET][6];
+                    chb[bank][i] <= slv8_reg['hC0+i+bank*BANK2_OFFSET][5];
+                    cha[bank][i] <= slv8_reg['hC0+i+bank*BANK2_OFFSET][4];
+                    fb[bank][i]  <= slv8_reg['hC0+i+bank*BANK2_OFFSET][3:1];
+                    cnt[bank][i] <= slv8_reg['hC0+i+bank*BANK2_OFFSET][0];                                
+                end
     end                
     endgenerate   
 endmodule

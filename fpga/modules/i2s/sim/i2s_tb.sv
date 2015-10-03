@@ -41,7 +41,7 @@
 `default_nettype none  // disable implicit net type declarations
 `timescale 1ns / 1ps
 
-`include "../../top_level/pkg/opl3_pkg.sv"
+`include "../top_level/pkg/opl3_pkg.sv"
 import opl3_pkg::*;
 
 module i2s_tb;
@@ -50,8 +50,8 @@ module i2s_tb;
     
     bit clk;
     wire sample_clk_en;
-    bit [SAMPLE_WIDTH-1:0] left_channel = 0;
-    bit [SAMPLE_WIDTH-1:0] right_channel = 2**16/2;
+    bit [DAC_OUTPUT_WIDTH-1:0] left_channel = 0;
+    bit [DAC_OUTPUT_WIDTH-1:0] right_channel = 2**16/2;
     wire i2s_sclk;
     wire i2s_ws;
     wire i2s_sd;

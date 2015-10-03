@@ -71,20 +71,20 @@ Close up of the attack phase:
 
 ## Utilization in xc7z010:
 
-    +----------------------------+------+-------+-----------+-------+
-    |          Site Type         | Used | Fixed | Available | Util% |
-    +----------------------------+------+-------+-----------+-------+
-    | Slice LUTs                 | 6126 |     0 |     17600 | 34.81 |
-    |   LUT as Logic             | 6060 |     0 |     17600 | 34.43 |
-    |   LUT as Memory            |   66 |     0 |      6000 |  1.10 |
-    |     LUT as Distributed RAM |    0 |     0 |           |       |
-    |     LUT as Shift Register  |   66 |     0 |           |       |
-    | Slice Registers            | 7404 |     0 |     35200 | 21.03 |
-    |   Register as Flip Flop    | 7404 |     0 |     35200 | 21.03 |
-    |   Register as Latch        |    0 |     0 |     35200 |  0.00 |
-    | F7 Muxes                   |  784 |     0 |      8800 |  8.91 |
-    | F8 Muxes                   |  188 |     0 |      4400 |  4.27 |
-    +----------------------------+------+-------+-----------+-------+
+    +----------------------------+-------+-------+-----------+-------+
+    |          Site Type         |  Used | Fixed | Available | Util% |
+    +----------------------------+-------+-------+-----------+-------+
+    | Slice LUTs                 |  6450 |     0 |     17600 | 36.65 |
+    |   LUT as Logic             |  6384 |     0 |     17600 | 36.27 |
+    |   LUT as Memory            |    66 |     0 |      6000 |  1.10 |
+    |     LUT as Distributed RAM |     0 |     0 |           |       |
+    |     LUT as Shift Register  |    66 |     0 |           |       |
+    | Slice Registers            | 10230 |     0 |     35200 | 29.06 |
+    |   Register as Flip Flop    | 10230 |     0 |     35200 | 29.06 |
+    |   Register as Latch        |     0 |     0 |     35200 |  0.00 |
+    | F7 Muxes                   |   897 |     0 |      8800 | 10.19 |
+    | F8 Muxes                   |   252 |     0 |      4400 |  5.73 |
+    +----------------------------+-------+-------+-----------+-------+
     
     +-------------------+------+-------+-----------+-------+
     |     Site Type     | Used | Fixed | Available | Util% |
