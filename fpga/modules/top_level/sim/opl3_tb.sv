@@ -52,6 +52,7 @@ module opl3_tb;
     
     bit clk125;
     wire clk;
+    wire clk_locked;
     wire i2s_sclk;
     wire i2s_ws;
     wire i2s_sd;
