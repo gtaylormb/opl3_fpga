@@ -54,8 +54,7 @@ module tremolo (
     localparam TREMOLO_MAX_COUNT = 13*1024;
     localparam TREMOLO_INDEX_WIDTH = $clog2(TREMOLO_MAX_COUNT);
     
-    logic [TREMOLO_INDEX_WIDTH-1:0] tremolo_index [NUM_BANKS][NUM_OPERATORS_PER_BANK]
-        = '{default: '0};
+    logic [TREMOLO_INDEX_WIDTH-1:0] tremolo_index = '0;
     logic [TREMOLO_INDEX_WIDTH-8-1:0] am_val_tmp0;
     logic [TREMOLO_INDEX_WIDTH-8-1:0] am_val_tmp1;
     
@@ -64,13 +63,13 @@ module tremolo (
      * 3.7 Hz (Sample Freq/2**14)
      */            
     always_ff @(posedge clk)
-        if (sample_clk_en)
-            if (tremolo_index[bank_num][op_num] == TREMOLO_MAX_COUNT - 1)
-                tremolo_index[bank_num][op_num] <= 0;
+        if (sample_clk_en && bank_num == 0 && op_num == 0)
+            if (tremolo_index == TREMOLO_MAX_COUNT - 1)
+                tremolo_index <= 0;
             else
-                tremolo_index[bank_num][op_num] <= tremolo_index[bank_num][op_num] + 1;
+                tremolo_index <= tremolo_index + 1;
     
-    always_comb am_val_tmp0 = tremolo_index[bank_num][op_num] >> 8;
+    always_comb am_val_tmp0 = tremolo_index >> 8;
     
     always_comb 
         if (am_val_tmp0 > 26)

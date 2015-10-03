@@ -56,8 +56,7 @@ module vibrato (
 );
     localparam VIBRATO_INDEX_WIDTH = 13;
     
-    logic [VIBRATO_INDEX_WIDTH-1:0] vibrato_index [NUM_BANKS][NUM_OPERATORS_PER_BANK]
-        = '{ default: '0 };
+    logic [VIBRATO_INDEX_WIDTH-1:0] vibrato_index = '0;
     logic [REG_FNUM_WIDTH-1:0] delta0;
     logic [REG_FNUM_WIDTH-1:0] delta1;
     logic [REG_FNUM_WIDTH-1:0] delta2;
@@ -68,13 +67,13 @@ module vibrato (
      */        
     always_ff @(posedge clk)
         if (sample_clk_en)
-            vibrato_index[bank_num][op_num] <= vibrato_index[bank_num][op_num] + 1;
+            vibrato_index <= vibrato_index + 1;
         
     always_comb delta0 = fnum >> 7;
-    always_comb delta1 = ((vibrato_index[bank_num][op_num] >> 10) & 3) == 3 ? delta0 >> 1 : delta0;
+    always_comb delta1 = ((vibrato_index >> 10) & 3) == 3 ? delta0 >> 1 : delta0;
     always_comb delta2 = !dvb ? delta1 >> 1 : delta1;
     
     always_ff @(posedge clk)
-        vib_val <= ((vibrato_index[bank_num][op_num] >> 10) & 4) != 0 ? ~delta2 : delta2;
+        vib_val <= ((vibrato_index >> 10) & 4) != 0 ? ~delta2 : delta2;
 endmodule
 `default_nettype wire  // re-enable implicit net type declarations
