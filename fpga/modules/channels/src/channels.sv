@@ -83,8 +83,8 @@ module channels (
     output logic signed [SAMPLE_WIDTH-1:0] channel_c = 0,
     output logic signed [SAMPLE_WIDTH-1:0] channel_d = 0
 );      
-    logic signed [SAMPLE_WIDTH-1:0] channel_2_op;
-    logic signed [SAMPLE_WIDTH-1:0] channel_4_op;
+    logic signed [SAMPLE_WIDTH-1:0] channel_2_op [2][9];
+    logic signed [SAMPLE_WIDTH-1:0] channel_4_op [2][3];
     logic signed [OP_OUT_WIDTH-1:0] operator_out [NUM_BANKS][NUM_OPERATORS_PER_BANK];
     
     /*
@@ -92,9 +92,13 @@ module channels (
      * 16-bits.
      */
     logic signed [CHANNEL_ACCUMULATOR_WIDTH-1:0] channel_a_acc_pre_clamp = 0;
-    logic signed [CHANNEL_ACCUMULATOR_WIDTH-1:0] channel_b_acc_pre_clamp = 0; 
-    logic signed [CHANNEL_ACCUMULATOR_WIDTH-1:0] channel_c_acc_pre_clamp = 0;      
+    logic signed [CHANNEL_ACCUMULATOR_WIDTH-1:0] channel_a_acc_pre_clamp_p [2][9] = '{default: 0};    
+    logic signed [CHANNEL_ACCUMULATOR_WIDTH-1:0] channel_b_acc_pre_clamp = 0;
+    logic signed [CHANNEL_ACCUMULATOR_WIDTH-1:0] channel_b_acc_pre_clamp_p [2][9] = '{default: 0};        
+    logic signed [CHANNEL_ACCUMULATOR_WIDTH-1:0] channel_c_acc_pre_clamp = 0;
+    logic signed [CHANNEL_ACCUMULATOR_WIDTH-1:0] channel_c_acc_pre_clamp_p [2][9] = '{default: 0};        
     logic signed [CHANNEL_ACCUMULATOR_WIDTH-1:0] channel_d_acc_pre_clamp = 0;
+    logic signed [CHANNEL_ACCUMULATOR_WIDTH-1:0] channel_d_acc_pre_clamp_p [2][9] = '{default: 0};
     
     typedef enum {
         IDLE,
@@ -105,15 +109,7 @@ module channels (
     state_t next_state;
     
     logic [$clog2(9)-1:0] channel = 0;
-    logic bank = 0;
-
-    /*
-     * One operator is instantiated; it replicates the necessary registers for
-     * all operator slots (phase accumulation, envelope state and value, etc).
-     */    
-    control_operators control_operators (
-        .*
-    );    
+    logic bank = 0; 
     
     always_ff @(posedge clk)
         state <= next_state;
@@ -134,139 +130,313 @@ module channels (
         if (state == IDLE)
             bank <= 0;
         else if (channel == 8)
-            bank <= 1;
+            bank <= 1;       
+      
+    /*
+     * One operator is instantiated; it replicates the necessary registers for
+     * all operator slots (phase accumulation, envelope state and value, etc).
+     */    
+    control_operators control_operators (
+        .*
+    );    
+    
+    genvar i, j;
+    generate            
+    for (i = 0; i < NUM_BANKS; i++) begin
+        /*
+         * 2 operator channel output connections
+         */
+        always_comb begin
+            channel_2_op[i][0] = cnt[i][0] ? operator_out[i][0] + operator_out[i][3]
+             : operator_out[i][3];
+            channel_2_op[i][1] = cnt[i][1] ? operator_out[i][1] + operator_out[i][4]
+             : operator_out[i][4];
+            channel_2_op[i][2] = cnt[i][2] ? operator_out[i][2] + operator_out[i][5]
+             : operator_out[i][5];        
+            channel_2_op[i][3] = cnt[i][3] ? operator_out[i][6] + operator_out[i][9]
+             : operator_out[i][9];
+            channel_2_op[i][4] = cnt[i][4] ? operator_out[i][7] + operator_out[i][10]
+             : operator_out[i][10];
+            channel_2_op[i][5] = cnt[i][5] ? operator_out[i][8] + operator_out[i][11]
+             : operator_out[i][11];
             
-    always_comb
-        unique case (channel)
-        0, 1, 2: channel_2_op = cnt[bank][channel] ? operator_out[bank][channel]
-         + operator_out[bank][channel + 3] : operator_out[bank][channel + 3];
-        3, 4, 5: channel_2_op = cnt[bank][channel] ? operator_out[bank][channel + 3]
-         + operator_out[bank][channel + 6] : operator_out[bank][channel + 6];
-        6: // bass drum is special
-            if (ryt && bank == 0)               
-                channel_2_op = cnt[bank][channel] ? operator_out[bank][channel + 9]
-                 : operator_out[bank][channel + 6];
+            if (ryt && i == 0)               
+                // bass drum is special (bank 0)
+                channel_2_op[i][6] = cnt[i][6] ? operator_out[i][15] : operator_out[i][12];
             else
-                channel_2_op = cnt[bank][channel] ? operator_out[bank][channel + 6]
-                 + operator_out[bank][channel + 9] : operator_out[bank][15];
-        7, 8: // 7 aka hi hat and snare drum in bank 0, 8 aka tom tom and top cymbal in bank 0
-            channel_2_op = cnt[bank][channel] || (ryt && bank == 0) ? operator_out[bank][channel]
-             + operator_out[bank][channel + 6] : operator_out[bank][channel + 9];
-        endcase
+                channel_2_op[i][6] = cnt[i][6] ? operator_out[i][12] + operator_out[i][15]
+                 : operator_out[i][15];
             
-    always_comb
-        unique case ({cnt[bank][channel], cnt[bank][channel + 3]})
-        'b00: channel_4_op = operator_out[bank][channel + 9];
-        'b01: channel_4_op = operator_out[bank][channel + 3] + operator_out[bank][channel + 9];
-        'b10: channel_4_op = operator_out[bank][channel] + operator_out[bank][channel + 9];
-        'b11: channel_4_op = operator_out[bank][channel] + operator_out[bank][channel + 6]
-         + operator_out[bank][channel + 9];
-        endcase 
+            // aka hi hat and snare drum in bank 0
+            channel_2_op[i][7] = cnt[i][7] || (ryt && i == 0) ? operator_out[i][13] + operator_out[i][16]
+             : operator_out[i][16];   
+            
+            // aka tom tom and top cymbal in bank 0
+            channel_2_op[i][8] = cnt[i][8] || (ryt && i == 0)  ? operator_out[i][14] + operator_out[i][17]
+             : operator_out[i][17];
+        end
+    
+        /*
+         * 4 operator channel output connections
+         */
+        always_comb begin
+            unique case ({cnt[i][0], cnt[i][3]})
+            'b00: channel_4_op[i][0] = operator_out[i][9];
+            'b01: channel_4_op[i][0] = operator_out[i][3] + operator_out[i][9];
+            'b10: channel_4_op[i][0] = operator_out[i][0] + operator_out[i][9];
+            'b11: channel_4_op[i][0] = operator_out[i][0] + operator_out[i][6] + operator_out[i][9];
+            endcase
+                
+            unique case ({cnt[i][1], cnt[i][4]})
+            'b00: channel_4_op[i][1] = operator_out[i][10];
+            'b01: channel_4_op[i][1] = operator_out[i][4] + operator_out[i][10];
+            'b10: channel_4_op[i][1] = operator_out[i][1] + operator_out[i][10];
+            'b11: channel_4_op[i][1] = operator_out[i][1] + operator_out[i][7] + operator_out[i][10];
+            endcase
+                
+            unique case ({cnt[i][2], cnt[i][5]})
+            'b00: channel_4_op[i][2] = operator_out[i][11];
+            'b01: channel_4_op[i][2] = operator_out[i][5] + operator_out[i][11];
+            'b10: channel_4_op[i][2] = operator_out[i][2] + operator_out[i][11];
+            'b11: channel_4_op[i][2] = operator_out[i][2] + operator_out[i][8] + operator_out[i][11];
+            endcase 
+        end
+    end 
+    endgenerate        
+        
+    generate
+    for (i = 0; i < 3; i++) 
+        always_ff @(posedge clk)
+            if (cha[0][i] || !is_new)
+                channel_a_acc_pre_clamp_p[0][i] <= connection_sel[i] && is_new ? channel_4_op[0][i] : channel_2_op[0][i];
+            else
+                channel_a_acc_pre_clamp_p[0][i] <= 0;
+                
+    for (i = 3; i < 6; i++)
+        always_ff @(posedge clk)
+            if (cha[0][i] || !is_new)
+                channel_a_acc_pre_clamp_p[0][i] <= channel_2_op[0][i];
+            else
+                channel_a_acc_pre_clamp_p[0][i] <= 0;
+        
+    for (i = 6; i < 9; i++)
+        always_ff @(posedge clk)
+            if (cha[0][i] || !is_new)
+                channel_a_acc_pre_clamp_p[0][i] <= channel_2_op[0][i];
+            else
+                channel_a_acc_pre_clamp_p[0][i] <= 0;
+        
+    for (i = 0; i < 3; i++) 
+        always_ff @(posedge clk)
+            if (cha[1][i])
+                channel_a_acc_pre_clamp_p[1][i] <= connection_sel[i+3] && is_new ? channel_4_op[1][i] : channel_2_op[1][i];
+            else
+                channel_a_acc_pre_clamp_p[1][i] <= 0;
+            
+    for (i = 3; i < 6; i++)
+        always_ff @(posedge clk)
+            if (cha[1][i])
+                channel_a_acc_pre_clamp_p[1][i] <= channel_2_op[1][i];
+            else
+                channel_a_acc_pre_clamp_p[1][i] <= 0;
+    
+    for (i = 6; i < 9; i++)
+        always_ff @(posedge clk)
+            if (cha[1][i])
+                channel_a_acc_pre_clamp_p[1][i] <= channel_2_op[1][i];
+            else
+                channel_a_acc_pre_clamp_p[1][i] <= 0; 
+    endgenerate
     
     always_ff @(posedge clk)
         if (sample_clk_en)
             channel_a_acc_pre_clamp <= 0;
         else if (state == CALC_OUTPUTS)
-            unique case (channel)
-            0, 1, 2:
-                if (cha[bank][channel] || (bank == 0 && !is_new))
-                    channel_a_acc_pre_clamp <= channel_a_acc_pre_clamp +
-                     (connection_sel[channel] && is_new ? channel_4_op : channel_2_op);
-            3, 4, 5:
-                if (cha[bank][channel] || (bank == 0 && !is_new))
-                    channel_a_acc_pre_clamp <= channel_a_acc_pre_clamp +
-                     (connection_sel[channel-3] && is_new ? channel_4_op : channel_2_op);
-            6, 7, 8:
-                if (cha[bank][channel] || (bank == 0 && !is_new))
-                    channel_a_acc_pre_clamp <= channel_a_acc_pre_clamp + channel_2_op;
-            endcase
-                
+            channel_a_acc_pre_clamp <= channel_a_acc_pre_clamp + channel_a_acc_pre_clamp_p[bank][channel];
+            
+    generate
+        for (i = 0; i < 3; i++) 
+            always_ff @(posedge clk)
+                if (chb[0][i] || !is_new)
+                    channel_b_acc_pre_clamp_p[0][i] <= connection_sel[i] && is_new ? channel_4_op[0][i] : channel_2_op[0][i];
+                else
+                    channel_b_acc_pre_clamp_p[0][i] <= 0;
+            
+        for (i = 3; i < 6; i++)
+            always_ff @(posedge clk)
+                if (chb[0][i] || !is_new)
+                    channel_b_acc_pre_clamp_p[0][i] <= channel_2_op[0][i];
+                else
+                    channel_b_acc_pre_clamp_p[0][i] <= 0;
+    
+        for (i = 6; i < 9; i++)
+            always_ff @(posedge clk)
+                if (chb[0][i] || !is_new)
+                    channel_b_acc_pre_clamp_p[0][i] <= channel_2_op[0][i];
+                else
+                    channel_b_acc_pre_clamp_p[0][i] <= 0;
+    
+        for (i = 0; i < 3; i++) 
+            always_ff @(posedge clk)
+                if (chb[1][i])
+                    channel_b_acc_pre_clamp_p[1][i] <= connection_sel[i+3] && is_new ? channel_4_op[1][i] : channel_2_op[1][i];
+                else
+                    channel_b_acc_pre_clamp_p[1][i] <= 0;
+        
+        for (i = 3; i < 6; i++)
+            always_ff @(posedge clk)
+                if (chb[1][i])
+                    channel_b_acc_pre_clamp_p[1][i] <= channel_2_op[1][i];
+                else
+                    channel_b_acc_pre_clamp_p[1][i] <= 0;
+
+        for (i = 6; i < 9; i++)
+            always_ff @(posedge clk)
+                if (chb[1][i])
+                    channel_b_acc_pre_clamp_p[1][i] <= channel_2_op[1][i];
+                else
+                    channel_b_acc_pre_clamp_p[1][i] <= 0; 
+    endgenerate
+    
     always_ff @(posedge clk)
         if (sample_clk_en)
             channel_b_acc_pre_clamp <= 0;
         else if (state == CALC_OUTPUTS)
-            unique case (channel)
-            0, 1, 2:
-                if (chb[bank][channel] || (bank == 0 && !is_new))
-                    channel_b_acc_pre_clamp <= channel_b_acc_pre_clamp +
-                     (connection_sel[channel] && is_new ? channel_4_op : channel_2_op);
-            3, 4, 5:
-                if (chb[bank][channel] || (bank == 0 && !is_new))
-                    channel_b_acc_pre_clamp <= channel_b_acc_pre_clamp +
-                     (connection_sel[channel-3] && is_new ? channel_4_op : channel_2_op);
-            6, 7, 8:
-                if (chb[bank][channel] || (bank == 0 && !is_new))
-                    channel_b_acc_pre_clamp <= channel_b_acc_pre_clamp + channel_2_op;
-            endcase                
-                
+            channel_b_acc_pre_clamp <= channel_b_acc_pre_clamp + channel_b_acc_pre_clamp_p[bank][channel];    
+            
+    generate
+        for (i = 0; i < 3; i++) 
+            always_ff @(posedge clk)
+                if (chc[0][i] || !is_new)
+                    channel_c_acc_pre_clamp_p[0][i] <= connection_sel[i] && is_new ? channel_4_op[0][i] : channel_2_op[0][i];
+                else
+                    channel_c_acc_pre_clamp_p[0][i] <= 0;
+        
+        for (i = 3; i < 6; i++)
+            always_ff @(posedge clk)
+                if (chc[0][i] || !is_new)
+                    channel_c_acc_pre_clamp_p[0][i] <= channel_2_op[0][i];
+                else
+                    channel_c_acc_pre_clamp_p[0][i] <= 0;
+
+        for (i = 6; i < 9; i++)
+            always_ff @(posedge clk)
+                if (chc[0][i] || !is_new)
+                    channel_c_acc_pre_clamp_p[0][i] <= channel_2_op[0][i];
+                else
+                    channel_c_acc_pre_clamp_p[0][i] <= 0;
+
+        for (i = 0; i < 3; i++) 
+            always_ff @(posedge clk)
+                if (chc[1][i])
+                    channel_c_acc_pre_clamp_p[1][i] <= connection_sel[i+3] && is_new ? channel_4_op[1][i] : channel_2_op[1][i];
+                else
+                    channel_c_acc_pre_clamp_p[1][i] <= 0;
+    
+        for (i = 3; i < 6; i++)
+            always_ff @(posedge clk)
+                if (chc[1][i])
+                    channel_c_acc_pre_clamp_p[1][i] <= channel_2_op[1][i];
+                else
+                    channel_c_acc_pre_clamp_p[1][i] <= 0;
+
+        for (i = 6; i < 9; i++)
+            always_ff @(posedge clk)
+                if (chc[1][i])
+                    channel_c_acc_pre_clamp_p[1][i] <= channel_2_op[1][i];
+                else
+                    channel_c_acc_pre_clamp_p[1][i] <= 0; 
+    endgenerate
+    
     always_ff @(posedge clk)
         if (sample_clk_en)
             channel_c_acc_pre_clamp <= 0;
         else if (state == CALC_OUTPUTS)
-            unique case (channel)
-            0, 1, 2:
-                if (chc[bank][channel] || (bank == 0 && !is_new))
-                    channel_c_acc_pre_clamp <= channel_c_acc_pre_clamp +
-                     (connection_sel[channel] && is_new ? channel_4_op : channel_2_op);
-            3, 4, 5:
-                if (chc[bank][channel] || (bank == 0 && !is_new))
-                    channel_c_acc_pre_clamp <= channel_c_acc_pre_clamp +
-                     (connection_sel[channel-3] && is_new ? channel_4_op : channel_2_op);
-            6, 7, 8:
-                if (chc[bank][channel] || (bank == 0 && !is_new))
-                    channel_c_acc_pre_clamp <= channel_c_acc_pre_clamp + channel_2_op;
-            endcase
-                
+            channel_c_acc_pre_clamp <= channel_c_acc_pre_clamp + channel_c_acc_pre_clamp_p[bank][channel];    
+            
+    generate
+        for (i = 0; i < 3; i++) 
+            always_ff @(posedge clk)
+                if (chd[0][i] || !is_new)
+                    channel_d_acc_pre_clamp_p[0][i] <= connection_sel[i] && is_new ? channel_4_op[0][i] : channel_2_op[0][i];
+                else
+                    channel_d_acc_pre_clamp_p[0][i] <= 0;
+    
+        for (i = 3; i < 6; i++)
+            always_ff @(posedge clk)
+                if (chd[0][i] || !is_new)
+                    channel_d_acc_pre_clamp_p[0][i] <= channel_2_op[0][i];
+                else
+                    channel_d_acc_pre_clamp_p[0][i] <= 0;
+
+        for (i = 6; i < 9; i++)
+            always_ff @(posedge clk)
+                if (chd[0][i] || !is_new)
+                    channel_d_acc_pre_clamp_p[0][i] <= channel_2_op[0][i];
+                else
+                    channel_d_acc_pre_clamp_p[0][i] <= 0;
+
+        for (i = 0; i < 3; i++) 
+            always_ff @(posedge clk)
+                if (chd[1][i])
+                    channel_d_acc_pre_clamp_p[1][i] <= connection_sel[i+3] && is_new ? channel_4_op[1][i] : channel_2_op[1][i];
+                else
+                    channel_d_acc_pre_clamp_p[1][i] <= 0;
+
+        for (i = 3; i < 6; i++)
+            always_ff @(posedge clk)
+                if (chd[1][i])
+                    channel_d_acc_pre_clamp_p[1][i] <= channel_2_op[1][i];
+                else
+                    channel_d_acc_pre_clamp_p[1][i] <= 0;
+
+        for (i = 6; i < 9; i++)
+            always_ff @(posedge clk)
+                if (chd[1][i])
+                    channel_d_acc_pre_clamp_p[1][i] <= channel_2_op[1][i];
+                else
+                    channel_d_acc_pre_clamp_p[1][i] <= 0; 
+    endgenerate
+    
     always_ff @(posedge clk)
         if (sample_clk_en)
             channel_d_acc_pre_clamp <= 0;
         else if (state == CALC_OUTPUTS)
-            unique case (channel)
-            0, 1, 2:
-                if (chd[bank][channel] || (bank == 0 && !is_new))
-                    channel_d_acc_pre_clamp <= channel_d_acc_pre_clamp +
-                     (connection_sel[channel] && is_new ? channel_4_op : channel_2_op);
-            3, 4, 5:
-                if (chd[bank][channel] || (bank == 0 && !is_new))
-                    channel_d_acc_pre_clamp <= channel_d_acc_pre_clamp +
-                     (connection_sel[channel-3] && is_new ? channel_4_op : channel_2_op);
-            6, 7, 8:
-                if (chd[bank][channel] || (bank == 0 && !is_new))
-                    channel_d_acc_pre_clamp <= channel_d_acc_pre_clamp + channel_2_op;
-            endcase
+            channel_d_acc_pre_clamp <= channel_d_acc_pre_clamp + channel_d_acc_pre_clamp_p[bank][channel];    
     
     /*
      * Clamp output channels
      */
-    always_ff @(posedge clk) begin
-        if (channel_a_acc_pre_clamp > 2**15 - 1)
-            channel_a <= 2**15 - 1;
-        else if (channel_a_acc_pre_clamp < -2**15)
-            channel_a <= -2**15;
-        else
-            channel_a <= channel_a_acc_pre_clamp;
-
-        if (channel_b_acc_pre_clamp > 2**15 - 1)
-            channel_b <= 2**15 - 1;
-        else if (channel_b_acc_pre_clamp < -2**15)
-            channel_b <= -2**15;
-        else
-            channel_b <= channel_b_acc_pre_clamp;              
-
-        if (channel_c_acc_pre_clamp > 2**15 - 1)
-            channel_c <= 2**15 - 1;
-        else if (channel_c_acc_pre_clamp < -2**15)
-            channel_c <= -2**15;
-        else
-            channel_c <= channel_c_acc_pre_clamp;              
-
-        if (channel_d_acc_pre_clamp > 2**15 - 1)
-            channel_d <= 2**15 - 1;
-        else if (channel_d_acc_pre_clamp < -2**15)
-            channel_d <= -2**15;
-        else
-            channel_d <= channel_d_acc_pre_clamp; 
-    end        
+    always_ff @(posedge clk)
+        if (sample_clk_en) begin
+            if (channel_a_acc_pre_clamp > 2**15 - 1)
+                channel_a <= 2**15 - 1;
+            else if (channel_a_acc_pre_clamp < -2**15)
+                channel_a <= -2**15;
+            else
+                channel_a <= channel_a_acc_pre_clamp;
+    
+            if (channel_b_acc_pre_clamp > 2**15 - 1)
+                channel_b <= 2**15 - 1;
+            else if (channel_b_acc_pre_clamp < -2**15)
+                channel_b <= -2**15;
+            else
+                channel_b <= channel_b_acc_pre_clamp;              
+    
+            if (channel_c_acc_pre_clamp > 2**15 - 1)
+                channel_c <= 2**15 - 1;
+            else if (channel_c_acc_pre_clamp < -2**15)
+                channel_c <= -2**15;
+            else
+                channel_c <= channel_c_acc_pre_clamp;              
+    
+            if (channel_d_acc_pre_clamp > 2**15 - 1)
+                channel_d <= 2**15 - 1;
+            else if (channel_d_acc_pre_clamp < -2**15)
+                channel_d <= -2**15;
+            else
+                channel_d <= channel_d_acc_pre_clamp; 
+        end        
         
 endmodule
 `default_nettype wire  // re-enable implicit net type declarations

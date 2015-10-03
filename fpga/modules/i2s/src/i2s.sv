@@ -48,7 +48,6 @@ import opl3_pkg::*;
 
 module i2s (
     input wire clk, 
-    input wire reset,
     input wire sample_clk_en,
     input wire [DAC_OUTPUT_WIDTH-1:0] left_channel,
     input wire [DAC_OUTPUT_WIDTH-1:0] right_channel,
@@ -76,7 +75,7 @@ module i2s (
             left_channel_r[0] <= left_channel;
             right_channel_r[0] <= right_channel;
         end
-        else if (bit_counter == BITS_PER_FRAME - 1 && i2s_sclk_en) begin
+        else if (bit_counter == BITS_PER_FRAME - 2 && i2s_sclk_en) begin
             left_channel_r[1] <= left_channel_r[0];
             right_channel_r[1] <= right_channel_r[0];
         end
