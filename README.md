@@ -8,7 +8,7 @@ Hear it in action:
 * https://www.youtube.com/watch?v=KoSF4ZoDuRI
 * https://www.youtube.com/watch?v=i9vEKyJScYw
 
-Every effort possible has been made to replicate, bit-true, the math of the original OPL3 chip. Several other very smart people put in a lot of work before me to get as close as possible this goal in software, and this FPGA design would not be possible without their work. Their efforts included <a href="https://docs.google.com/document/d/18IGx18NQY_Q1PJVZ-bHywao9bhsDoAqoIn1rIm42nwo/edit">de-lidding the chip to extract the actual values out of the ROMs</a>. They're all over at http://forums.submarine.org.uk/phpBB/viewforum.php?f=9. You can follow the progression of some of the reverse engineering--it's quite interesting.
+Every effort possible has been made to replicate, bit-true, the math of the original OPL3 chip. Several other very smart people put in a lot of work before me to get as close as possible this goal in software, and this FPGA design would not be possible without their work. Their efforts included <a href="https://docs.google.com/document/d/18IGx18NQY_Q1PJVZ-bHywao9bhsDoAqoIn1rIm42nwo/edit">de-lidding the chip to extract the actual values out of the ROMs</a> and <a href="https://github.com/gtaylormb/opl3_fpga/blob/master/docs/opl3math/opl3math.pdf">in-dept analysis of the math involved</a>. They're all over at http://forums.submarine.org.uk/phpBB/viewforum.php?f=9. You can follow the progression of some of the reverse engineering--it's quite interesting.
 
 There are some differences between this version and the original chip in the external interface due to the hardware on
 the board that I'm using. The design is targeted to the <a href="https://www.digilentinc.com/Products/Detail.cfm?Prod=ZYBO">Digilent ZYBO board</a>
@@ -28,11 +28,11 @@ chip. The ZYBO provides the FPGA with an external clock of 125MHz. Using a mixed
 I'm able to synthesize a 12.727MHz clock from that, which divided by 256 gets me very close to the original
 sample rate at 49.7148KHz. Updating 36 operator slots using my slower master clock only gives me 7 clock
 cycles per sample instead of 8, but that's okay because I can stack tons of combinational logic up with
-few pipeline registers with this slow clock speed and modern FPGA.
+few pipeline registers with this slow clock speed and modern FPGA. The build meets timing with 53.1ns of slack (＠_＠;)
 
 As far as software, so far I've ported over <a href="http://software.kvee.cz/imfplay/">imfplay</a> from x86 DOS to the ARM running bare metal. It can playback .dro files captured in DOSBox while playing the original games. They are essentially OPL3 register writes using a 1000Hz timer tick (I used the built in timer in the ARM). The files are stored in an in-memory filesystem. The whole package including the FPGA bitstream, front stage boot loader, imfplay executable, and filesystem image can be built using one command and placed on an SD card.
 
-In doing the project, I was very impressed with what the original chip designers were able to accomplish. They used some very clever techniques to squeeze maximum functionality out of very limited resources--particularly using the combination of an exponential lookup table and a log-sine lookup table to <a href="https://github.com/gtaylormb/opl3_fpga/blob/master/docs/opl3math.pdf">apply gain to the sine wave without the use of multipliers</a>, and the clever use of time sharing the operator resources among 36 slots.
+In doing the project, I was very impressed with what the original chip designers were able to accomplish. They used some very clever techniques to squeeze maximum functionality out of very limited resources--particularly using the combination of an exponential lookup table and a log-sine lookup table to <a href="https://github.com/gtaylormb/opl3_fpga/blob/master/docs/opl3math/opl3math.pdf">apply gain to the sine wave without the use of multipliers</a>, and the clever use of time sharing the operator resources among 36 slots.
 
 Tools used are Modelsim, Vivado 2015.1, Octave (for sample analysis), and SVEditor (for SystemVerilog file editing).
 

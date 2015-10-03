@@ -1,7 +1,7 @@
 //Copyright 1986-2015 Xilinx, Inc. All Rights Reserved.
 //--------------------------------------------------------------------------------
 //Tool Version: Vivado v.2015.1 (lin64) Build 1215546 Mon Apr 27 19:07:21 MDT 2015
-//Date        : Mon Aug 24 01:19:32 2015
+//Date        : Fri Oct  2 20:01:42 2015
 //Host        : edinburgh running 64-bit Ubuntu 15.04
 //Command     : generate_target opl3_cpu_wrapper.bd
 //Design      : opl3_cpu_wrapper
@@ -31,6 +31,7 @@ module opl3_cpu_wrapper
     FIXED_IO_ps_clk,
     FIXED_IO_ps_porb,
     FIXED_IO_ps_srstb,
+    ac_mclk,
     ac_mute_n,
     clk125,
     i2s_sclk,
@@ -60,6 +61,7 @@ module opl3_cpu_wrapper
   inout FIXED_IO_ps_clk;
   inout FIXED_IO_ps_porb;
   inout FIXED_IO_ps_srstb;
+  output ac_mclk;
   output ac_mute_n;
   input clk125;
   output i2s_sclk;
@@ -90,6 +92,7 @@ module opl3_cpu_wrapper
   wire FIXED_IO_ps_clk;
   wire FIXED_IO_ps_porb;
   wire FIXED_IO_ps_srstb;
+  wire ac_mclk;
   wire ac_mute_n;
   wire clk125;
   wire i2s_sclk;
@@ -143,6 +146,7 @@ module opl3_cpu_wrapper
         .IIC_0_sda_i(iic_0_sda_i),
         .IIC_0_sda_o(iic_0_sda_o),
         .IIC_0_sda_t(iic_0_sda_t),
+        .ac_mclk(ac_mclk),
         .ac_mute_n(ac_mute_n),
         .clk125(clk125),
         .i2s_sclk(i2s_sclk),

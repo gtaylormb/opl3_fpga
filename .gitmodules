@@ -1,6 +1,6 @@
-[submodule "docs/ppplayer-code"]
-	path = docs/ppplayer-code
-	url = git://git.code.sf.net/p/peepeeplayer/code
 [submodule "docs/imfplay"]
 	path = docs/imfplay
 	url = https://bitbucket.org/kvee/imfplay
+[submodule "docs/ppplay-code"]
+	path = docs/ppplay-code
+	url = https://github.com/stohrendorf/ppplay.git
