@@ -102,10 +102,8 @@ module opl3 #(
     wire cnt [2][9];
     wire irq;
 
-    logic signed [SAMPLE_WIDTH-1:0] sample_l = 0;
-    logic signed [SAMPLE_WIDTH-1:0] sample_r = 0;
-    logic signed [SAMPLE_WIDTH:0] sample_l_pre_clamp = 0;
-    logic signed [SAMPLE_WIDTH:0] sample_r_pre_clamp = 0;
+    logic signed [DAC_OUTPUT_WIDTH-1:0] sample_l = 0;
+    logic signed [DAC_OUTPUT_WIDTH-1:0] sample_r = 0;
     wire signed [SAMPLE_WIDTH-1:0] channel_a;
     wire signed [SAMPLE_WIDTH-1:0] channel_b;
     wire signed [SAMPLE_WIDTH-1:0] channel_c;
@@ -135,29 +133,14 @@ module opl3 #(
     );
     
     /*
-     * The 4 output channels are normally combined in the analog domain after
-     * the YAC512 DAC outputs. Here we'll just add and clamp to 16-bit
+     * The 4 16-bit output channels are normally combined in the analog domain
+     * after the YAC512 DAC outputs. Here we'll just add and output to our DAC
+     * in 24-bit mode.
      */
     always_ff @(posedge clk) begin
-        sample_l_pre_clamp <= channel_a + channel_c;
-        sample_r_pre_clamp <= channel_b + channel_d;
+        sample_l <= (channel_a + channel_c) << 7;
+        sample_r <= (channel_b + channel_d) << 7;
     end
-    
-    always_ff @(posedge clk) begin
-        if (sample_l_pre_clamp > 2**15 - 1)
-            sample_l <= 2** 15 -1;
-        else if (sample_l_pre_clamp < -2**15)
-            sample_l <= -2**15;
-        else
-            sample_l <= sample_l_pre_clamp;
-               
-        if (sample_r_pre_clamp > 2**15 - 1)
-            sample_r <= 2** 15 -1;
-        else if (sample_r_pre_clamp < -2**15)
-            sample_r <= -2**15;
-        else
-            sample_r <= sample_r_pre_clamp;
-    end 
     
     i2s i2s (
         .left_channel(sample_l),

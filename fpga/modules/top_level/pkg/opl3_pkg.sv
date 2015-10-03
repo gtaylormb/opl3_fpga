@@ -67,6 +67,7 @@ package opl3_pkg;
     parameter REG_FB_WIDTH = 3;
     
     parameter SAMPLE_WIDTH = 16;
+    parameter DAC_OUTPUT_WIDTH = 24;
     parameter ENV_WIDTH = 9;
     parameter OP_OUT_WIDTH = 13;
     parameter PHASE_ACC_WIDTH = 20;
