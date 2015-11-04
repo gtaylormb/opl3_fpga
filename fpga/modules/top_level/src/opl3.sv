@@ -138,8 +138,8 @@ module opl3 #(
      * in 24-bit mode.
      */
     always_ff @(posedge clk) begin
-        sample_l <= (channel_a + channel_c) << 7;
-        sample_r <= (channel_b + channel_d) << 7;
+        sample_l <= (channel_a + channel_c) <<< 6;
+        sample_r <= (channel_b + channel_d) <<< 6;
     end
     
     i2s i2s (
