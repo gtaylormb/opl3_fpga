@@ -27,7 +27,7 @@
 		<link>
 			<name>src/ps7_init.c</name>
 			<type>1</type>
-			<location>../opl3_hw_platform/ps7_init.c</location>
+			<location>../../opl3_hw_platform/ps7_init.c</location>
 		</link>
 	</linkedResources>
 </projectDescription>
