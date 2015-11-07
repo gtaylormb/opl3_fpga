@@ -14,7 +14,7 @@ C_SRCS += \
 ../src/nand.c \
 ../src/nor.c \
 ../src/pcap.c \
-/media/sf_D_DRIVE/Users/Greg/git/opl3_fpga/software/opl3_hw_platform/ps7_init.c \
+../../opl3_hw_platform/ps7_init.c \
 ../src/qspi.c \
 ../src/rsa.c \
 ../src/sd.c 
