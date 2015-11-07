@@ -4,3 +4,6 @@
 [submodule "docs/ppplay-code"]
 	path = docs/ppplay-code
 	url = https://github.com/stohrendorf/ppplay.git
+[submodule "docs/ppplay"]
+	path = docs/ppplay
+	url = https://github.com/stohrendorf/ppplay.git
