@@ -49,6 +49,8 @@ compile:
 clean:
 	cd opl3_standalone_bsp_0 && make clean
 	cd fsbl/Release && make clean
+	cd fsbl/Debug && make clean
 	cd imfplay_port/Release && make clean
+	cd imfplay_port/Debug && make clean
 	cd opl3dro && rm -f filesystem.mfs
 	cd hw_def && rm -f opl3.hdf

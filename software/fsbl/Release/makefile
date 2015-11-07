@@ -35,7 +35,7 @@ all: fsbl.elf secondary-outputs
 fsbl.elf: $(OBJS) ../src/lscript.ld $(USER_OBJS)
 	@echo 'Building target: $@'
 	@echo 'Invoking: ARM gcc linker'
-	arm-xilinx-eabi-gcc -L"/media/sf_D_DRIVE/Users/Greg/git/opl3_fpga/software/fsbl/src" -Wl,-T -Wl,../src/lscript.ld -L../../opl3_standalone_bsp_0/ps7_cortexa9_0/lib -o "fsbl.elf" $(OBJS) $(USER_OBJS) $(LIBS)
+	arm-xilinx-eabi-gcc -L"../src" -Wl,-T -Wl,../src/lscript.ld -L../../opl3_standalone_bsp_0/ps7_cortexa9_0/lib -o "fsbl.elf" $(OBJS) $(USER_OBJS) $(LIBS)
 	@echo 'Finished building target: $@'
 	@echo ' '
 

@@ -57,21 +57,21 @@ C_DEPS += \
 src/%.o: ../src/%.S
 	@echo 'Building file: $<'
 	@echo 'Invoking: ARM gcc compiler'
-	arm-xilinx-eabi-gcc -Wall -O2 -I"/media/sf_D_DRIVE/Users/Greg/git/opl3_fpga/software/opl3_hw_platform" -c -fmessage-length=0 -MT"$@" -I../../opl3_standalone_bsp_0/ps7_cortexa9_0/include -MMD -MP -MF"$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -o "$@" "$<"
+	arm-xilinx-eabi-gcc -Wall -O2 -I"../../opl3_hw_platform" -c -fmessage-length=0 -MT"$@" -I../../opl3_standalone_bsp_0/ps7_cortexa9_0/include -MMD -MP -MF"$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -o "$@" "$<"
 	@echo 'Finished building: $<'
 	@echo ' '
 
 src/%.o: ../src/%.c
 	@echo 'Building file: $<'
 	@echo 'Invoking: ARM gcc compiler'
-	arm-xilinx-eabi-gcc -Wall -O2 -I"/media/sf_D_DRIVE/Users/Greg/git/opl3_fpga/software/opl3_hw_platform" -c -fmessage-length=0 -MT"$@" -I../../opl3_standalone_bsp_0/ps7_cortexa9_0/include -MMD -MP -MF"$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -o "$@" "$<"
+	arm-xilinx-eabi-gcc -Wall -O2 -I"../../opl3_hw_platform" -c -fmessage-length=0 -MT"$@" -I../../opl3_standalone_bsp_0/ps7_cortexa9_0/include -MMD -MP -MF"$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -o "$@" "$<"
 	@echo 'Finished building: $<'
 	@echo ' '
 
 src/ps7_init.o: /media/sf_D_DRIVE/Users/Greg/git/opl3_fpga/software/opl3_hw_platform/ps7_init.c
 	@echo 'Building file: $<'
 	@echo 'Invoking: ARM gcc compiler'
-	arm-xilinx-eabi-gcc -Wall -O2 -I"/media/sf_D_DRIVE/Users/Greg/git/opl3_fpga/software/opl3_hw_platform" -c -fmessage-length=0 -MT"$@" -I../../opl3_standalone_bsp_0/ps7_cortexa9_0/include -MMD -MP -MF"$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -o "$@" "$<"
+	arm-xilinx-eabi-gcc -Wall -O2 -I"../../opl3_hw_platform" -c -fmessage-length=0 -MT"$@" -I../../opl3_standalone_bsp_0/ps7_cortexa9_0/include -MMD -MP -MF"$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -o "$@" "$<"
 	@echo 'Finished building: $<'
 	@echo ' '
 
