@@ -260,7 +260,7 @@ module control_operators (
         block_tmp[1][15] = block[1][6];
         kon_tmp[1][15] = kon[1][6];
         fb_tmp[1][15] = 0;
-        use_feedback[1][15] = 1;
+        use_feedback[1][15] = 0;
         modulation[1][15] = cnt[1][6] ? 0 : operator_out[1][12];
         
         fnum_tmp[1][13] = fnum[1][7];
