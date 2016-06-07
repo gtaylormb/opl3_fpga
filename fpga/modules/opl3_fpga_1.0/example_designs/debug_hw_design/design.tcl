@@ -102,29 +102,14 @@ proc create_ipi_design { offsetfile design_name } {
 	connect_bd_net [get_bd_pins axi_peri_interconnect/S00_ARESETN] [get_bd_pins sys_reset_0/peripheral_aresetn]
 	connect_bd_intf_net [get_bd_intf_pins jtag_axi_0/M_AXI] [get_bd_intf_pins axi_peri_interconnect/S00_AXI]
 
-	set_property -dict [ list CONFIG.NUM_MI {3} ] $axi_peri_interconnect
+	set_property -dict [ list CONFIG.NUM_MI {1} ] $axi_peri_interconnect
 	connect_bd_net [get_bd_pins axi_peri_interconnect/M00_ACLK] [get_bd_pins sys_clk_0/clk_out1]
 	connect_bd_net [get_bd_pins axi_peri_interconnect/M00_ARESETN] [get_bd_pins sys_reset_0/peripheral_aresetn]
-	connect_bd_net [get_bd_pins axi_peri_interconnect/M01_ACLK] [get_bd_pins sys_clk_0/clk_out1]
-	connect_bd_net [get_bd_pins axi_peri_interconnect/M01_ARESETN] [get_bd_pins sys_reset_0/peripheral_aresetn]
-	connect_bd_net [get_bd_pins axi_peri_interconnect/M02_ACLK] [get_bd_pins sys_clk_0/clk_out1]
-	connect_bd_net [get_bd_pins axi_peri_interconnect/M02_ARESETN] [get_bd_pins sys_reset_0/peripheral_aresetn]
 
 	# Connect all clock & reset of opl3_fpga_0 slave interfaces..
 	connect_bd_intf_net [get_bd_intf_pins axi_peri_interconnect/M00_AXI] [get_bd_intf_pins opl3_fpga_0/S_AXI]
 	connect_bd_net [get_bd_pins opl3_fpga_0/s_axi_aclk] [get_bd_pins sys_clk_0/clk_out1]
 	connect_bd_net [get_bd_pins opl3_fpga_0/s_axi_aresetn] [get_bd_pins sys_reset_0/peripheral_aresetn]
-	connect_bd_intf_net [get_bd_intf_pins axi_peri_interconnect/M01_AXI] [get_bd_intf_pins opl3_fpga_0/S_AXI_INTR]
-	connect_bd_net [get_bd_pins opl3_fpga_0/s_axi_intr_aclk] [get_bd_pins sys_clk_0/clk_out1]
-	connect_bd_net [get_bd_pins opl3_fpga_0/s_axi_intr_aresetn] [get_bd_pins sys_reset_0/peripheral_aresetn]
-
-	# Create instance: axi_gpio_irq, and set properties
-	set axi_gpio_irq [ create_bd_cell -type ip -vlnv xilinx.com:ip:axi_gpio axi_gpio_irq ]
-	set_property -dict [ list CONFIG.C_ALL_INPUTS {1} CONFIG.C_GPIO_WIDTH {1} ] $axi_gpio_irq
-	connect_bd_net [get_bd_pins axi_gpio_irq/s_axi_aclk] [get_bd_pins sys_clk_0/clk_out1]
-	connect_bd_net [get_bd_pins axi_gpio_irq/s_axi_aresetn] [get_bd_pins sys_reset_0/peripheral_aresetn]
-	connect_bd_intf_net [get_bd_intf_pins axi_gpio_irq/S_AXI] [get_bd_intf_pins axi_peri_interconnect/M02_AXI]
-	connect_bd_net [get_bd_pins opl3_fpga_0/irq] [get_bd_pins axi_gpio_irq/gpio_io_i]
 
 
 	# Auto assign address
@@ -137,14 +122,8 @@ proc create_ipi_design { offsetfile design_name } {
 	set fp [open $offset_file "w"]
 	puts $fp "# Configuration address parameters"
 
-	set offset [get_property OFFSET [get_bd_addr_segs /jtag_axi_0/Data/SEG_axi_gpio_irq_Reg ]]
-	puts $fp "set axi_gpio_irq_addr ${offset}"
-
 	set offset [get_property OFFSET [get_bd_addr_segs /jtag_axi_0/Data/SEG_opl3_fpga_0_S_AXI_* ]]
 	puts $fp "set s_axi_addr ${offset}"
-
-	set offset [get_property OFFSET [get_bd_addr_segs /jtag_axi_0/Data/SEG_opl3_fpga_0_S_AXI_INTR_* ]]
-	puts $fp "set s_axi_intr_addr ${offset}"
 
 	close $fp
 }

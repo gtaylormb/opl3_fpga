@@ -1,21 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Root MajorVersion="0" MinorVersion="32">
+<Root MajorVersion="0" MinorVersion="33">
   <CompositeFile CompositeFileTopName="opl3_cpu" CanBeSetAsTop="true" CanDisplayChildGraph="true">
     <Description>Composite Fileset</Description>
-    <Generation Name="SYNTHESIS" State="GENERATED"/>
-    <Generation Name="IMPLEMENTATION" State="GENERATED"/>
-    <Generation Name="SIMULATION" State="GENERATED"/>
+    <Generation Name="SYNTHESIS" State="GENERATED" Timestamp="1465271067"/>
+    <Generation Name="IMPLEMENTATION" State="GENERATED" Timestamp="1465271067"/>
+    <Generation Name="SIMULATION" State="GENERATED" Timestamp="1465271067"/>
     <FileCollection Name="SOURCES" Type="SOURCES">
-      <File Name="ip/opl3_cpu_processing_system7_0_0/opl3_cpu_processing_system7_0_0.xci" Type="IP">
-        <Instance HierarchyPath="processing_system7_0"/>
+      <File Name="ip/opl3_cpu_opl3_fpga_0_0/opl3_cpu_opl3_fpga_0_0.xci" Type="IP">
+        <Instance HierarchyPath="opl3_fpga_0"/>
         <Properties IsEditable="false" IsVisible="true" Timestamp="0" IsTrackable="true" IsStatusTracked="true"/>
         <Library Name="work"/>
         <UsedIn Val="SYNTHESIS"/>
         <UsedIn Val="IMPLEMENTATION"/>
         <UsedIn Val="SIMULATION"/>
       </File>
-      <File Name="ip/opl3_cpu_opl3_fpga_0_0/opl3_cpu_opl3_fpga_0_0.xci" Type="IP">
-        <Instance HierarchyPath="opl3_fpga_0"/>
+      <File Name="ip/opl3_cpu_processing_system7_0_0/opl3_cpu_processing_system7_0_0.xci" Type="IP">
+        <Instance HierarchyPath="processing_system7_0"/>
         <Properties IsEditable="false" IsVisible="true" Timestamp="0" IsTrackable="true" IsStatusTracked="true"/>
         <Library Name="work"/>
         <UsedIn Val="SYNTHESIS"/>
@@ -30,8 +30,8 @@
         <UsedIn Val="IMPLEMENTATION"/>
         <UsedIn Val="SIMULATION"/>
       </File>
-      <File Name="ip/opl3_cpu_rst_clk_wiz_100M_0/opl3_cpu_rst_clk_wiz_100M_0.xci" Type="IP">
-        <Instance HierarchyPath="rst_clk_wiz_100M"/>
+      <File Name="ip/opl3_cpu_rst_opl3_fpga_0_12M_0/opl3_cpu_rst_opl3_fpga_0_12M_0.xci" Type="IP">
+        <Instance HierarchyPath="rst_opl3_fpga_0_12M"/>
         <Properties IsEditable="false" IsVisible="true" Timestamp="0" IsTrackable="true" IsStatusTracked="true"/>
         <Library Name="work"/>
         <UsedIn Val="SYNTHESIS"/>

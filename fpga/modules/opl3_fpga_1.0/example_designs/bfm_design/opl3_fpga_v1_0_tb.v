@@ -16,21 +16,13 @@
 `define S_AXI_ADDRESS_BUS_WIDTH 32
 `define S_AXI_MAX_DATA_SIZE (`S_AXI_DATA_BUS_WIDTH*`S_AXI_MAX_BURST_LENGTH)/8
 
-// AMBA AXI4 Lite Range Constants
-`define S_AXI_INTR_MAX_BURST_LENGTH 1
-`define S_AXI_INTR_DATA_BUS_WIDTH 32
-`define S_AXI_INTR_ADDRESS_BUS_WIDTH 32
-`define S_AXI_INTR_MAX_DATA_SIZE (`S_AXI_INTR_DATA_BUS_WIDTH*`S_AXI_INTR_MAX_BURST_LENGTH)/8
-
 module opl3_fpga_v1_0_tb;
 	reg tb_ACLK;
 	reg tb_ARESETn;
-	wire tb_irq;
 
 	// Create an instance of the example tb
 	`BD_WRAPPER dut (.ACLK(tb_ACLK),
-				.ARESETN(tb_ARESETn),
-				.irq(tb_irq));
+				.ARESETN(tb_ARESETn));
 
 	// Local Variables
 
@@ -42,19 +34,6 @@ module opl3_fpga_v1_0_tb;
 	reg [3-1:0]   S_AXI_mtestProtection_lite;
 	integer S_AXI_mtestvectorlite; // Master side testvector
 	integer S_AXI_mtestdatasizelite;
-
-	// AMBA S_AXI_INTR Interrupt AXI4 Lite Local Reg
-	reg [`S_AXI_INTR_DATA_BUS_WIDTH-1:0] S_AXI_INTR_globalenData;
-	reg [`S_AXI_INTR_DATA_BUS_WIDTH-1:0] S_AXI_INTR_intrenData;
-	reg [`S_AXI_INTR_DATA_BUS_WIDTH-1:0] S_AXI_INTR_pendData;
-	reg [`S_AXI_INTR_DATA_BUS_WIDTH-1:0] S_AXI_INTR_ackData;
-	reg [`S_AXI_INTR_ADDRESS_BUS_WIDTH-1:0] S_AXI_INTR_globalenAddress;
-	reg [`S_AXI_INTR_ADDRESS_BUS_WIDTH-1:0] S_AXI_INTR_intrenAddress;
-	reg [`S_AXI_INTR_ADDRESS_BUS_WIDTH-1:0] S_AXI_INTR_pendAddress;	
-	reg [`S_AXI_INTR_ADDRESS_BUS_WIDTH-1:0] S_AXI_INTR_ackAddress;
-	reg [`RESP_BUS_WIDTH-1:0] S_AXI_INTR_lite_response;
-	reg [3-1:0] S_AXI_INTR_mtestProtection_lite;
-	integer S_AXI_INTR_mtestdatasizelite;
 	integer result_slave_lite;
 
 
@@ -172,82 +151,6 @@ module opl3_fpga_v1_0_tb;
 		end
 	endtask
 
-	task automatic S_AXI_INTR_TEST;
-		begin
-			$display("---------------------------------------------------------");
-			$display("EXAMPLE TEST : S_AXI_INTR");
-			$display("Simple Interrupt generation test");
-			$display("---------------------------------------------------------");
-
-			//Initializing local registers	                                                                                
-			S_AXI_INTR_globalenAddress = `S_AXI_INTR_SLAVE_ADDRESS;                                                
-			S_AXI_INTR_intrenAddress = `S_AXI_INTR_SLAVE_ADDRESS + 32'h00000004;                                   
-			S_AXI_INTR_pendAddress = `S_AXI_INTR_SLAVE_ADDRESS + 32'h00000010;                                     
-			S_AXI_INTR_ackAddress = `S_AXI_INTR_SLAVE_ADDRESS + 32'h0000000c;                                      
-			S_AXI_INTR_globalenData = 32'h00000001;                                                                    
-			S_AXI_INTR_intrenData = 32'h00000001;                                                                      
-			S_AXI_INTR_ackData = 32'h00000001;                                                                         
-			S_AXI_INTR_pendData = 32'h00000000;                                                                        
-			S_AXI_INTR_mtestProtection_lite = 0;                                                                       
-			S_AXI_INTR_mtestdatasizelite = `S_AXI_INTR_MAX_DATA_SIZE;                                              
-			                                                                                                               
-			//Enabling global interrupt generation	                                                                        
-			dut.`BD_INST_NAME.master_1.cdn_axi4_lite_master_bfm_inst.WRITE_BURST_CONCURRENT(S_AXI_INTR_globalenAddress,
-						                   S_AXI_INTR_mtestProtection_lite,                                             
-						                   S_AXI_INTR_globalenData,                                                     
-						                   S_AXI_INTR_mtestdatasizelite,                                                
-						                   S_AXI_INTR_lite_response);                                                   
-										                                                                                    
-			//Enabling Interrupt generation at bit 0							                                            
-			dut.`BD_INST_NAME.master_1.cdn_axi4_lite_master_bfm_inst.WRITE_BURST_CONCURRENT(S_AXI_INTR_intrenAddress,  
-						                   S_AXI_INTR_mtestProtection_lite,                                             
-						                   S_AXI_INTR_intrenData,                                                       
-						                   S_AXI_INTR_mtestdatasizelite,                                                
-						                   S_AXI_INTR_lite_response);                                                   
-						                                                                                                    
-			wait(tb_irq == `IRQ_ACTIVE_STATE) @(posedge tb_ACLK);	                                                        
-			begin                                                                                                          
-				#100;                                                                                                       
-				//Reading Interrupt pending register value                                                                  
-				dut.`BD_INST_NAME.master_1.cdn_axi4_lite_master_bfm_inst.READ_BURST(S_AXI_INTR_pendAddress,             
-					                     S_AXI_INTR_mtestProtection_lite,                                               
-					                     S_AXI_INTR_pendData,                                                           
-					                     S_AXI_INTR_lite_response);                                                     
-			                                                                                                               
-				if ( S_AXI_INTR_pendData[0] != 1'b1) begin                                                              
-					$display("ERROR: Interrupt not generated at bit0");                                                   
-					$display("PTGEN_TEST: FAILED!");                                                                      
-					$stop;                                                                                                  
-				end                                                                                                         
-					                                                                                                        
-				//clearing irq_f2p through Interrupt acknowledgement register                                               
-				dut.`BD_INST_NAME.master_1.cdn_axi4_lite_master_bfm_inst.WRITE_BURST_CONCURRENT(S_AXI_INTR_ackAddress,  
-						                   S_AXI_INTR_mtestProtection_lite,                                             
-						                   S_AXI_INTR_ackData,                                                          
-						                   S_AXI_INTR_mtestdatasizelite,                                                
-						                   S_AXI_INTR_lite_response);		                                            
-				#100;                                                                                                       
-				//Reading Interrupt pending register value                                                                  
-				dut.`BD_INST_NAME.master_1.cdn_axi4_lite_master_bfm_inst.READ_BURST(S_AXI_INTR_pendAddress,             
-					                     S_AXI_INTR_mtestProtection_lite,                                               
-					                     S_AXI_INTR_pendData,                                                           
-					                     S_AXI_INTR_lite_response);	                                                    
-					                     	                                                                                
-				if ( S_AXI_INTR_pendData[0] != 1'b0) begin                                                              
-					$display("ERROR: Interrupt not cleared at bit0");                                                     
-					$display("PTGEN_TEST: FAILED!");                                                                      
-					$stop;                                                                                                  
-				end	else begin                                                                                              
-					$display ("PASS: Interrupt test successful");                                                         
-					$display("PTGEN_TEST: PASSED!");                                                                      
-				end                                                                                                         
-			end                                                                                                            
-			$display("---------------------------------------------------------");
-			$display("EXAMPLE TEST S_AXI_INTR: PTGEN_TEST_FINISHED!");
-			$display("---------------------------------------------------------");
-		end
-	endtask
-
 	// Create the test vectors
 	initial begin
 		// When performing debug enable all levels of INFO messages.
@@ -276,7 +179,6 @@ module opl3_fpga_v1_0_tb;
 		wait(tb_ARESETn === 1) @(posedge tb_ACLK);     
 
 		S_AXI_TEST();
-		S_AXI_INTR_TEST();
 
 	end
 

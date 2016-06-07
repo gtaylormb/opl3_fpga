@@ -23,19 +23,6 @@ proc create_ipi_design { offsetfile design_name } {
 	connect_bd_net -net aclk_net [get_bd_ports ACLK] [get_bd_pins master_0/M_AXI_LITE_ACLK] [get_bd_pins opl3_fpga_0/S_AXI_ACLK]
 	connect_bd_net -net aresetn_net [get_bd_ports ARESETN] [get_bd_pins master_0/M_AXI_LITE_ARESETN] [get_bd_pins opl3_fpga_0/S_AXI_ARESETN]
 
-	# Create instance: master_1, and set properties
-	set master_1 [ create_bd_cell -type ip -vlnv xilinx.com:ip:cdn_axi_bfm master_1]
-	set_property -dict [ list CONFIG.C_PROTOCOL_SELECTION {2} ] $master_1
-
-	# Create interface connections
-	connect_bd_intf_net [get_bd_intf_pins master_1/M_AXI_LITE] [get_bd_intf_pins opl3_fpga_0/S_AXI_INTR]
-
-	# Create port connections
-	connect_bd_net -net aclk_net [get_bd_ports ACLK] [get_bd_pins master_1/M_AXI_LITE_ACLK] [get_bd_pins opl3_fpga_0/S_AXI_INTR_ACLK]
-	connect_bd_net -net aresetn_net [get_bd_ports ARESETN] [get_bd_pins master_1/M_AXI_LITE_ARESETN] [get_bd_pins opl3_fpga_0/S_AXI_INTR_ARESETN]
-	set S_AXI_INTR_IRQ [ create_bd_port -dir O -type intr irq ]
-	connect_bd_net [get_bd_pins /opl3_fpga_0/irq] ${S_AXI_INTR_IRQ}
-
 	# Auto assign address
 	assign_bd_address
 
@@ -55,21 +42,6 @@ proc create_ipi_design { offsetfile design_name } {
 	set offset_hex [string replace $offset 0 1 "32'h"]
 	puts $fp "`define S_AXI_SLAVE_ADDRESS ${offset_hex}"
 
-	set offset [get_property OFFSET [get_bd_addr_segs -of_objects [get_bd_addr_spaces master_1/Data_lite]]]
-	set offset_hex [string replace $offset 0 1 "32'h"]
-	puts $fp "`define S_AXI_INTR_SLAVE_ADDRESS ${offset_hex}"
-
-	puts $fp "\n//Interrupt configuration parameters"
-
-	set param_irq_active_state [get_property CONFIG.C_IRQ_ACTIVE_STATE [get_bd_cells opl3_fpga_0]]
-	set param_irq_sensitivity [get_property CONFIG.C_IRQ_SENSITIVITY [get_bd_cells opl3_fpga_0]]
-	set param_intr_active_state [get_property CONFIG.C_INTR_ACTIVE_STATE [get_bd_cells opl3_fpga_0]]
-	set param_intr_sensitivity [get_property CONFIG.C_INTR_SENSITIVITY [get_bd_cells opl3_fpga_0]]
-
-	puts $fp "`define IRQ_ACTIVE_STATE ${param_irq_active_state}"
-	puts $fp "`define IRQ_SENSITIVITY ${param_irq_sensitivity}"
-	puts $fp "`define INTR_ACTIVE_STATE ${param_intr_active_state}"
-	puts $fp "`define INTR_SENSITIVITY ${param_intr_sensitivity}\n"
 	puts $fp "`endif"
 	close $fp
 }

@@ -1,3 +1,4 @@
+
 // file: clk_gen.v
 // 
 // (c) Copyright 2008 - 2013 Xilinx, Inc. All rights reserved.
@@ -55,7 +56,7 @@
 //  Output     Output      Phase    Duty Cycle   Pk-to-Pk     Phase
 //   Clock     Freq (MHz)  (degrees)    (%)     Jitter (ps)  Error (ps)
 //----------------------------------------------------------------------------
-// CLK_OUT1____12.727______0.000______50.0______285.078____281.140
+// _____clk____12.727______0.000______50.0______285.078____281.140
 //
 //----------------------------------------------------------------------------
 // Input Clock   Freq (MHz)    Input Jitter (UI)
@@ -65,6 +66,7 @@
 `timescale 1ps/1ps
 
 module clk_gen_clk_wiz 
+
  (// Clock in ports
   input         clk125,
   // Clock out ports
@@ -72,20 +74,30 @@ module clk_gen_clk_wiz
   // Status and control signals
   output        clk_locked
  );
-
   // Input buffering
   //------------------------------------
+wire clk125_clk_gen;
+wire clk_in2_clk_gen;
   IBUF clkin1_ibufg
    (.O (clk125_clk_gen),
     .I (clk125));
 
 
-
   // Clocking PRIMITIVE
   //------------------------------------
+
   // Instantiation of the MMCM PRIMITIVE
   //    * Unused inputs are tied off
   //    * Unused outputs are labeled unused
+
+  wire        clk_clk_gen;
+  wire        clk_out2_clk_gen;
+  wire        clk_out3_clk_gen;
+  wire        clk_out4_clk_gen;
+  wire        clk_out5_clk_gen;
+  wire        clk_out6_clk_gen;
+  wire        clk_out7_clk_gen;
+
   wire [15:0] do_unused;
   wire        drdy_unused;
   wire        psdone_unused;
@@ -163,8 +175,9 @@ module clk_gen_clk_wiz
 
 
   assign clk_locked = clk_locked_int;
-
-  // Output buffering
+// Clock Monitor clock assigning
+//--------------------------------------
+ // Output buffering
   //-----------------------------------
 
 

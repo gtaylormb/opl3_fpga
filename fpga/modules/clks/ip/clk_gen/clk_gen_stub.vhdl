@@ -1,10 +1,10 @@
--- Copyright 1986-2014 Xilinx, Inc. All Rights Reserved.
+-- Copyright 1986-2016 Xilinx, Inc. All Rights Reserved.
 -- --------------------------------------------------------------------------------
--- Tool Version: Vivado v.2014.4 (lin64) Build 1071353 Tue Nov 18 16:47:07 MST 2014
--- Date        : Sun Mar  8 22:11:52 2015
--- Host        : edinburgh running 64-bit Ubuntu 14.10
+-- Tool Version: Vivado v.2016.1 (lin64) Build 1538259 Fri Apr  8 15:45:23 MDT 2016
+-- Date        : Mon Jun  6 23:00:45 2016
+-- Host        : edinburgh running 64-bit Ubuntu 15.04
 -- Command     : write_vhdl -force -mode synth_stub
---               /media/sf_D_DRIVE/Users/Greg/git/opl3_fpga/fpga/modules/clks/ip/clk_gen/clk_gen_stub.vhdl
+--               /home/greg/opl3_fpga_vivado_project/opl3_fpga_vivado_project.srcs/sources_1/ip/clk_gen/clk_gen_stub.vhdl
 -- Design      : clk_gen
 -- Purpose     : Stub declaration of top-level module interface
 -- Device      : xc7z010clg400-1

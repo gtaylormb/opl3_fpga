@@ -71,13 +71,11 @@ RTL_SRC = \
 	
 SIM_SRC = \
 	modules/top_level/sim/opl3_tb.sv \
-	modules/clks/ip/clk_gen/clk_gen_funcsim.v \
-	modules/operator/sim/save_dac_input.sv \
-	modules/ila/ip/ila_0/ila_0_stub.v
+	modules/clks/ip/clk_gen/clk_gen_sim_netlist.v \
+	modules/operator/sim/save_dac_input.sv
 	
 IP_SRC = \
 	modules/clks/ip/clk_gen/clk_gen.xci
-#	modules/ila/ip/ila_0/ila_0.xci
 	
 BD_SRC = \
 	bd/opl3_cpu/opl3_cpu.bd
@@ -89,7 +87,7 @@ INC_DIR0 = \
 	modules/
 	
 SIM_LIB = \
-	sim_lib_vivado_2014.3/unisims/*.v
+	sim_lib_vivado_2016.1/unisims/*.v
 	
 compile: compile_sim_lib
 	test -e work || vlib work
