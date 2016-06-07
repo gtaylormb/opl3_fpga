@@ -2,7 +2,7 @@ opl3_fpga
 =========
 Reverse engineered SystemVerilog RTL version of the 
 <a href="http://en.wikipedia.org/wiki/Yamaha_YMF262">Yamaha OPL3 (YMF262)</a> FM Synthesizer.
-Design is complete and working on the Digilent ZYBO board. The software needs a bit of cleaning up.
+Design is complete and working on the Digilent ZYBO board.
 
 Hear it in action:
 * https://www.youtube.com/watch?v=KoSF4ZoDuRI
@@ -31,10 +31,11 @@ cycles per sample instead of 8, but that's okay because I can stack tons of comb
 few pipeline registers with this slow clock speed and modern FPGA. The build meets timing with 53.1ns of slack (＠_＠;)
 
 As far as software, so far I've ported over <a href="http://software.kvee.cz/imfplay/">imfplay</a> from x86 DOS to the ARM running bare metal. It can playback .dro files captured in DOSBox while playing the original games. They are essentially OPL3 register writes using a 1000Hz timer tick (I used the built in timer in the ARM). The files are stored in an in-memory filesystem. The whole package including the FPGA bitstream, front stage boot loader, imfplay executable, and filesystem image can be built using one command and placed on an SD card.
+I'm working with Walter van Niftrik to use the OPL3_FPGA on the ZYBO board as an output device in DOSBox/ScummVM over USB. His code is over at https://github.com/waltervn/opl3_fpga-apps. He has a daemon running on top of PetaLinux instead of bare metal on the ARM.
 
 In doing the project, I was very impressed with what the original chip designers were able to accomplish. They used some very clever techniques to squeeze maximum functionality out of very limited resources--particularly using the combination of an exponential lookup table and a log-sine lookup table to <a href="https://github.com/gtaylormb/opl3_fpga/blob/master/docs/opl3math/opl3math.pdf">apply gain to the sine wave without the use of multipliers</a>, and the clever use of time sharing the operator resources among 36 slots.
 
-Tools used are Modelsim, Vivado 2015.1, Octave (for sample analysis), and SVEditor (for SystemVerilog file editing).
+Tools used are Modelsim, Vivado 2016.1, Octave (for sample analysis), and SVEditor (for SystemVerilog file editing).
 
 ## Digital waveform images
 These were produced by writing the actual binary output values of the operator logic in simulation to a file and plotting them using Octave.
@@ -74,16 +75,16 @@ Close up of the attack phase:
     +----------------------------+-------+-------+-----------+-------+
     |          Site Type         |  Used | Fixed | Available | Util% |
     +----------------------------+-------+-------+-----------+-------+
-    | Slice LUTs                 |  6450 |     0 |     17600 | 36.65 |
-    |   LUT as Logic             |  6384 |     0 |     17600 | 36.27 |
-    |   LUT as Memory            |    66 |     0 |      6000 |  1.10 |
+    | Slice LUTs                 |  6042 |     0 |     17600 | 34.33 |
+    |   LUT as Logic             |  5972 |     0 |     17600 | 33.93 |
+    |   LUT as Memory            |    70 |     0 |      6000 |  1.17 |
     |     LUT as Distributed RAM |     0 |     0 |           |       |
-    |     LUT as Shift Register  |    66 |     0 |           |       |
-    | Slice Registers            | 10230 |     0 |     35200 | 29.06 |
-    |   Register as Flip Flop    | 10230 |     0 |     35200 | 29.06 |
+    |     LUT as Shift Register  |    70 |     0 |           |       |
+    | Slice Registers            | 10105 |     0 |     35200 | 28.71 |
+    |   Register as Flip Flop    | 10105 |     0 |     35200 | 28.71 |
     |   Register as Latch        |     0 |     0 |     35200 |  0.00 |
-    | F7 Muxes                   |   897 |     0 |      8800 | 10.19 |
-    | F8 Muxes                   |   252 |     0 |      4400 |  5.73 |
+    | F7 Muxes                   |   837 |     0 |      8800 |  9.51 |
+    | F8 Muxes                   |   126 |     0 |      4400 |  2.86 |
     +----------------------------+-------+-------+-----------+-------+
     
     +-------------------+------+-------+-----------+-------+
@@ -138,8 +139,7 @@ They will be included in the in-memory filesystem for playback.
 2. Source the Vivado and SDK settings so all the build tools are in your path.
 Example: 
 
-        source /opt/Xilinx/Vivado/2015.1/settings64.sh
-        source /opt/Xilinx/SDK/2015.1/settings64.sh
+        source /opt/Xilinx/Vivado/2016.1/settings64.sh
       
 3. Run 'make' to build the FPGA and software necessary to run the OPL3
 and create an SD card image.
@@ -161,9 +161,3 @@ and create an SD card image.
 
 Enjoy!
 
-## Future work
-I'd really love to make the board appear as a USB peripheral when plugged into a PC. If DOSBox/ScummVM could be made aware of the device, they could direct all OPL3 writes to the board. Digital PCM output could be made available as well.
-
-Another idea is to port DOSBox/ScummVM directly to the ARM CPU on the board.
-
-Let me know if you have other ideas or are interested into doing either of these projects, I'll help out as much as I can.
