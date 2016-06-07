@@ -424,6 +424,14 @@ int imfplay(char *filename)
 			}
 
 			next_event = c.delay;
+
+			/*
+			 * Prevent drop-out due to back to back command, fast clock speed of
+			 * CPU, slow clock speed of FPGA. FPGA can miss key-off, key-on
+			 * event.
+			 */
+			if (next_event == 0)
+				TimerDelay(1);
 		}
 	}
 
