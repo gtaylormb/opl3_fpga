@@ -3,7 +3,7 @@ opl3_fpga
 ## News
 2016-6-11
 * FPGA and software build flows have been updated for Vivado 2016.1.
-* I have been working with one of the ScummVM devs, Walter van Niftrik, to use the OPL3_FPGA as an OPL3 output device in ScummVM over USB. His code is over at https://github.com/waltervn/opl3_fpga-apps. He has a daemon running on top of PetaLinux instead of bare metal on the ARM. This is very cool and something I always envisioned.
+* I have been working with one of the ScummVM devs, Walter van Niftrik, to use the OPL3_FPGA as an OPL3 output device in ScummVM and DOSBox over USB. His code is over at https://github.com/waltervn/opl3_fpga-apps and https://github.com/waltervn/dosbox. He has a daemon running on top of PetaLinux instead of bare metal on the ARM. This is very cool and something I always envisioned.
 
 ## About            
 Reverse engineered SystemVerilog RTL version of the 
