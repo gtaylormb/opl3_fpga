@@ -1,5 +1,11 @@
 opl3_fpga
 =========
+## News
+2016-6-11
+* FPGA and software build flows have been updated for Vivado 2016.1.
+* I have been working with one of the ScummVM devs, Walter van Niftrik, to use the OPL3_FPGA as an OPL3 output device in ScummVM over USB. His code is over at https://github.com/waltervn/opl3_fpga-apps. He has a daemon running on top of PetaLinux instead of bare metal on the ARM. This is very cool and something I always envisioned.
+
+## About            
 Reverse engineered SystemVerilog RTL version of the 
 <a href="http://en.wikipedia.org/wiki/Yamaha_YMF262">Yamaha OPL3 (YMF262)</a> FM Synthesizer.
 Design is complete and working on the Digilent ZYBO board.
@@ -31,7 +37,6 @@ cycles per sample instead of 8, but that's okay because I can stack tons of comb
 few pipeline registers with this slow clock speed and modern FPGA. The build meets timing with 53.1ns of slack (＠_＠;)
 
 As far as software, so far I've ported over <a href="http://software.kvee.cz/imfplay/">imfplay</a> from x86 DOS to the ARM running bare metal. It can playback .dro files captured in DOSBox while playing the original games. They are essentially OPL3 register writes using a 1000Hz timer tick (I used the built in timer in the ARM). The files are stored in an in-memory filesystem. The whole package including the FPGA bitstream, front stage boot loader, imfplay executable, and filesystem image can be built using one command and placed on an SD card.
-I'm working with Walter van Niftrik to use the OPL3_FPGA on the ZYBO board as an output device in DOSBox/ScummVM over USB. His code is over at https://github.com/waltervn/opl3_fpga-apps. He has a daemon running on top of PetaLinux instead of bare metal on the ARM.
 
 In doing the project, I was very impressed with what the original chip designers were able to accomplish. They used some very clever techniques to squeeze maximum functionality out of very limited resources--particularly using the combination of an exponential lookup table and a log-sine lookup table to <a href="https://github.com/gtaylormb/opl3_fpga/blob/master/docs/opl3math/opl3math.pdf">apply gain to the sine wave without the use of multipliers</a>, and the clever use of time sharing the operator resources among 36 slots.
 
