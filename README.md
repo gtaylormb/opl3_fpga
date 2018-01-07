@@ -3,7 +3,7 @@ opl3_fpga
 ## News
 2018-1-7
 * The FPGA and imfplay software build flows have been tested on Vivado 2017.4. No changes are necessary.
-* Walter van Niftrik's work on the ScummVM/DOSBox projects <a href="https://github.com/waltervn/opl3_fpga-apps">allowing the OPL3-FPGA to be used as a realtime output device</a> for both emulators is really cool. I've updated everything for Vivado/Petalinux 2017.4, and I'll be updating my fork soon. I'll also include prebuilt binary SD card images for people to easily take advantage of it without having to setup a build environment, and a YouTube demo so you can see how cool it is.
+* Walter van Niftrik's work on the ScummVM/DOSBox projects and PetaLinux daemon <a href="https://github.com/waltervn/opl3_fpga-apps">allowing the OPL3-FPGA to be used as a realtime output device</a> for both emulators is really cool. I've updated everything for Vivado/PetaLinux 2017.4, and I'll be updating my fork soon. I'll also include prebuilt binary SD card images for people to easily take advantage of it without having to setup a build environment, and a YouTube demo so you can see how cool it is.
 
 2016-6-11
 * FPGA and software build flows have been updated for Vivado 2016.1.
