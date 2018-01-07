@@ -55,7 +55,7 @@ module calc_rhythm_phase (
     output logic [PHASE_ACC_WIDTH-1:0] rhythm_phase
 );	
     localparam RAND_POLYNOMIAL = 'h800302; // verified on real opl3
-    localparam RAND_NUM_WIDTH = $bits(RAND_POLYNOMIAL);
+    localparam RAND_NUM_WIDTH = $clog2(RAND_POLYNOMIAL);
     
     /*
      * The hi hat and top cymbal use each other's phase
