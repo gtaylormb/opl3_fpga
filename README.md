@@ -2,7 +2,7 @@ opl3_fpga
 =========
 ## News
 2019-11-7
-* The OPL2 subset of OPL3_FPGA was converted to Verilog by Magnus of Saanlima Electronics, and then ported to the Panologic thin client (a Spartan-3E based board) by Skip Hansen. The project can be found here: https://github.com/skiphansen/panog1_opl3
+* The OPL2 subset of OPL3_FPGA was converted to Verilog by Magnus Karlsson, and then ported to the Panologic thin client (a Spartan-3E based board) by Skip Hansen. The project can be found here: https://github.com/skiphansen/panog1_opl3
 
 2018-1-7
 * The FPGA and imfplay software build flows have been tested on Vivado 2017.4. No changes are necessary.
