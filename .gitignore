@@ -1,6 +1,0 @@
-build/
-.Xil/
-fpga/modules/operator/work/
-fpga/sim_lib/
-fpga/work/
-transcript

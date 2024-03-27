@@ -41,9 +41,9 @@
 `timescale 1ns / 1ps
 `default_nettype none // disable implicit net type declarations
 
-module envelope_generator
-    import opl3_pkg::*;
-#(
+import opl3_pkg::*;
+
+module envelope_generator #(
     parameter SILENCE = 511
 )(
     input wire clk,
@@ -66,77 +66,57 @@ module envelope_generator
     input wire [REG_BLOCK_WIDTH-1:0] block,
     input wire key_on_pulse,
     input wire key_off_pulse,
-    output logic [ENV_WIDTH-1:0] env_p4 = SILENCE
+    output logic [ENV_WIDTH-1:0] env = SILENCE
 );
     localparam KSL_ADD_WIDTH = 8;
-    localparam PIPELINE_DELAY = 4;
+    localparam PIPELINE_DELAY = 2;
 
     /*
-     * Because of the 2D array of state_p1 registers, this state_p1 machine isn't
+     * Because of the 2D array of state registers, this state machine isn't
      * picked up by Vivado synthesis, therefore is not optimized. Manually
      * optimize encoding to 1-hot
      */
-    enum logic [3:0] {
+    typedef enum logic [3:0] {
         ATTACK    = 4'b0001,
         DECAY     = 4'b0010,
         SUSTAIN   = 4'b0100,
         RELEASE   = 4'b1000
-    } state_p0, next_state_p0, state_p1, state_p2;
+    } state_t;
 
-    logic [KSL_ADD_WIDTH-1:0] ksl_add_p2;
-    logic [KSL_ADD_WIDTH-1:0] ksl_add_p3;
-    logic [ENV_WIDTH-1:0] env_int_p0;
-    logic [ENV_WIDTH-1:0] env_int_p1;
-    logic [ENV_WIDTH-1:0] env_int_p2;
-    logic [ENV_WIDTH-1:0] env_int_p3;
-    logic [AM_VAL_WIDTH-1:0] am_val_p2;
-    logic [AM_VAL_WIDTH-1:0] am_val_p3;
+    state_t state [NUM_BANKS][NUM_OPERATORS_PER_BANK] = '{ default: RELEASE };
+    state_t next_state;
+
+    wire [KSL_ADD_WIDTH-1:0] ksl_add;
+    logic [ENV_WIDTH-1:0] env_int [NUM_BANKS][NUM_OPERATORS_PER_BANK] =
+     '{ default: SILENCE};
+    wire [AM_VAL_WIDTH-1:0] am_val;
     logic [REG_ENV_WIDTH-1:0] requested_rate_p1;
-    logic [ENV_RATE_COUNTER_OVERFLOW_WIDTH-1:0] rate_counter_overflow_p2;
-    logic signed [ENV_WIDTH+1:0] env_tmp_p3; // two more bits wide than env for >, < comparison
-    logic [PIPELINE_DELAY-1:1] sample_clk_en_p;
+    wire [ENV_RATE_COUNTER_OVERFLOW_WIDTH-1:0] rate_counter_overflow_p2;
+    logic signed [ENV_WIDTH+1:0] env_tmp; // two more bits wide than env for >, < comparison
+    logic [PIPELINE_DELAY-1:0] sample_clk_en_delayed = 0;
 
     ksl_add_rom ksl_add_rom (
         .*
     );
 
-    mem_simple_dual_port_auto #(
-        .DATA_WIDTH(4),
-        .DEPTH(NUM_BANKS*NUM_OPERATORS_PER_BANK),
-        .OUTPUT_DELAY(0),
-        .DEFAULT_VALUE(RELEASE)
-    ) state_mem (
-        .clka(clk),
-        .clkb(clk),
-        .wea(sample_clk_en_p[2] && requested_rate_p1 != 0),
-        .reb(sample_clk_en),
-        .addra({bank_num, op_num}),
-        .addrb({bank_num, op_num}),
-        .dia(env_int_p2),
-        .dob(state_p0)
-    );
-
-    always_ff @(posedge clk) begin
+    always_ff @(posedge clk)
         if (key_on_pulse)
-            state_p1 <= ATTACK;
+            state[bank_num][op_num] <= ATTACK;
         else if (key_off_pulse)
-            state_p1 <= RELEASE;
+            state[bank_num][op_num] <= RELEASE;
         else if (sample_clk_en)
-            state_p1 <= next_state_p0;
-
-        state_p2 <= state_p1;
-    end
+            state[bank_num][op_num] <= next_state;
 
     always_comb
-        unique case (state_p0)
-        ATTACK: next_state_p0 = env_int_p0 == 0 ? DECAY : ATTACK;
-        DECAY: next_state_p0 = (env_int_p0 >> 4) >= sl ? SUSTAIN : DECAY;
-        SUSTAIN: next_state_p0 = !egt ? RELEASE : SUSTAIN;
-        RELEASE: next_state_p0 = RELEASE;
+        unique case (state[bank_num][op_num])
+        ATTACK: next_state = env_int[bank_num][op_num] == 0 ? DECAY : ATTACK;
+        DECAY: next_state = (env_int[bank_num][op_num] >> 4) >= sl ? SUSTAIN : DECAY;
+        SUSTAIN: next_state = !egt ? RELEASE : SUSTAIN;
+        RELEASE: next_state = RELEASE;
         endcase
 
     always_comb
-        unique case (state_p1)
+        unique case (state[bank_num][op_num])
         ATTACK: requested_rate_p1 = ar;
         DECAY: requested_rate_p1 = dr;
         SUSTAIN: requested_rate_p1 = 0;
@@ -151,42 +131,20 @@ module envelope_generator
     );
 
     always_ff @(posedge clk) begin
-        sample_clk_en_p <= sample_clk_en_p << 1;
-        sample_clk_en_p[1] <= sample_clk_en;
+        sample_clk_en_delayed <= sample_clk_en_delayed << 1;
+        sample_clk_en_delayed[0] <= sample_clk_en;
     end
 
-    mem_simple_dual_port_auto #(
-        .DATA_WIDTH(ENV_WIDTH),
-        .DEPTH(NUM_BANKS*NUM_OPERATORS_PER_BANK),
-        .OUTPUT_DELAY(0),
-        .DEFAULT_VALUE(SILENCE)
-    ) env_int_mem (
-        .clka(clk),
-        .clkb(clk),
-        .wea(sample_clk_en_p[2] && requested_rate_p1 != 0),
-        .reb(sample_clk_en),
-        .addra({bank_num, op_num}),
-        .addrb({bank_num, op_num}),
-        .dia(env_int_p2),
-        .dob(env_int_p0)
-    );
-
-    always_ff @(posedge clk) begin
-        env_int_p1 <= env_int_p0;
-        env_int_p2 <= env_int_p1;
-
-        if (sample_clk_en_p[2]) begin
-            if (state_p2 == ATTACK && rate_counter_overflow_p2 != 0 && env_int_p2 != 0)
-                env_int_p3 <= env_int_p2 - (((env_int_p2*rate_counter_overflow_p2) >> 3) + 1);
-            else if (state_p2 == DECAY || state_p2 == RELEASE) begin
-                if (env_int_p2 + rate_counter_overflow_p2 > SILENCE)
+    always_ff @(posedge clk)
+        if (sample_clk_en_delayed[PIPELINE_DELAY-1])
+            if (state[bank_num][op_num] == ATTACK && rate_counter_overflow_p2 != 0 && env_int[bank_num][op_num] != 0)
+                env_int[bank_num][op_num] <= env_int[bank_num][op_num] - (((env_int[bank_num][op_num]*rate_counter_overflow_p2) >> 3) + 1);
+            else if (state[bank_num][op_num] == DECAY || state[bank_num][op_num] == RELEASE)
+                if (env_int[bank_num][op_num] + rate_counter_overflow_p2 > SILENCE)
                     // env_int would overflow
-                    env_int_p3 <= SILENCE;
+                    env_int[bank_num][op_num] <= SILENCE;
                 else
-                    env_int_p3 <= env_int_p2 + rate_counter_overflow_p2;
-            end
-        end
-    end
+                    env_int[bank_num][op_num] <= env_int[bank_num][op_num] + rate_counter_overflow_p2;
 
     /*
      * Calculate am_val
@@ -195,23 +153,19 @@ module envelope_generator
         .*
     );
 
-    always_ff @(posedge clk) begin
-        ksl_add_p3 <= ksl_add_p2;
-        am_val_p3 <= am_val_p2;
-    end
-
     always_comb
         if (am)
-            env_tmp_p3 = env_int_p3 + (tl << 2) + ksl_add_p3 + am_val_p3;
+            env_tmp = env_int[bank_num][op_num] + (tl << 2) + ksl_add + am_val;
         else
-            env_tmp_p3 = env_int_p3 + (tl << 2) + ksl_add_p3;
+            env_tmp = env_int[bank_num][op_num] + (tl << 2) + ksl_add;
 
     always_ff @(posedge clk)
-        if (env_tmp_p3 < 0)
-            env_p4 <= 0;
-        else if (env_tmp_p3 > SILENCE)
-            env_p4 <= SILENCE;
+        if (env_tmp < 0)
+            env <= 0;
+        else if (env_tmp > SILENCE)
+            env <= SILENCE;
         else
-            env_p4 <= env_tmp_p3;
+            env <= env_tmp;
+
 endmodule
 `default_nettype wire  // re-enable implicit net type declarations

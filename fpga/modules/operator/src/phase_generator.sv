@@ -51,7 +51,7 @@ module phase_generator (
     input wire [OP_NUM_WIDTH-1:0] op_num,
     input wire [PHASE_ACC_WIDTH-1:0] phase_inc_p2,
     input wire [REG_WS_WIDTH-1:0] ws,
-    input wire [ENV_WIDTH-1:0] env_p4,
+    input wire [ENV_WIDTH-1:0] env,
     input wire key_on_pulse,
     input wire [OP_OUT_WIDTH-1:0] modulation,
     input operator_t op_type,
@@ -169,7 +169,7 @@ module phase_generator (
     always_comb tmp_ws7[10:0] = final_phase[bank_num][op_num][19] ?
      ~final_phase[bank_num][op_num][17:10] << 3 : final_phase[bank_num][op_num][17:10] << 3;
 
-    always_comb log_sin_plus_gain = (ws_post_opl == 7 ? tmp_ws7 : log_sin_out) + (env_p4 << 3);
+    always_comb log_sin_plus_gain = (ws_post_opl == 7 ? tmp_ws7 : log_sin_out) + (env << 3);
 
     opl3_exp_lut exp_lut_inst (
         .in(~log_sin_plus_gain[7:0]),
