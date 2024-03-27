@@ -84,7 +84,7 @@ module operator (
     wire key_on_pulse_array [NUM_BANKS][NUM_OPERATORS_PER_BANK];
     logic key_off_pulse;
     wire key_off_pulse_array [NUM_BANKS][NUM_OPERATORS_PER_BANK];
-    wire [ENV_WIDTH-1:0] env;
+    wire [ENV_WIDTH-1:0] env_p4;
     logic signed [OP_OUT_WIDTH-1:0] feedback [NUM_BANKS][NUM_OPERATORS_PER_BANK][2] =
      '{default: 0};
     logic signed [OP_OUT_WIDTH-1:0] feedback_result;
