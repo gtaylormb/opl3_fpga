@@ -91,7 +91,7 @@ module envelope_generator #(
      '{ default: SILENCE};
     wire [AM_VAL_WIDTH-1:0] am_val;
     logic [REG_ENV_WIDTH-1:0] requested_rate_p1;
-    wire [ENV_RATE_COUNTER_OVERFLOW_WIDTH-1:0] rate_counter_overflow_p2;
+    wire [ENV_RATE_COUNTER_OVERFLOW_WIDTH-1:0] rate_counter_overflow_p1;
     logic signed [ENV_WIDTH+1:0] env_tmp; // two more bits wide than env for >, < comparison
     logic [PIPELINE_DELAY-1:0] sample_clk_en_delayed = 0;
 
@@ -124,7 +124,7 @@ module envelope_generator #(
         endcase
 
     /*
-     * Calculate rate_counter_overflow_p2
+     * Calculate rate_counter_overflow_p1
      */
     env_rate_counter env_rate_counter (
         .*
@@ -137,14 +137,14 @@ module envelope_generator #(
 
     always_ff @(posedge clk)
         if (sample_clk_en_delayed[PIPELINE_DELAY-1])
-            if (state[bank_num][op_num] == ATTACK && rate_counter_overflow_p2 != 0 && env_int[bank_num][op_num] != 0)
-                env_int[bank_num][op_num] <= env_int[bank_num][op_num] - (((env_int[bank_num][op_num]*rate_counter_overflow_p2) >> 3) + 1);
+            if (state[bank_num][op_num] == ATTACK && rate_counter_overflow_p1 != 0 && env_int[bank_num][op_num] != 0)
+                env_int[bank_num][op_num] <= env_int[bank_num][op_num] - (((env_int[bank_num][op_num]*rate_counter_overflow_p1) >> 3) + 1);
             else if (state[bank_num][op_num] == DECAY || state[bank_num][op_num] == RELEASE)
-                if (env_int[bank_num][op_num] + rate_counter_overflow_p2 > SILENCE)
+                if (env_int[bank_num][op_num] + rate_counter_overflow_p1 > SILENCE)
                     // env_int would overflow
                     env_int[bank_num][op_num] <= SILENCE;
                 else
-                    env_int[bank_num][op_num] <= env_int[bank_num][op_num] + rate_counter_overflow_p2;
+                    env_int[bank_num][op_num] <= env_int[bank_num][op_num] + rate_counter_overflow_p1;
 
     /*
      * Calculate am_val
