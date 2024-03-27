@@ -77,7 +77,7 @@ module operator (
     input wire [OP_OUT_WIDTH-1:0] modulation,
     input wire latch_feedback_pulse,
     input operator_t op_type,
-    output logic signed [OP_OUT_WIDTH-1:0] out_p6
+    output logic signed [OP_OUT_WIDTH-1:0] out
 );
     wire [PHASE_ACC_WIDTH-1:0] phase_inc_p2;
     logic key_on_pulse;
@@ -187,7 +187,7 @@ module operator (
      */
     always_ff @(posedge clk)
         if (latch_feedback_pulse) begin
-            feedback[bank_num][op_num][0] <= out_p6;
+            feedback[bank_num][op_num][0] <= out;
             feedback[bank_num][op_num][1] <= feedback[bank_num][op_num][0];
         end
 
