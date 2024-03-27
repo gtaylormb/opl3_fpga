@@ -79,21 +79,21 @@ module operator (
     input operator_t op_type,
     output logic signed [OP_OUT_WIDTH-1:0] out
 );
-    wire [PHASE_ACC_WIDTH-1:0] phase_inc_p2;
+    logic [PHASE_ACC_WIDTH-1:0] phase_inc_p2;
     logic key_on_pulse;
-    wire key_on_pulse_array [NUM_BANKS][NUM_OPERATORS_PER_BANK];
+    logic key_on_pulse_array [NUM_BANKS][NUM_OPERATORS_PER_BANK];
     logic key_off_pulse;
-    wire key_off_pulse_array [NUM_BANKS][NUM_OPERATORS_PER_BANK];
-    wire [ENV_WIDTH-1:0] env;
+    logic key_off_pulse_array [NUM_BANKS][NUM_OPERATORS_PER_BANK];
+    logic [ENV_WIDTH-1:0] env_p4;
     logic signed [OP_OUT_WIDTH-1:0] feedback [NUM_BANKS][NUM_OPERATORS_PER_BANK][2] =
      '{default: 0};
     logic signed [OP_OUT_WIDTH-1:0] feedback_result;
     logic signed [OP_OUT_WIDTH+1+2**REG_FB_WIDTH-1:0] feedback_result_p0;
-    wire bd_on_pulse;
-    wire sd_on_pulse;
-    wire tom_on_pulse;
-    wire tc_on_pulse;
-    wire hh_on_pulse;
+    logic bd_on_pulse;
+    logic sd_on_pulse;
+    logic tom_on_pulse;
+    logic tc_on_pulse;
+    logic hh_on_pulse;
     logic rhythm_kon_pulse;
 
     genvar i, j;
@@ -105,7 +105,7 @@ module operator (
                  */
                 edge_detector #(
                     .EDGE_LEVEL(1),
-                    .CLK_DLY(1)
+                    .CLK_DLY(0)
                 ) key_on_edge_detect (
                     .clk_en(i == bank_num && j == op_num && sample_clk_en),
                     .in(kon[i][j]),
@@ -115,7 +115,7 @@ module operator (
 
                 edge_detector #(
                     .EDGE_LEVEL(0),
-                    .CLK_DLY(1)
+                    .CLK_DLY(0)
                 ) key_off_edge_detect (
                     .clk_en(i == bank_num && j == op_num && sample_clk_en && op_type == OP_NORMAL),
                     .in(kon[i][j]),
@@ -127,7 +127,7 @@ module operator (
 
     edge_detector #(
         .EDGE_LEVEL(1),
-        .CLK_DLY(1)
+        .CLK_DLY(0)
     ) bd_edge_detect (
         .clk_en(op_type == OP_BASS_DRUM && sample_clk_en),
         .in(bd),
@@ -136,7 +136,7 @@ module operator (
     );
     edge_detector #(
         .EDGE_LEVEL(1),
-        .CLK_DLY(1)
+        .CLK_DLY(0)
     ) sd_edge_detect (
         .clk_en(op_type == OP_SNARE_DRUM && sample_clk_en),
         .in(sd),
@@ -145,7 +145,7 @@ module operator (
     );
     edge_detector #(
         .EDGE_LEVEL(1),
-        .CLK_DLY(1)
+        .CLK_DLY(0)
     ) tom_edge_detect (
         .clk_en(op_type == OP_TOM_TOM && sample_clk_en),
         .in(tom),
@@ -154,7 +154,7 @@ module operator (
     );
     edge_detector #(
         .EDGE_LEVEL(1),
-        .CLK_DLY(1)
+        .CLK_DLY(0)
     ) tc_edge_detect (
         .clk_en(op_type == OP_TOP_CYMBAL && sample_clk_en),
         .in(tc),
@@ -163,7 +163,7 @@ module operator (
     );
     edge_detector #(
         .EDGE_LEVEL(1),
-        .CLK_DLY(1)
+        .CLK_DLY(0)
     ) hh_edge_detect (
         .clk_en(op_type == OP_HI_HAT && sample_clk_en),
         .in(hh),
