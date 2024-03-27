@@ -11,32 +11,32 @@
 #       Initial version
 #
 #   Copyright (C) 2014 Greg Taylor <gtaylor@sonic.net>
-#    
+#
 #   This file is part of OPL3 FPGA.
-#    
+#
 #   OPL3 FPGA is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU Lesser General Public License as published by
 #   the Free Software Foundation, either version 3 of the License, or
 #   (at your option) any later version.
-#   
+#
 #   OPL3 FPGA is distributed in the hope that it will be useful,
 #   but WITHOUT ANY WARRANTY; without even the implied warranty of
 #   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 #   GNU Lesser General Public License for more details.
-#   
+#
 #   You should have received a copy of the GNU Lesser General Public License
 #   along with OPL3 FPGA.  If not, see <http://www.gnu.org/licenses/>.
-#   
-#   Original Java Code: 
+#
+#   Original Java Code:
 #   Copyright (C) 2008 Robson Cozendey <robson@cozendey.com>
-#   
-#   Original C++ Code: 
+#
+#   Original C++ Code:
 #   Copyright (C) 2012  Steffen Ohrendorf <steffen.ohrendorf@gmx.de>
-#   
-#   Some code based on forum posts in: 
+#
+#   Some code based on forum posts in:
 #   http://forums.submarine.org.uk/phpBB/viewforum.php?f=9,
-#   Copyright (C) 2010-2013 by carbon14 and opl3    
-#   
+#   Copyright (C) 2010-2013 by carbon14 and opl3
+#
 #******************************************************************************/
 `timescale 1ns / 1ps
 `default_nettype none // disable implicit net type declarations
@@ -49,7 +49,7 @@ module envelope_generator #(
     input wire clk,
     input wire sample_clk_en,
     input wire [BANK_NUM_WIDTH-1:0] bank_num,
-    input wire [OP_NUM_WIDTH-1:0] op_num,        
+    input wire [OP_NUM_WIDTH-1:0] op_num,
     input wire [REG_ENV_WIDTH-1:0] ar, // attack rate
     input wire [REG_ENV_WIDTH-1:0] dr, // decay rate
     input wire [REG_ENV_WIDTH-1:0] sl, // sustain level
@@ -70,7 +70,7 @@ module envelope_generator #(
 );
     localparam KSL_ADD_WIDTH = 8;
     localparam PIPELINE_DELAY = 2;
-    
+
     /*
      * Because of the 2D array of state registers, this state machine isn't
      * picked up by Vivado synthesis, therefore is not optimized. Manually
@@ -82,23 +82,23 @@ module envelope_generator #(
         SUSTAIN   = 4'b0100,
         RELEASE   = 4'b1000
     } state_t;
-    
+
     state_t state [NUM_BANKS][NUM_OPERATORS_PER_BANK] = '{ default: RELEASE };
-    state_t next_state;    
-    
+    state_t next_state;
+
     wire [KSL_ADD_WIDTH-1:0] ksl_add;
     logic [ENV_WIDTH-1:0] env_int [NUM_BANKS][NUM_OPERATORS_PER_BANK] =
      '{ default: SILENCE};
     wire [AM_VAL_WIDTH-1:0] am_val;
-    logic [REG_ENV_WIDTH-1:0] requested_rate;
-    wire [ENV_RATE_COUNTER_OVERFLOW_WIDTH-1:0] rate_counter_overflow;
+    logic [REG_ENV_WIDTH-1:0] requested_rate_p1;
+    wire [ENV_RATE_COUNTER_OVERFLOW_WIDTH-1:0] rate_counter_overflow_p2;
     logic signed [ENV_WIDTH+1:0] env_tmp; // two more bits wide than env for >, < comparison
     logic [PIPELINE_DELAY-1:0] sample_clk_en_delayed = 0;
-    
+
     ksl_add_rom ksl_add_rom (
         .*
     );
-    
+
     always_ff @(posedge clk)
         if (key_on_pulse)
             state[bank_num][op_num] <= ATTACK;
@@ -106,7 +106,7 @@ module envelope_generator #(
             state[bank_num][op_num] <= RELEASE;
         else if (sample_clk_en)
             state[bank_num][op_num] <= next_state;
-        
+
     always_comb
         unique case (state[bank_num][op_num])
         ATTACK: next_state = env_int[bank_num][op_num] == 0 ? DECAY : ATTACK;
@@ -114,59 +114,58 @@ module envelope_generator #(
         SUSTAIN: next_state = !egt ? RELEASE : SUSTAIN;
         RELEASE: next_state = RELEASE;
         endcase
-            
+
     always_comb
         unique case (state[bank_num][op_num])
-        ATTACK: requested_rate = ar;
-        DECAY: requested_rate = dr;
-        SUSTAIN: requested_rate = 0;
-        RELEASE: requested_rate = rr;
+        ATTACK: requested_rate_p1 = ar;
+        DECAY: requested_rate_p1 = dr;
+        SUSTAIN: requested_rate_p1 = 0;
+        RELEASE: requested_rate_p1 = rr;
         endcase
-            
+
     /*
-     * Calculate rate_counter_overflow
-     */            
+     * Calculate rate_counter_overflow_p2
+     */
     env_rate_counter env_rate_counter (
         .*
     );
-    
+
     always_ff @(posedge clk) begin
         sample_clk_en_delayed <= sample_clk_en_delayed << 1;
         sample_clk_en_delayed[0] <= sample_clk_en;
-    end        
-    
+    end
+
     always_ff @(posedge clk)
         if (sample_clk_en_delayed[PIPELINE_DELAY-1])
-            if (state[bank_num][op_num] == ATTACK && rate_counter_overflow != 0 && env_int[bank_num][op_num] != 0)
-                env_int[bank_num][op_num] <= env_int[bank_num][op_num] - (((env_int[bank_num][op_num]*rate_counter_overflow) >> 3) + 1);
+            if (state[bank_num][op_num] == ATTACK && rate_counter_overflow_p2 != 0 && env_int[bank_num][op_num] != 0)
+                env_int[bank_num][op_num] <= env_int[bank_num][op_num] - (((env_int[bank_num][op_num]*rate_counter_overflow_p2) >> 3) + 1);
             else if (state[bank_num][op_num] == DECAY || state[bank_num][op_num] == RELEASE)
-                if (env_int[bank_num][op_num] + rate_counter_overflow > SILENCE)
+                if (env_int[bank_num][op_num] + rate_counter_overflow_p2 > SILENCE)
                     // env_int would overflow
                     env_int[bank_num][op_num] <= SILENCE;
                 else
-                    env_int[bank_num][op_num] <= env_int[bank_num][op_num] + rate_counter_overflow;     
-    
+                    env_int[bank_num][op_num] <= env_int[bank_num][op_num] + rate_counter_overflow_p2;
+
     /*
      * Calculate am_val
      */
     tremolo tremolo (
         .*
     );
-    
+
     always_comb
         if (am)
             env_tmp = env_int[bank_num][op_num] + (tl << 2) + ksl_add + am_val;
         else
             env_tmp = env_int[bank_num][op_num] + (tl << 2) + ksl_add;
-            
+
     always_ff @(posedge clk)
         if (env_tmp < 0)
             env <= 0;
-        else if (env_tmp > SILENCE) 
+        else if (env_tmp > SILENCE)
             env <= SILENCE;
         else
             env <= env_tmp;
-    
+
 endmodule
 `default_nettype wire  // re-enable implicit net type declarations
-	
