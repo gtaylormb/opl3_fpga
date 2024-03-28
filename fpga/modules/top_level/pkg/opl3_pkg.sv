@@ -13,32 +13,32 @@
 #       Initial version
 #
 #   Copyright (C) 2014 Greg Taylor <gtaylor@sonic.net>
-#    
+#
 #   This file is part of OPL3 FPGA.
-#    
+#
 #   OPL3 FPGA is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU Lesser General Public License as published by
 #   the Free Software Foundation, either version 3 of the License, or
 #   (at your option) any later version.
-#   
+#
 #   OPL3 FPGA is distributed in the hope that it will be useful,
 #   but WITHOUT ANY WARRANTY; without even the implied warranty of
 #   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 #   GNU Lesser General Public License for more details.
-#   
+#
 #   You should have received a copy of the GNU Lesser General Public License
 #   along with OPL3 FPGA.  If not, see <http://www.gnu.org/licenses/>.
-#   
-#   Original Java Code: 
+#
+#   Original Java Code:
 #   Copyright (C) 2008 Robson Cozendey <robson@cozendey.com>
-#   
-#   Original C++ Code: 
+#
+#   Original C++ Code:
 #   Copyright (C) 2012  Steffen Ohrendorf <steffen.ohrendorf@gmx.de>
-#   
-#   Some code based on forum posts in: 
+#
+#   Some code based on forum posts in:
 #   http://forums.submarine.org.uk/phpBB/viewforum.php?f=9,
-#   Copyright (C) 2010-2013 by carbon14 and opl3    
-#   
+#   Copyright (C) 2010-2013 by carbon14 and opl3
+#
 #******************************************************************************/
 package opl3_pkg;
     /*
@@ -52,7 +52,7 @@ package opl3_pkg;
     parameter int CLK_FREQ = 12.727e6;
     parameter DAC_OVERSAMPLE = 256;
     parameter SAMPLE_FREQ = CLK_FREQ/DAC_OVERSAMPLE;
-    
+
     parameter REG_FILE_ADDRESS_WIDTH = $clog2('hF5);
     parameter REG_FILE_DATA_WIDTH = 8;
     parameter REG_TIMER_WIDTH = 8;
@@ -65,7 +65,7 @@ package opl3_pkg;
     parameter REG_TL_WIDTH = 6;
     parameter REG_KSL_WIDTH = 2;
     parameter REG_FB_WIDTH = 3;
-    
+
     parameter SAMPLE_WIDTH = 16;
     parameter DAC_OUTPUT_WIDTH = 24;
     parameter ENV_WIDTH = 9;
@@ -73,19 +73,19 @@ package opl3_pkg;
     parameter PHASE_ACC_WIDTH = 20;
     parameter AM_VAL_WIDTH = 5;
     parameter ENV_RATE_COUNTER_OVERFLOW_WIDTH = 8;
-    parameter CHANNEL_ACCUMULATOR_WIDTH = 19;    
-    
+    parameter CHANNEL_ACCUMULATOR_WIDTH = 19;
+
     parameter NUM_BANKS = 2;
     parameter NUM_OPERATORS_PER_BANK = 18;
     parameter NUM_CHANNELS_PER_BANK = 9;
     parameter BANK_NUM_WIDTH = $clog2(NUM_BANKS);
     parameter OP_NUM_WIDTH = $clog2(NUM_OPERATORS_PER_BANK);
-    
+
     parameter INSTANTIATE_TIMERS = 0; // set to 1 to use timers
     parameter TIMER1_TICK_INTERVAL = 80e-6;  // in seconds
     parameter TIMER2_TICK_INTERVAL = 320e-6; // in seconds
-    
-    typedef enum {
+
+    typedef enum logic [31:0] {
         OP_NORMAL,
         OP_BASS_DRUM,
         OP_HI_HAT,

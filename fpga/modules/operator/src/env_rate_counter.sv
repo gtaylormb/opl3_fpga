@@ -52,56 +52,60 @@ module env_rate_counter
     input wire nts, // keyboard split selection
     input wire [REG_FNUM_WIDTH-1:0] fnum,
     input wire [REG_BLOCK_WIDTH-1:0] block,
-    input wire [REG_ENV_WIDTH-1:0] requested_rate_p1,
+    input wire [REG_ENV_WIDTH-1:0] requested_rate_p0,
     output logic [ENV_RATE_COUNTER_OVERFLOW_WIDTH-1:0] rate_counter_overflow_p1 = 0
 );
     localparam COUNTER_WIDTH = 15;
     localparam OVERFLOW_TMP_MAX_VALUE = 7<<15;
     localparam PIPELINE_DELAY = 2;
 
-    logic [ENV_RATE_COUNTER_OVERFLOW_WIDTH-1:0] rate_tmp0;
-    logic [ENV_RATE_COUNTER_OVERFLOW_WIDTH-1:0] rate_tmp1;
-    logic [ENV_RATE_COUNTER_OVERFLOW_WIDTH-1:0] rate_tmp2;
+    logic [ENV_RATE_COUNTER_OVERFLOW_WIDTH-1:0] rate_tmp0_p0;
+    logic [ENV_RATE_COUNTER_OVERFLOW_WIDTH-1:0] rate_tmp1_p0;
+    logic [ENV_RATE_COUNTER_OVERFLOW_WIDTH-1:0] rate_tmp2_p0;
     logic [ENV_RATE_COUNTER_OVERFLOW_WIDTH-1:0] effective_rate_p1 = 0;
     logic [ENV_RATE_COUNTER_OVERFLOW_WIDTH-1:0] rate_value_p1;
-    logic [ENV_RATE_COUNTER_OVERFLOW_WIDTH-1:0] requested_rate_shifted_p1;
+    logic [ENV_RATE_COUNTER_OVERFLOW_WIDTH-1:0] requested_rate_shifted_p0;
     logic [1:0] rof_p1;
     logic [COUNTER_WIDTH-1:0] counter_p1;
     logic [COUNTER_WIDTH-1:0] counter_new_p2;
     logic [$clog2(OVERFLOW_TMP_MAX_VALUE)-1:0] overflow_tmp_p1;
     logic sample_clk_en_p1 = 0;
     logic sample_clk_en_p2 = 0;
+    logic [REG_ENV_WIDTH-1:0] requested_rate_p1 = 0;
     logic [REG_ENV_WIDTH-1:0] requested_rate_p2 = 0;
     logic [BANK_NUM_WIDTH-1:0] bank_num_p1;
     logic [BANK_NUM_WIDTH-1:0] bank_num_p2;
     logic [OP_NUM_WIDTH-1:0] op_num_p1;
     logic [OP_NUM_WIDTH-1:0] op_num_p2;
 
-    always_comb rate_tmp0 = nts ? fnum[8] : fnum[9];
-    always_comb rate_tmp1 = rate_tmp0 | (block << 1);
-    always_comb rate_tmp2 = ksr ? rate_tmp1 : rate_tmp1 >> 2;
-    always_comb requested_rate_shifted_p1 = requested_rate_p1 << 2;
+    always_comb rate_tmp0_p0 = nts ? fnum[8] : fnum[9];
+    always_comb rate_tmp1_p0 = rate_tmp0_p0 | (block << 1);
+    always_comb rate_tmp2_p0 = ksr ? rate_tmp1_p0 : rate_tmp1_p0 >> 2;
+    always_comb requested_rate_shifted_p0 = requested_rate_p0 << 2;
 
-    always_comb
-        if (rate_tmp2 + requested_rate_shifted_p1 > 60)
-            effective_rate_p1 = 60;
+    always_ff @(posedge clk)
+        if (rate_tmp2_p0 + requested_rate_shifted_p0 > 60)
+            effective_rate_p1 <= 60;
         else
-            effective_rate_p1 = rate_tmp2 + requested_rate_shifted_p1;
+            effective_rate_p1 <= rate_tmp2_p0 + requested_rate_shifted_p0;
 
     always_comb rate_value_p1 = effective_rate_p1 >> 2;
     always_comb rof_p1 = effective_rate_p1[1:0];
 
-    mem_simple_dual_port_auto #(
-        .DATA_WIDTH(COUNTER_WIDTH),
-        .DEPTH(NUM_BANKS*NUM_OPERATORS_PER_BANK),
-        .OUTPUT_DELAY(1)
+    mem_multi_bank #(
+        .type_t(logic [COUNTER_WIDTH-1:0]),
+        .DEPTH(NUM_OPERATORS_PER_BANK),
+        .OUTPUT_DELAY(1),
+        .DEFAULT_VALUE(0),
+        .NUM_BANKS(NUM_BANKS)
     ) counter_mem (
-        .clka(clk),
-        .clkb(clk),
+        .clk,
         .wea(sample_clk_en_p2 && requested_rate_p2 != 0),
         .reb(sample_clk_en),
-        .addra({bank_num_p2, op_num_p2}),
-        .addrb({bank_num, op_num}),
+        .banka(bank_num_p2),
+        .addra(op_num_p2),
+        .bankb(bank_num),
+        .addrb(op_num),
         .dia(counter_new_p2),
         .dob(counter_p1)
     );
@@ -115,6 +119,7 @@ module env_rate_counter
         op_num_p2 <= op_num_p1;
         sample_clk_en_p1 <= sample_clk_en;
         sample_clk_en_p2 <= sample_clk_en_p1;
+        requested_rate_p1 <= requested_rate_p0;
         requested_rate_p2 <= requested_rate_p1;
         counter_new_p2 <= overflow_tmp_p1;
     end

@@ -3,7 +3,7 @@
 #
 #   FILENAME: operator_tb.sv
 #   AUTHOR: Greg Taylor     CREATION DATE: 2 Nov 2014
-# 
+#
 #   DESCRIPTION:
 #
 #   CHANGE HISTORY:
@@ -11,55 +11,54 @@
 #       Initial version
 #
 #   Copyright (C) 2014 Greg Taylor <gtaylor@sonic.net>
-#    
+#
 #   This file is part of OPL3 FPGA.
-#    
+#
 #   OPL3 FPGA is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU Lesser General Public License as published by
 #   the Free Software Foundation, either version 3 of the License, or
 #   (at your option) any later version.
-#   
+#
 #   OPL3 FPGA is distributed in the hope that it will be useful,
 #   but WITHOUT ANY WARRANTY; without even the implied warranty of
 #   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 #   GNU Lesser General Public License for more details.
-#   
+#
 #   You should have received a copy of the GNU Lesser General Public License
 #   along with OPL3 FPGA.  If not, see <http://www.gnu.org/licenses/>.
-#   
-#   Original Java Code: 
+#
+#   Original Java Code:
 #   Copyright (C) 2008 Robson Cozendey <robson@cozendey.com>
-#   
-#   Original C++ Code: 
+#
+#   Original C++ Code:
 #   Copyright (C) 2012  Steffen Ohrendorf <steffen.ohrendorf@gmx.de>
-#   
-#   Some code based on forum posts in: 
+#
+#   Some code based on forum posts in:
 #   http://forums.submarine.org.uk/phpBB/viewforum.php?f=9,
-#   Copyright (C) 2010-2013 by carbon14 and opl3    
-#   
+#   Copyright (C) 2010-2013 by carbon14 and opl3
+#
 #******************************************************************************/
 `default_nettype none  // disable implicit net type declarations
 `timescale 1ns / 1ps
 
-`include "../../top_level/pkg/opl3_pkg.sv"
-import opl3_pkg::*;
-
-module operator_tb;
+module operator_tb
+    import opl3_pkg::*;
+();
     localparam CLK_HALF_PERIOD = 1/real'(CLK_FREQ)*1000e6/2;
     localparam GATE_DELAY = 2; // in ns
-    
+
     bit clk;
-    wire sample_clk_en;
-    wire signed [OP_OUT_WIDTH-1:0] out;
+    logic sample_clk_en;
+    logic signed [OP_OUT_WIDTH-1:0] out;
     logic signed [15:0] dac_input;
-    
+
     bit [REG_FNUM_WIDTH-1:0] fnum = 512;
     bit [REG_MULT_WIDTH-1:0] mult = 5;
     bit [REG_BLOCK_WIDTH-1:0] block = 4;
     bit [REG_WS_WIDTH-1:0] ws = 0;
     bit vib = 0;
     bit dvb = 0;
-    logic kon [NUM_BANKS][NUM_OPERATORS_PER_BANK] = '{default: '0};
+    bit kon [NUM_BANKS][NUM_OPERATORS_PER_BANK] = '{default: '0};
     bit [REG_ENV_WIDTH-1:0] ar = 0; // attack rate
     bit [REG_ENV_WIDTH-1:0] dr = 0; // decay rate
     bit [REG_ENV_WIDTH-1:0] sl = 0; // sustain level
@@ -70,19 +69,27 @@ module operator_tb;
     bit egt = 0;                     // envelope type
     bit am = 0;                      // amplitude modulation (tremolo)
     bit dam = 0;                     // depth of tremolo
-    bit nts = 0;                     // keyboard split selection   
-    bit use_feedback = 0;       
-    bit [REG_FB_WIDTH-1:0] fb = 0;       
-    bit [OP_OUT_WIDTH-1:0] modulation = 0; 
-    
+    bit nts = 0;                     // keyboard split selection
+    bit use_feedback = 0;
+    bit [REG_FB_WIDTH-1:0] fb = 0;
+    bit [OP_OUT_WIDTH-1:0] modulation = 0;
+    bit bd = 0;
+    bit sd = 0;
+    bit tom = 0;
+    bit tc = 0;
+    bit hh = 0;
+    bit latch_feedback_pulse = 0;
+    bit is_new = 0;
+    operator_t op_type = OP_NORMAL;
+
     bit [BANK_NUM_WIDTH-1:0] bank_num = 0;
-    bit [OP_NUM_WIDTH-1:0] op_num = 0; 
-    
+    bit [OP_NUM_WIDTH-1:0] op_num = 0;
+
     always begin
         #CLK_HALF_PERIOD clk = 0;
         #CLK_HALF_PERIOD clk = 1;
     end
-    
+
     default clocking mclk @(posedge clk);
         default input #1step;
         default output #GATE_DELAY;
@@ -94,31 +101,31 @@ module operator_tb;
         output vib;
         output dvb;
         output kon;
-        output ar; 
+        output ar;
         output dr;
-        output sl; 
-        output rr; 
-        output tl;  
-        output ksr;                  
-        output ksl; 
-        output egt;                    
-        output am;                      
-        output dam;                     
-        output nts;                                   
-    endclocking 
-    
+        output sl;
+        output rr;
+        output tl;
+        output ksr;
+        output ksl;
+        output egt;
+        output am;
+        output dam;
+        output nts;
+    endclocking
+
     clk_div #(
-        .INPUT_CLK_FREQ(CLK_FREQ),       
-        .OUTPUT_CLK_EN_FREQ(SAMPLE_FREQ) 
+        .INPUT_CLK_FREQ(CLK_FREQ),
+        .OUTPUT_CLK_EN_FREQ(SAMPLE_FREQ)
     ) sample_clk_gen_inst (
         .clk_en(sample_clk_en),
         .*
     );
-    
-    operator operator (      
+
+    operator operator (
         .*
     );
-    
+
     save_dac_input #(
         .DAC_WIDTH(SAMPLE_WIDTH),
         .NUM_SAMPLES(32*1024),
@@ -130,12 +137,12 @@ module operator_tb;
         .*
     );
     always_comb dac_input = out; // this will sign extend out
-    
+
     initial begin
         for (int i = 0; i < 2; i++)
             for (int j = 0; j < 18; j++)
                 mclk.kon[i][j] <= 0;
-        
+
         ##10;
         mclk.ar <= 5;
         mclk.dr <= 7;
@@ -149,8 +156,8 @@ module operator_tb;
         mclk.kon[0][0] <= 1;
         ##(CLK_FREQ/3);
         mclk.kon[0][0] <= 0;
-        ##12e6; 
-        
+        ##12e6;
+
         mclk.fnum <= 128;
         mclk.mult <= 2;
         mclk.block <= 2;
@@ -159,10 +166,10 @@ module operator_tb;
         mclk.dr <= 5; // decay rate
         mclk.sl <= 1; // sustain level
         mclk.rr <= 3; // release rate
-        mclk.tl <= 1;  // total level         
+        mclk.tl <= 1;  // total level
         ##(CLK_FREQ/3);
         mclk.kon[0][1] <= 0;
-        ##12e6;         
+        ##12e6;
     end
 
 endmodule

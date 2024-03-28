@@ -2,7 +2,8 @@
 `default_nettype none
 
 module mem_simple_dual_port_auto #(
-    parameter DATA_WIDTH = 0,
+    parameter type type_t = logic,
+    parameter DATA_WIDTH = $bits(type_t),
     parameter DEPTH = 0,
     parameter OUTPUT_DELAY = 0, // 0, 1, or 2
     parameter DEFAULT_VALUE = 0
@@ -13,15 +14,15 @@ module mem_simple_dual_port_auto #(
     input wire reb, // only used if OUTPUT_DELAY >0
     input wire [$clog2(DEPTH)-1:0] addra,
     input wire [$clog2(DEPTH)-1:0] addrb,
-    input wire [DATA_WIDTH-1:0] dia,
-    output logic [DATA_WIDTH-1:0] dob
+    input var type_t dia,
+    output type_t dob
 );
-    logic [DATA_WIDTH-1:0] dob_p0;
-    logic [DATA_WIDTH-1:0] dob_p1 = 0;
-    logic [DATA_WIDTH-1:0] dob_p2 = 0;
+    type_t dob_p0;
+    type_t dob_p1;
+    type_t dob_p2;
 
     (* ram_style = "auto" *)
-    logic [DATA_WIDTH-1:0] ram [DEPTH-1:0] = '{default: DEFAULT_VALUE};
+    type_t ram [DEPTH-1:0] = '{default: DEFAULT_VALUE};
 
     always_ff @(posedge clka)
         if (wea)
@@ -43,6 +44,6 @@ module mem_simple_dual_port_auto #(
     else if (OUTPUT_DELAY == 2)
         always_comb dob = dob_p2;
     else
-        $error("OUTPUT_DELAY must be 0, 1, or 2");
+        $fatal("OUTPUT_DELAY must be 0, 1, or 2");
 endmodule
 `default_nettype wire

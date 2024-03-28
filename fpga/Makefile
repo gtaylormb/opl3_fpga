@@ -68,7 +68,11 @@ RTL_SRC = \
 	modules/timers/src/timer.sv \
 	modules/misc/src/edge_detector.sv \
 	modules/misc/src/mem_simple_dual_port_auto.sv \
+	modules/misc/src/mem_multi_bank.sv \
     modules/register_file/src/register_file_axi.sv
+
+PKG_SRC = \
+	modules/top_level/pkg/opl3_pkg.sv
 
 SIM_SRC = \
 	modules/top_level/sim/opl3_tb.sv \
@@ -92,7 +96,7 @@ SIM_LIB = \
 
 compile: compile_sim_lib
 	test -e work || vlib work
-	vlog -incr $(SIM_SRC) $(RTL_SRC) +define+SIM +incdir+$(INC_DIR0)
+	vlog -incr ${PKG_SRC} $(SIM_SRC) $(RTL_SRC) +define+SIM +incdir+$(INC_DIR0)
 
 compile_sim_lib:
 	test -e sim_lib || (vlib sim_lib && vlog -work sim_lib -incr $(SIM_LIB))
@@ -126,11 +130,11 @@ clean:
 	rm -rf *~ core csrc simv* vc_hdrs.h ucli.key urg* *.log core.* synlog.tcl
 	rm -rf sim_lib build usage_stat* ipshared/ .Xil
 
-build/post_syn.dcp: $(RTL_SRC) $(IP_SRC) $(BD_SRC) $(XDC_SRC)
+build/post_syn.dcp: ${PKG_SRC} $(RTL_SRC) $(IP_SRC) $(BD_SRC) $(XDC_SRC)
 	test -e build || mkdir build
 	rm -rf ipshared
 	vivado -mode batch -source scripts/vivado_syn.tcl -nojournal \
-	-log build/syn_log.txt -tclargs "$(RTL_SRC)" "$(INC_DIR0)" "$(IP_SRC)" "$(BD_SRC)" "$(XDC_SRC)"
+	-log build/syn_log.txt -tclargs "${PKG_SRC}" "$(RTL_SRC)" "$(INC_DIR0)" "$(IP_SRC)" "$(BD_SRC)" "$(XDC_SRC)"
 
 build/post_place.dcp: build/post_syn.dcp
 	vivado -mode batch -source scripts/vivado_place.tcl -log build/place_log.txt -nojournal

@@ -41,9 +41,9 @@
 `timescale 1ns / 1ps
 `default_nettype none  // disable implicit net type declarations
 
-import opl3_pkg::*;
-
-module operator (
+module operator
+    import opl3_pkg::*;
+(
     input wire clk,
     input wire sample_clk_en,
     input wire is_new,
@@ -55,7 +55,7 @@ module operator (
     input wire [REG_WS_WIDTH-1:0] ws,
     input wire vib,
     input wire dvb,
-    input wire kon[NUM_BANKS][NUM_OPERATORS_PER_BANK],
+    input wire kon [NUM_BANKS][NUM_OPERATORS_PER_BANK],
     input wire [REG_ENV_WIDTH-1:0] ar, // attack rate
     input wire [REG_ENV_WIDTH-1:0] dr, // decay rate
     input wire [REG_ENV_WIDTH-1:0] sl, // sustain level
@@ -76,15 +76,13 @@ module operator (
     input wire [REG_FB_WIDTH-1:0] fb,
     input wire [OP_OUT_WIDTH-1:0] modulation,
     input wire latch_feedback_pulse,
-    input operator_t op_type,
-    output logic signed [OP_OUT_WIDTH-1:0] out
+    input var operator_t op_type,
+    output logic signed [OP_OUT_WIDTH-1:0] out_p6
 );
     logic [PHASE_ACC_WIDTH-1:0] phase_inc_p2;
-    logic key_on_pulse;
-    logic key_on_pulse_array [NUM_BANKS][NUM_OPERATORS_PER_BANK];
-    logic key_off_pulse;
-    logic key_off_pulse_array [NUM_BANKS][NUM_OPERATORS_PER_BANK];
-    logic [ENV_WIDTH-1:0] env_p4;
+    logic key_on_pulse_p0;
+    logic key_off_pulse_p0;
+    logic [ENV_WIDTH-1:0] env_p3;
     logic signed [OP_OUT_WIDTH-1:0] feedback [NUM_BANKS][NUM_OPERATORS_PER_BANK][2] =
      '{default: 0};
     logic signed [OP_OUT_WIDTH-1:0] feedback_result;
@@ -95,35 +93,36 @@ module operator (
     logic tc_on_pulse;
     logic hh_on_pulse;
     logic rhythm_kon_pulse;
+    logic sample_clk_en_p1;
+    logic [BANK_NUM_WIDTH-1:0] bank_num_p1;
+    logic [OP_NUM_WIDTH-1:0] op_num_p1;
+    logic prev_kon;
+    logic kon_p1 [NUM_BANKS][NUM_OPERATORS_PER_BANK];
 
-    genvar i, j;
-    generate
-        for (i = 0; i < NUM_BANKS; i ++)
-            for (j = 0; j < NUM_OPERATORS_PER_BANK; j++) begin
-                /*
-                 * Detect key on and key off
-                 */
-                edge_detector #(
-                    .EDGE_LEVEL(1),
-                    .CLK_DLY(0)
-                ) key_on_edge_detect (
-                    .clk_en(i == bank_num && j == op_num && sample_clk_en),
-                    .in(kon[i][j]),
-                    .edge_detected(key_on_pulse_array[i][j]),
-                    .*
-                );
+    always_ff @(posedge clk) begin
+        sample_clk_en_p1 <= sample_clk_en;
+        bank_num_p1 <= bank_num;
+        op_num_p1 <= op_num;
+        kon_p1 <= kon;
+    end
 
-                edge_detector #(
-                    .EDGE_LEVEL(0),
-                    .CLK_DLY(0)
-                ) key_off_edge_detect (
-                    .clk_en(i == bank_num && j == op_num && sample_clk_en && op_type == OP_NORMAL),
-                    .in(kon[i][j]),
-                    .edge_detected(key_off_pulse_array[i][j]),
-                    .*
-                );
-            end
-    endgenerate
+    mem_multi_bank #(
+        .type_t(logic),
+        .DEPTH(NUM_OPERATORS_PER_BANK),
+        .OUTPUT_DELAY(0),
+        .DEFAULT_VALUE(0),
+        .NUM_BANKS(NUM_BANKS)
+    ) kon_mem (
+        .clk,
+        .wea(sample_clk_en_p1),
+        .reb(sample_clk_en),
+        .banka(bank_num_p1),
+        .addra(op_num_p1),
+        .bankb(bank_num),
+        .addrb(op_num),
+        .dia(kon_p1[bank_num_p1][op_num_p1]),
+        .dob(prev_kon)
+    );
 
     edge_detector #(
         .EDGE_LEVEL(1),
@@ -178,8 +177,8 @@ module operator (
      (op_type == OP_TOP_CYMBAL && tc_on_pulse) ||
      (op_type == OP_HI_HAT && hh_on_pulse);
 
-    always_comb key_on_pulse = key_on_pulse_array[bank_num][op_num] || rhythm_kon_pulse;
-    always_comb key_off_pulse = key_off_pulse_array[bank_num][op_num];
+    always_comb key_on_pulse_p0 = ((!prev_kon && kon[bank_num][op_num]) || rhythm_kon_pulse) && sample_clk_en;
+    always_comb key_off_pulse_p0 = prev_kon && !kon[bank_num][op_num] && sample_clk_en;
 
     /*
      * latch_feedback_pulse comes in the last cycle of the time slot so out has had a
@@ -187,7 +186,7 @@ module operator (
      */
     always_ff @(posedge clk)
         if (latch_feedback_pulse) begin
-            feedback[bank_num][op_num][0] <= out;
+            feedback[bank_num][op_num][0] <= out_p6;
             feedback[bank_num][op_num][1] <= feedback[bank_num][op_num][0];
         end
 
