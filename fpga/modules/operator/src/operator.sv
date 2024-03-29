@@ -81,9 +81,9 @@ module operator
 );
     localparam PIPELINE_DELAY = 6;
 
-    logic [PIPELINE_DELAY:0] sample_clk_en_p;
-    logic [PIPELINE_DELAY:0] [BANK_NUM_WIDTH-1:0] bank_num_p;
-    logic [PIPELINE_DELAY:0] [OP_NUM_WIDTH-1:0] op_num_p;
+    logic [PIPELINE_DELAY:1] sample_clk_en_p;
+    logic [PIPELINE_DELAY:1] [BANK_NUM_WIDTH-1:0] bank_num_p;
+    logic [PIPELINE_DELAY:1] [OP_NUM_WIDTH-1:0] op_num_p;
     logic [PHASE_ACC_WIDTH-1:0] phase_inc_p2;
     logic key_on_pulse_p0;
     logic key_off_pulse_p0;
@@ -100,7 +100,7 @@ module operator
     logic kon_p1 [NUM_BANKS][NUM_OPERATORS_PER_BANK];
     logic [1:0] [OP_OUT_WIDTH-1:0] feedback_p0;
     logic [1:0] [OP_OUT_WIDTH-1:0] feedback_p6;
-    logic [PIPELINE_DELAY:0] [1:0] [OP_OUT_WIDTH-1:0] feedback_p;
+    logic [PIPELINE_DELAY:1] [1:0] [OP_OUT_WIDTH-1:0] feedback_p;
 
     pipeline_sr #(
         .type_t(logic),

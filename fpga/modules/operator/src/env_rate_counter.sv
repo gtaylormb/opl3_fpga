@@ -69,10 +69,10 @@ module env_rate_counter
     logic [COUNTER_WIDTH-1:0] counter_p1;
     logic [COUNTER_WIDTH-1:0] counter_new_p2;
     logic [$clog2(OVERFLOW_TMP_MAX_VALUE)-1:0] overflow_tmp_p1;
-    logic [PIPELINE_DELAY:0] [REG_ENV_WIDTH-1:0] requested_rate_p;
-    logic [PIPELINE_DELAY:0] sample_clk_en_p;
-    logic [PIPELINE_DELAY:0] [BANK_NUM_WIDTH-1:0] bank_num_p;
-    logic [PIPELINE_DELAY:0] [OP_NUM_WIDTH-1:0] op_num_p;
+    logic [PIPELINE_DELAY:1] [REG_ENV_WIDTH-1:0] requested_rate_p;
+    logic [PIPELINE_DELAY:1] sample_clk_en_p;
+    logic [PIPELINE_DELAY:1] [BANK_NUM_WIDTH-1:0] bank_num_p;
+    logic [PIPELINE_DELAY:1] [OP_NUM_WIDTH-1:0] op_num_p;
 
     pipeline_sr #(
         .type_t(logic),

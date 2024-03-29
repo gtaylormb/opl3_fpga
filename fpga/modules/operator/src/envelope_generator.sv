@@ -94,9 +94,9 @@ module envelope_generator
     logic [ENV_RATE_COUNTER_OVERFLOW_WIDTH-1:0] rate_counter_overflow_p1;
     logic [ENV_RATE_COUNTER_OVERFLOW_WIDTH-1:0] rate_counter_overflow_p2 = 0;
     logic signed [ENV_WIDTH+1:0] env_tmp_p2; // two more bits wide than env for >, < comparison
-    logic [PIPELINE_DELAY:0] sample_clk_en_p;
-    logic [PIPELINE_DELAY:0] [BANK_NUM_WIDTH-1:0] bank_num_p;
-    logic [PIPELINE_DELAY:0] [OP_NUM_WIDTH-1:0] op_num_p;
+    logic [PIPELINE_DELAY:1] sample_clk_en_p;
+    logic [PIPELINE_DELAY:1] [BANK_NUM_WIDTH-1:0] bank_num_p;
+    logic [PIPELINE_DELAY:1] [OP_NUM_WIDTH-1:0] op_num_p;
 
     pipeline_sr #(
         .type_t(logic),

@@ -62,7 +62,7 @@ module calc_phase_inc
     logic signed [PHASE_ACC_WIDTH-1:0] post_mult_p1 = 0;
     logic signed [PHASE_ACC_WIDTH-1:0] post_mult_p2 = 0;
     logic signed [REG_FNUM_WIDTH-1:0] vib_val_p2;
-    logic [PIPELINE_DELAY:0] vib_p;
+    logic [PIPELINE_DELAY:1] vib_p;
 
     always_comb pre_mult_p0 = fnum << block;
 

@@ -63,8 +63,8 @@ module phase_generator
     localparam LOG_SIN_PLUS_GAIN_WIDTH = 13;
     localparam PIPELINE_DELAY = 6;
 
-    logic [PIPELINE_DELAY:0] sample_clk_en_p;
-    logic [PIPELINE_DELAY:0] key_on_pulse_p;
+    logic [PIPELINE_DELAY:1] sample_clk_en_p;
+    logic [PIPELINE_DELAY:1] key_on_pulse_p;
     logic [PHASE_ACC_WIDTH-1:0] phase_acc_p2;
     logic [PHASE_ACC_WIDTH-1:0] phase_acc_p3 = 0;
     logic [PHASE_ACC_WIDTH-1:0] final_phase_p3 = 0;
@@ -88,11 +88,11 @@ module phase_generator
     logic signed [OP_OUT_WIDTH-1:0] tmp_ws4_p5;
     logic [LOG_SIN_OUT_WIDTH-1:0] tmp_ws7_p4 = 0;
     logic [REG_WS_WIDTH-1:0] ws_post_opl_p0;
-    logic [PIPELINE_DELAY:0] [REG_WS_WIDTH-1:0] ws_post_opl_p;
+    logic [PIPELINE_DELAY:1] [REG_WS_WIDTH-1:0] ws_post_opl_p;
     logic [ENV_WIDTH-1:0] env_p4 = 0;
-    logic [PIPELINE_DELAY:0] [BANK_NUM_WIDTH-1:0] bank_num_p;
-    logic [PIPELINE_DELAY:0] [OP_NUM_WIDTH-1:0] op_num_p;
-    logic [PIPELINE_DELAY:0] [OP_OUT_WIDTH-1:0] modulation_p;
+    logic [PIPELINE_DELAY:1] [BANK_NUM_WIDTH-1:0] bank_num_p;
+    logic [PIPELINE_DELAY:1] [OP_NUM_WIDTH-1:0] op_num_p;
+    logic [PIPELINE_DELAY:1] [OP_OUT_WIDTH-1:0] modulation_p;
 
     pipeline_sr #(
         .type_t(logic),

@@ -24,7 +24,7 @@ module mem_multi_bank #(
     logic [NUM_BANKS-1:0] wea_array;
     logic [NUM_BANKS-1:0] reb_array;
     type_t dob_array [NUM_BANKS];
-    logic [PIPELINE_DELAY:0] [BANK_WIDTH-1:0] bankb_p;
+    logic [PIPELINE_DELAY:1] [BANK_WIDTH-1:0] bankb_p;
 
     pipeline_sr #(
         .type_t(logic [BANK_WIDTH-1:0]),
