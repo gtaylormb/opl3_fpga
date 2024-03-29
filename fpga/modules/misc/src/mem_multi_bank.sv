@@ -19,16 +19,21 @@ module mem_multi_bank #(
     input var type_t dia,
     output type_t dob
 );
+    localparam PIPELINE_DELAY = 2;
+
     logic [NUM_BANKS-1:0] wea_array;
     logic [NUM_BANKS-1:0] reb_array;
     type_t dob_array [NUM_BANKS];
-    logic [2:0] [BANK_WIDTH-1:0] bankb_p;
+    logic [PIPELINE_DELAY:0] [BANK_WIDTH-1:0] bankb_p;
 
-    always_comb
-        bankb_p[0] = bankb;
-
-    always_ff @(posedge clk)
-        bankb_p[2:1] <= bankb_p[1:0];
+    pipeline_sr #(
+        .type_t(logic [BANK_WIDTH-1:0]),
+        .ENDING_CYCLE(PIPELINE_DELAY)
+    ) bankb_sr (
+        .clk,
+        .in(bankb),
+        .out(bankb_p)
+    );
 
     for (genvar i = 0; i < NUM_BANKS; ++i) begin
         always_comb begin

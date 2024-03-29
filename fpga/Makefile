@@ -69,6 +69,7 @@ RTL_SRC = \
 	modules/misc/src/edge_detector.sv \
 	modules/misc/src/mem_simple_dual_port_auto.sv \
 	modules/misc/src/mem_multi_bank.sv \
+	modules/misc/src/pipeline_sr.sv \
     modules/register_file/src/register_file_axi.sv
 
 PKG_SRC = \

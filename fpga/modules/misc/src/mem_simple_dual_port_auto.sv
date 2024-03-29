@@ -18,8 +18,8 @@ module mem_simple_dual_port_auto #(
     output type_t dob
 );
     type_t dob_p0;
-    type_t dob_p1;
-    type_t dob_p2;
+    type_t dob_p1 = DEFAULT_VALUE;
+    type_t dob_p2 = DEFAULT_VALUE;
 
     (* ram_style = "auto" *)
     type_t ram [DEPTH-1:0] = '{default: DEFAULT_VALUE};

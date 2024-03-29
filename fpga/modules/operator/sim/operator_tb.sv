@@ -49,7 +49,7 @@ module operator_tb
 
     bit clk;
     logic sample_clk_en;
-    logic signed [OP_OUT_WIDTH-1:0] out;
+    logic signed [OP_OUT_WIDTH-1:0] out_p6;
     logic signed [15:0] dac_input;
 
     bit [REG_FNUM_WIDTH-1:0] fnum = 512;
@@ -93,7 +93,7 @@ module operator_tb
     default clocking mclk @(posedge clk);
         default input #1step;
         default output #GATE_DELAY;
-        input out;
+        input out_p6;
         output fnum;
         output mult;
         output block;
@@ -136,7 +136,7 @@ module operator_tb
         .clk_en(sample_clk_en),
         .*
     );
-    always_comb dac_input = out; // this will sign extend out
+    always_comb dac_input = out_p6; // this will sign extend out
 
     initial begin
         for (int i = 0; i < 2; i++)

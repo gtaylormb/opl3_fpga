@@ -61,12 +61,12 @@ module phase_generator
     localparam EXP_IN_WIDTH = 8;
     localparam EXP_OUT_WIDTH = 10;
     localparam LOG_SIN_PLUS_GAIN_WIDTH = 13;
-    localparam PIPELINE_DELAY = 4;
+    localparam PIPELINE_DELAY = 6;
 
-    logic [PIPELINE_DELAY-1:1] sample_clk_en_p = 0;
-    logic [PIPELINE_DELAY-1:1] key_on_pulse_p = 0;
+    logic [PIPELINE_DELAY:0] sample_clk_en_p;
+    logic [PIPELINE_DELAY:0] key_on_pulse_p;
     logic [PHASE_ACC_WIDTH-1:0] phase_acc_p2;
-    logic [PHASE_ACC_WIDTH-1:0] phase_acc_p3;
+    logic [PHASE_ACC_WIDTH-1:0] phase_acc_p3 = 0;
     logic [PHASE_ACC_WIDTH-1:0] final_phase_p3 = 0;
     logic [PHASE_ACC_WIDTH-1:0] final_phase_p4 = 0;
     logic [PHASE_ACC_WIDTH-1:0] final_phase_p5 = 0;
@@ -83,36 +83,65 @@ module phase_generator
     logic signed [OP_OUT_WIDTH-1:0] tmp_out2_p5;
     logic signed [OP_OUT_WIDTH-1:0] tmp_ws2_p5;
     logic signed [OP_OUT_WIDTH-1:0] tmp_ws4_p5;
-    logic [LOG_SIN_OUT_WIDTH-1:0] tmp_ws7_p4;
-    logic [REG_WS_WIDTH-1:0] ws_post_opl;
-    logic [ENV_WIDTH-1:0] env_p4;
-    logic [PIPELINE_DELAY:1] [BANK_NUM_WIDTH-1:0] bank_num_p;
-    logic [PIPELINE_DELAY:1] [OP_NUM_WIDTH-1:0] op_num_p;
+    logic [LOG_SIN_OUT_WIDTH-1:0] tmp_ws7_p4 = 0;
+    logic [REG_WS_WIDTH-1:0] ws_post_opl_p0;
+    logic [PIPELINE_DELAY:0] [REG_WS_WIDTH-1:0] ws_post_opl_p;
+    logic [ENV_WIDTH-1:0] env_p4 = 0;
+    logic [PIPELINE_DELAY:0] [BANK_NUM_WIDTH-1:0] bank_num_p;
+    logic [PIPELINE_DELAY:0] [OP_NUM_WIDTH-1:0] op_num_p;
+
+    pipeline_sr #(
+        .type_t(logic),
+        .ENDING_CYCLE(PIPELINE_DELAY)
+    ) sample_clk_en_sr (
+        .clk,
+        .in(key_on_pulse_p0),
+        .out(key_on_pulse_p)
+    );
+
+    pipeline_sr #(
+        .type_t(logic),
+        .ENDING_CYCLE(PIPELINE_DELAY)
+    ) key_on_pulse_sr (
+        .clk,
+        .in(sample_clk_en),
+        .out(sample_clk_en_p)
+    );
+
+    pipeline_sr #(
+        .type_t(logic [BANK_NUM_WIDTH-1:0]),
+        .ENDING_CYCLE(PIPELINE_DELAY)
+    ) bank_num_sr (
+        .clk,
+        .in(bank_num),
+        .out(bank_num_p)
+    );
+
+    pipeline_sr #(
+        .type_t(logic [OP_NUM_WIDTH-1:0]),
+        .ENDING_CYCLE(PIPELINE_DELAY)
+    ) op_num_sr (
+        .clk,
+        .in(op_num),
+        .out(op_num_p)
+    );
 
     /*
      * OPL2 only supports first 4 waveforms
      */
-    always_comb ws_post_opl = ws & (is_new ? 'h7 : 'h3);
+    always_comb ws_post_opl_p0 = ws & (is_new ? 'h7 : 'h3);
 
-    /*
-     * sample_clk_en must be delayed so the phase_inc_p2 is correct when it is added
-     * to the phase accumulator (inputs must settle for this time slot)
-     */
-    always_ff @(posedge clk) begin
-        sample_clk_en_p <= sample_clk_en_p << 1;
-        sample_clk_en_p[1] <= sample_clk_en;
+    pipeline_sr #(
+        .type_t(logic [REG_WS_WIDTH-1:0]),
+        .ENDING_CYCLE(PIPELINE_DELAY)
+    ) ws_post_opl_sr (
+        .clk,
+        .in(ws_post_opl_p0),
+        .out(ws_post_opl_p)
+    );
 
-        key_on_pulse_p <= key_on_pulse_p << 1;
-        key_on_pulse_p[1] <= key_on_pulse_p0;
-
+    always_ff @(posedge clk)
         env_p4 <= env_p3;
-
-        bank_num_p <= bank_num_p << BANK_NUM_WIDTH;
-        bank_num_p[1] <= bank_num;
-
-        op_num_p <= op_num_p << OP_NUM_WIDTH;
-        op_num_p[1] <= op_num;
-    end
 
     mem_multi_bank #(
         .type_t(logic [PHASE_ACC_WIDTH-1:0]),
@@ -141,7 +170,7 @@ module phase_generator
     );
 
     /*
-     * Phase Accumulator. Modulation gets added to the final phase but not
+     * Phase Accumulator. Modulation and rhythm get added to the final phase but not
      * back into the accumulator.
      */
     always_ff @(posedge clk)
@@ -150,7 +179,7 @@ module phase_generator
                 phase_acc_p3 <= 0;
                 final_phase_p3 <= 0;
             end
-            else if (ws_post_opl == 4 || ws_post_opl == 5) begin
+            else if (ws_post_opl_p[2] == 4 || ws_post_opl_p[2] == 5) begin
                 // double the frequency
                 phase_acc_p3 <= phase_acc_p2 + (phase_inc_p2 << 1);
                 final_phase_p3 <= rhythm_phase_p2 + (phase_inc_p2 << 1) + (modulation << 10);
@@ -198,7 +227,7 @@ module phase_generator
         tmp_ws7_p4[10:0] <= final_phase_p3[19] ? ~final_phase_p3[17:10] << 3 : final_phase_p3[17:10] << 3;
     end
 
-    always_comb log_sin_plus_gain_p4 = (ws_post_opl == 7 ? tmp_ws7_p4 : log_sin_out_p4) + (env_p4 << 3);
+    always_comb log_sin_plus_gain_p4 = (ws_post_opl_p[4] == 7 ? tmp_ws7_p4 : log_sin_out_p4) + (env_p4 << 3);
 
     always_ff @(posedge clk) begin
         log_sin_plus_gain_p5 <= log_sin_plus_gain_p4;
@@ -227,7 +256,7 @@ module phase_generator
      * Select waveform, do proper transformations to the wave
      */
     always_comb
-        unique case (ws_post_opl)
+        unique case (ws_post_opl_p[5])
         0: tmp_out2_p5 = tmp_out1_p5;
         1: tmp_out2_p5 = tmp_out1_p5 < 0 ? 0 : tmp_out1_p5;
         2: tmp_out2_p5 = tmp_ws2_p5;

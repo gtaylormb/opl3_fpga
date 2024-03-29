@@ -69,7 +69,7 @@ module envelope_generator
     output logic [ENV_WIDTH-1:0] env_p3 = SILENCE
 );
     localparam KSL_ADD_WIDTH = 8;
-    localparam PIPELINE_DELAY = 4;
+    localparam PIPELINE_DELAY = 3;
 
     /*
      * Because of the 2D array of state_p1 registers, this state_p1 machine isn't
@@ -86,24 +86,44 @@ module envelope_generator
     state_t state_p0, next_state_p0, state_p1 = RELEASE;
 
     logic [KSL_ADD_WIDTH-1:0] ksl_add_p2;
-    logic [KSL_ADD_WIDTH-1:0] ksl_add_p3;
     logic [ENV_WIDTH-1:0] env_int_p0;
-    logic [ENV_WIDTH-1:0] env_int_p1;
-    logic [ENV_WIDTH-1:0] env_int_p2;
-    logic [ENV_WIDTH-1:0] env_int_p3;
+    logic [ENV_WIDTH-1:0] env_int_p1 = 0;
+    logic [ENV_WIDTH-1:0] env_int_p2 = 0;
     logic [AM_VAL_WIDTH-1:0] am_val_p2;
-    logic [AM_VAL_WIDTH-1:0] am_val_p3;
     logic [REG_ENV_WIDTH-1:0] requested_rate_p0;
     logic [ENV_RATE_COUNTER_OVERFLOW_WIDTH-1:0] rate_counter_overflow_p1;
-    logic [ENV_RATE_COUNTER_OVERFLOW_WIDTH-1:0] rate_counter_overflow_p2;
+    logic [ENV_RATE_COUNTER_OVERFLOW_WIDTH-1:0] rate_counter_overflow_p2 = 0;
     logic signed [ENV_WIDTH+1:0] env_tmp_p2; // two more bits wide than env for >, < comparison
-    logic [PIPELINE_DELAY:1] sample_clk_en_p;
-    logic [BANK_NUM_WIDTH-1:0] bank_num_p1;
-    logic [BANK_NUM_WIDTH-1:0] bank_num_p2;
-    logic [BANK_NUM_WIDTH-1:0] bank_num_p3;
-    logic [OP_NUM_WIDTH-1:0] op_num_p1;
-    logic [OP_NUM_WIDTH-1:0] op_num_p2;
-    logic [OP_NUM_WIDTH-1:0] op_num_p3;
+    logic [PIPELINE_DELAY:0] sample_clk_en_p;
+    logic [PIPELINE_DELAY:0] [BANK_NUM_WIDTH-1:0] bank_num_p;
+    logic [PIPELINE_DELAY:0] [OP_NUM_WIDTH-1:0] op_num_p;
+
+    pipeline_sr #(
+        .type_t(logic),
+        .ENDING_CYCLE(PIPELINE_DELAY)
+    ) sample_clk_en_sr (
+        .clk,
+        .in(sample_clk_en),
+        .out(sample_clk_en_p)
+    );
+
+    pipeline_sr #(
+        .type_t(logic [BANK_NUM_WIDTH-1:0]),
+        .ENDING_CYCLE(PIPELINE_DELAY)
+    ) bank_num_sr (
+        .clk,
+        .in(bank_num),
+        .out(bank_num_p)
+    );
+
+    pipeline_sr #(
+        .type_t(logic [OP_NUM_WIDTH-1:0]),
+        .ENDING_CYCLE(PIPELINE_DELAY)
+    ) op_num_sr (
+        .clk,
+        .in(op_num),
+        .out(op_num_p)
+    );
 
     ksl_add_rom ksl_add_rom (
         .*
@@ -119,8 +139,8 @@ module envelope_generator
         .clk,
         .wea(sample_clk_en_p[1]),
         .reb(sample_clk_en),
-        .banka(bank_num_p1),
-        .addra(op_num_p1),
+        .banka(bank_num_p[1]),
+        .addra(op_num_p[1]),
         .bankb(bank_num),
         .addrb(op_num),
         .dia(state_p1),
@@ -160,11 +180,6 @@ module envelope_generator
         .*
     );
 
-    always_ff @(posedge clk) begin
-        sample_clk_en_p <= sample_clk_en_p << 1;
-        sample_clk_en_p[1] <= sample_clk_en;
-    end
-
     mem_multi_bank #(
         .type_t(logic [ENV_WIDTH-1:0]),
         .DEPTH(NUM_OPERATORS_PER_BANK),
@@ -175,8 +190,8 @@ module envelope_generator
         .clk,
         .wea(sample_clk_en_p[2]),
         .reb(sample_clk_en),
-        .banka(bank_num_p2),
-        .addra(op_num_p2),
+        .banka(bank_num_p[2]),
+        .addra(op_num_p[2]),
         .bankb(bank_num),
         .addrb(op_num),
         .dia(env_int_p2),
@@ -185,14 +200,8 @@ module envelope_generator
 
     always_ff @(posedge clk) begin
         env_int_p1 <= env_int_p0;
-        rate_counter_overflow_p2 <= rate_counter_overflow_p1;
-        bank_num_p1 <= bank_num;
-        bank_num_p2 <= bank_num_p1;
-        bank_num_p3 <= bank_num_p2;
-        op_num_p1 <= op_num;
-        op_num_p2 <= op_num_p1;
-        op_num_p3 <= op_num_p2;
         env_int_p2 <= env_int_p1;
+        rate_counter_overflow_p2 <= rate_counter_overflow_p1;
 
         if (sample_clk_en_p[1]) begin
             if (state_p1 == ATTACK && rate_counter_overflow_p1 != 0 && env_int_p1 != 0)
@@ -213,11 +222,6 @@ module envelope_generator
     tremolo tremolo (
         .*
     );
-
-    always_ff @(posedge clk) begin
-        ksl_add_p3 <= ksl_add_p2;
-        am_val_p3 <= am_val_p2;
-    end
 
     always_comb
         if (am)
