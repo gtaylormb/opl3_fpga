@@ -70,10 +70,13 @@ module phase_generator
     logic [PHASE_ACC_WIDTH-1:0] final_phase_p3 = 0;
     logic [PHASE_ACC_WIDTH-1:0] final_phase_p4 = 0;
     logic [PHASE_ACC_WIDTH-1:0] final_phase_p5 = 0;
+    logic prev_final_phase_msb_p2;
+    logic prev_final_phase_msb_p3 = 0;
+    logic is_odd_period_p2;
+    logic is_odd_period_p3 = 0;
+    logic is_odd_period_p4 = 0;
+    logic is_odd_period_p5 = 0;
     logic [PHASE_ACC_WIDTH-1:0] rhythm_phase_p2;
-
-    logic is_odd_period [NUM_BANKS][NUM_OPERATORS_PER_BANK] = '{ default: '0 };
-    logic phase_acc_msb_pos_edge_pulse_p3 [NUM_BANKS][NUM_OPERATORS_PER_BANK];
     logic [LOG_SIN_OUT_WIDTH-1:0] log_sin_out_p4;
     logic [LOG_SIN_PLUS_GAIN_WIDTH-1:0] log_sin_plus_gain_p4 = 0;
     logic [LOG_SIN_PLUS_GAIN_WIDTH-1:0] log_sin_plus_gain_p5 = 0;
@@ -189,21 +192,47 @@ module phase_generator
                 final_phase_p3 <= rhythm_phase_p2 + phase_inc_p2 + (modulation << 10);
             end
 
-    for (genvar i = 0; i < NUM_BANKS; i ++)
-        for (genvar j = 0; j < NUM_OPERATORS_PER_BANK; j++) begin
-            edge_detector #(
-                .EDGE_LEVEL(0),
-                .CLK_DLY(0)
-            ) phase_acc_msb_edge_detect (
-                .clk,
-                .clk_en(sample_clk_en_p[3] && bank_num == i && op_num == j),
-                .in(final_phase_p3[19]),
-                .edge_detected(phase_acc_msb_pos_edge_pulse_p3[i][j])
-            );
+    mem_multi_bank #(
+        .type_t(logic),
+        .DEPTH(NUM_OPERATORS_PER_BANK),
+        .OUTPUT_DELAY(2),
+        .DEFAULT_VALUE(0),
+        .NUM_BANKS(NUM_BANKS)
+    ) final_phase_msb_mem (
+        .clk,
+        .wea(sample_clk_en_p[3]),
+        .reb(sample_clk_en),
+        .banka(bank_num_p[3]),
+        .addra(op_num_p[3]),
+        .bankb(bank_num),
+        .addrb(op_num),
+        .dia(final_phase_p3[19]),
+        .dob(prev_final_phase_msb_p2)
+    );
 
-        always_ff @(posedge clk)
-            if (phase_acc_msb_pos_edge_pulse_p3[i][j])
-                is_odd_period[i][j] <= !is_odd_period[i][j];
+    mem_multi_bank #(
+        .type_t(logic),
+        .DEPTH(NUM_OPERATORS_PER_BANK),
+        .OUTPUT_DELAY(2),
+        .DEFAULT_VALUE(0),
+        .NUM_BANKS(NUM_BANKS)
+    ) is_odd_period_msb_mem (
+        .clk,
+        .wea(sample_clk_en_p[4]),
+        .reb(sample_clk_en),
+        .banka(bank_num_p[4]),
+        .addra(op_num_p[4]),
+        .bankb(bank_num),
+        .addrb(op_num),
+        .dia(is_odd_period_p4),
+        .dob(is_odd_period_p2)
+    );
+
+    always_ff @(posedge clk) begin
+        prev_final_phase_msb_p3 <= prev_final_phase_msb_p2;
+        is_odd_period_p3 <= is_odd_period_p2;
+        is_odd_period_p4 <= prev_final_phase_msb_p3 && !final_phase_p3[19] ? !is_odd_period_p3 : is_odd_period_p3;
+        is_odd_period_p5 <= is_odd_period_p4;
     end
 
     opl3_log_sine_lut log_sine_lut_inst (
@@ -250,7 +279,7 @@ module phase_generator
             tmp_out1_p5 = tmp_out0_p5 >> log_sin_plus_gain_p5[LOG_SIN_PLUS_GAIN_WIDTH-1:8];
 
     always_comb tmp_ws2_p5 = tmp_out1_p5 < 0 ? ~tmp_out1_p5 : tmp_out1_p5;
-    always_comb tmp_ws4_p5 = is_odd_period[bank_num][op_num] ? tmp_out1_p5 : 0;
+    always_comb tmp_ws4_p5 = is_odd_period_p5 ? tmp_out1_p5 : 0;
 
     /*
      * Select waveform, do proper transformations to the wave
