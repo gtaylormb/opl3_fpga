@@ -43,9 +43,9 @@
 `timescale 1ns / 1ps
 `default_nettype none // disable implicit net type declarations
 
-import opl3_pkg::*;
-
-module calc_rhythm_phase (
+module calc_rhythm_phase
+    import opl3_pkg::*;
+(
     input wire clk,
     input wire sample_clk_en,
     input wire [BANK_NUM_WIDTH-1:0] bank_num,
@@ -82,7 +82,8 @@ module calc_rhythm_phase (
 
     pipeline_sr #(
         .type_t(operator_t),
-        .ENDING_CYCLE(PIPELINE_DELAY)
+        .ENDING_CYCLE(PIPELINE_DELAY),
+        .POR_VALUE(OP_NORMAL)
     ) op_type_sr (
         .clk,
         .in(op_type),
