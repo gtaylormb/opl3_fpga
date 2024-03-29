@@ -75,7 +75,6 @@ module operator
     input wire use_feedback,
     input wire [REG_FB_WIDTH-1:0] fb,
     input wire [OP_OUT_WIDTH-1:0] modulation,
-    input wire latch_feedback_pulse,
     input var operator_t op_type,
     output logic signed [OP_OUT_WIDTH-1:0] out_p6
 );

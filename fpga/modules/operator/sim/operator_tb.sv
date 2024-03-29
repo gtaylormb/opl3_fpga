@@ -78,7 +78,6 @@ module operator_tb
     bit tom = 0;
     bit tc = 0;
     bit hh = 0;
-    bit latch_feedback_pulse = 0;
     bit is_new = 0;
     operator_t op_type = OP_NORMAL;
 

@@ -100,7 +100,6 @@ module control_operators
     logic use_feedback [NUM_BANKS][NUM_OPERATORS_PER_BANK];
     logic signed [OP_OUT_WIDTH-1:0] modulation [NUM_BANKS][NUM_OPERATORS_PER_BANK];
     logic signed [OP_OUT_WIDTH-1:0] operator_out_tmp;
-    logic latch_feedback_pulse = 0;
     operator_t op_type_tmp [NUM_BANKS][NUM_OPERATORS_PER_BANK] = '{default: OP_NORMAL};
 
     always_comb begin
@@ -539,16 +538,13 @@ module control_operators
         .hh,
         .use_feedback(use_feedback[bank_num][op_num]),
         .fb(fb_tmp[bank_num][op_num]),
-        .latch_feedback_pulse,
         .modulation(modulation[bank_num][op_num]),
         .op_type(op_type_tmp[bank_num][op_num]),
         .out_p6(operator_out_tmp)
     );
 
-    genvar i, j;
-    generate
-    for (i = 0; i < NUM_BANKS; i++)
-        for (j = 0; j < NUM_OPERATORS_PER_BANK; j++)
+    for (genvar i = 0; i < NUM_BANKS; i++)
+        for (genvar j = 0; j < NUM_OPERATORS_PER_BANK; j++)
             /*
              * Capture output from operator in the last cycle of the time slot
              */
@@ -556,13 +552,5 @@ module control_operators
                 if (i == bank_num && j == op_num &&
                  delay_counter == OPERATOR_PIPELINE_DELAY - 1)
                     operator_out[i][j] <= operator_out_tmp;
-    endgenerate
-
-    /*
-     * Signals to operator to latch output for feedback register
-     */
-    always_comb
-        latch_feedback_pulse = delay_counter == OPERATOR_PIPELINE_DELAY - 1;
-
 endmodule
 `default_nettype wire  // re-enable implicit net type declarations
