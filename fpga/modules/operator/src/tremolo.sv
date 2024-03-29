@@ -51,12 +51,14 @@ module tremolo
     input wire dam, // depth of tremolo
     output logic [AM_VAL_WIDTH-1:0] am_val_p2 = 0
 );
+    localparam PIPELINE_DELAY = 2;
     localparam TREMOLO_MAX_COUNT = 13*1024;
     localparam TREMOLO_INDEX_WIDTH = $clog2(TREMOLO_MAX_COUNT);
 
     logic [TREMOLO_INDEX_WIDTH-1:0] tremolo_index_p1 = '0;
     logic [TREMOLO_INDEX_WIDTH-8-1:0] am_val_tmp0_p1;
     logic [TREMOLO_INDEX_WIDTH-8-1:0] am_val_tmp1_p1;
+    logic dam_p1 = 0;
 
     /*
      * Low-Frequency Oscillator (LFO)
@@ -77,10 +79,13 @@ module tremolo
         else
             am_val_tmp1_p1 = am_val_tmp0_p1;
 
-    always_ff @(posedge clk)
-        if (dam)
+    always_ff @(posedge clk) begin
+        dam_p1 <= dam;
+
+        if (dam_p1)
             am_val_p2 <= am_val_tmp1_p1;
         else
             am_val_p2 <= am_val_tmp1_p1 >> 2;
+    end
 endmodule
 `default_nettype wire  // re-enable implicit net type declarations

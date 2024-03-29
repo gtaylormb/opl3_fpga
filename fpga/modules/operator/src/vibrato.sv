@@ -50,16 +50,22 @@ module vibrato
     input wire [BANK_NUM_WIDTH-1:0] bank_num,
     input wire [OP_NUM_WIDTH-1:0] op_num,
     input wire [REG_FNUM_WIDTH-1:0] fnum,
-    input wire vib,
     input wire dvb,
-    output logic [REG_FNUM_WIDTH-1:0] vib_val_p2
+    output logic [REG_FNUM_WIDTH-1:0] vib_val_p2 = 0
 );
     localparam VIBRATO_INDEX_WIDTH = 13;
 
-    logic [VIBRATO_INDEX_WIDTH-1:0] vibrato_index_p1 = '0;
+    logic [VIBRATO_INDEX_WIDTH-1:0] vibrato_index_p1 = 0;
     logic [REG_FNUM_WIDTH-1:0] delta0_p1;
     logic [REG_FNUM_WIDTH-1:0] delta1_p1;
     logic [REG_FNUM_WIDTH-1:0] delta2_p1;
+    logic fnum_p1 = 0;
+    logic dvb_p1 = 0;
+
+    always_ff @(posedge clk) begin
+        fnum_p1 <= fnum;
+        dvb_p1 <= dvb;
+    end
 
     /*
      * Low-Frequency Oscillator (LFO)
@@ -69,9 +75,9 @@ module vibrato
         if (sample_clk_en)
             vibrato_index_p1 <= vibrato_index_p1 + 1;
 
-    always_comb delta0_p1 = fnum >> 7;
+    always_comb delta0_p1 = fnum_p1 >> 7;
     always_comb delta1_p1 = ((vibrato_index_p1 >> 10) & 3) == 3 ? delta0_p1 >> 1 : delta0_p1;
-    always_comb delta2_p1 = !dvb ? delta1_p1 >> 1 : delta1_p1;
+    always_comb delta2_p1 = !dvb_p1 ? delta1_p1 >> 1 : delta1_p1;
 
     always_ff @(posedge clk)
         vib_val_p2 <= ((vibrato_index_p1 >> 10) & 4) != 0 ? ~delta2_p1 : delta2_p1;

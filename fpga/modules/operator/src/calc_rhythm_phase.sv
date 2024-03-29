@@ -78,6 +78,7 @@ module calc_rhythm_phase (
      */
     always_comb upper_current_phase_p2 = phase_acc_p2 >> 10;
 
+    // store the friend_phase when the relevant phase_acc comes by for later
     always_ff @(posedge clk)
         if (sample_clk_en_p[2])
             unique case (op_type)

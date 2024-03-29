@@ -92,6 +92,7 @@ module phase_generator
     logic [ENV_WIDTH-1:0] env_p4 = 0;
     logic [PIPELINE_DELAY:0] [BANK_NUM_WIDTH-1:0] bank_num_p;
     logic [PIPELINE_DELAY:0] [OP_NUM_WIDTH-1:0] op_num_p;
+    logic [PIPELINE_DELAY:0] [OP_OUT_WIDTH-1:0] modulation_p;
 
     pipeline_sr #(
         .type_t(logic),
@@ -172,6 +173,15 @@ module phase_generator
         .*
     );
 
+    pipeline_sr #(
+        .type_t(logic [OP_OUT_WIDTH-1:0]),
+        .ENDING_CYCLE(PIPELINE_DELAY)
+    ) modulation_sr (
+        .clk,
+        .in(modulation),
+        .out(modulation_p)
+    );
+
     /*
      * Phase Accumulator. Modulation and rhythm get added to the final phase but not
      * back into the accumulator.
@@ -185,11 +195,11 @@ module phase_generator
             else if (ws_post_opl_p[2] == 4 || ws_post_opl_p[2] == 5) begin
                 // double the frequency
                 phase_acc_p3 <= phase_acc_p2 + (phase_inc_p2 << 1);
-                final_phase_p3 <= rhythm_phase_p2 + (phase_inc_p2 << 1) + (modulation << 10);
+                final_phase_p3 <= rhythm_phase_p2 + (phase_inc_p2 << 1) + (modulation_p[2] << 10);
             end
             else begin
                 phase_acc_p3 <= phase_acc_p2 + phase_inc_p2;
-                final_phase_p3 <= rhythm_phase_p2 + phase_inc_p2 + (modulation << 10);
+                final_phase_p3 <= rhythm_phase_p2 + phase_inc_p2 + (modulation_p[2] << 10);
             end
 
     mem_multi_bank #(

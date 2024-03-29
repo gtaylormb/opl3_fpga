@@ -69,14 +69,46 @@ module env_rate_counter
     logic [COUNTER_WIDTH-1:0] counter_p1;
     logic [COUNTER_WIDTH-1:0] counter_new_p2;
     logic [$clog2(OVERFLOW_TMP_MAX_VALUE)-1:0] overflow_tmp_p1;
-    logic sample_clk_en_p1 = 0;
-    logic sample_clk_en_p2 = 0;
-    logic [REG_ENV_WIDTH-1:0] requested_rate_p1 = 0;
-    logic [REG_ENV_WIDTH-1:0] requested_rate_p2 = 0;
-    logic [BANK_NUM_WIDTH-1:0] bank_num_p1;
-    logic [BANK_NUM_WIDTH-1:0] bank_num_p2;
-    logic [OP_NUM_WIDTH-1:0] op_num_p1;
-    logic [OP_NUM_WIDTH-1:0] op_num_p2;
+    logic [PIPELINE_DELAY:0] [REG_ENV_WIDTH-1:0] requested_rate_p;
+    logic [PIPELINE_DELAY:0] sample_clk_en_p;
+    logic [PIPELINE_DELAY:0] [BANK_NUM_WIDTH-1:0] bank_num_p;
+    logic [PIPELINE_DELAY:0] [OP_NUM_WIDTH-1:0] op_num_p;
+
+    pipeline_sr #(
+        .type_t(logic),
+        .ENDING_CYCLE(PIPELINE_DELAY)
+    ) sample_clk_en_sr (
+        .clk,
+        .in(sample_clk_en),
+        .out(sample_clk_en_p)
+    );
+
+    pipeline_sr #(
+        .type_t(logic [BANK_NUM_WIDTH-1:0]),
+        .ENDING_CYCLE(PIPELINE_DELAY)
+    ) bank_num_sr (
+        .clk,
+        .in(bank_num),
+        .out(bank_num_p)
+    );
+
+    pipeline_sr #(
+        .type_t(logic [OP_NUM_WIDTH-1:0]),
+        .ENDING_CYCLE(PIPELINE_DELAY)
+    ) op_num_sr (
+        .clk,
+        .in(op_num),
+        .out(op_num_p)
+    );
+
+    pipeline_sr #(
+        .type_t(logic [REG_ENV_WIDTH-1:0]),
+        .ENDING_CYCLE(PIPELINE_DELAY)
+    ) requested_rate_sr (
+        .clk,
+        .in(requested_rate_p0),
+        .out(requested_rate_p)
+    );
 
     always_comb rate_tmp0_p0 = nts ? fnum[8] : fnum[9];
     always_comb rate_tmp1_p0 = rate_tmp0_p0 | (block << 1);
@@ -100,10 +132,10 @@ module env_rate_counter
         .NUM_BANKS(NUM_BANKS)
     ) counter_mem (
         .clk,
-        .wea(sample_clk_en_p2 && requested_rate_p2 != 0),
+        .wea(sample_clk_en_p[2] && requested_rate_p[2] != 0),
         .reb(sample_clk_en),
-        .banka(bank_num_p2),
-        .addra(op_num_p2),
+        .banka(bank_num_p[2]),
+        .addra(op_num_p[2]),
         .bankb(bank_num),
         .addrb(op_num),
         .dia(counter_new_p2),
@@ -111,20 +143,9 @@ module env_rate_counter
     );
 
     always_comb overflow_tmp_p1 = counter_p1 + ((4 | rof_p1) << rate_value_p1);
+    always_comb rate_counter_overflow_p1 = overflow_tmp_p1 >> 15;
 
-    always_ff @(posedge clk) begin
-        bank_num_p1 <= bank_num;
-        bank_num_p2 <= bank_num_p1;
-        op_num_p1 <= op_num;
-        op_num_p2 <= op_num_p1;
-        sample_clk_en_p1 <= sample_clk_en;
-        sample_clk_en_p2 <= sample_clk_en_p1;
-        requested_rate_p1 <= requested_rate_p0;
-        requested_rate_p2 <= requested_rate_p1;
+    always_ff @(posedge clk)
         counter_new_p2 <= overflow_tmp_p1;
-    end
-
-    always_comb
-        rate_counter_overflow_p1 = overflow_tmp_p1 >> 15;
 endmodule
 `default_nettype wire  // re-enable implicit net type declarations

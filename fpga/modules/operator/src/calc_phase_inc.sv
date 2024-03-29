@@ -56,10 +56,13 @@ module calc_phase_inc
     input wire dvb,
     output logic signed [PHASE_ACC_WIDTH-1:0] phase_inc_p2 = 0
 );
+    localparam PIPELINE_DELAY = 2;
+
     logic signed [PHASE_ACC_WIDTH-1:0] pre_mult_p0;
     logic signed [PHASE_ACC_WIDTH-1:0] post_mult_p1 = 0;
     logic signed [PHASE_ACC_WIDTH-1:0] post_mult_p2 = 0;
     logic signed [REG_FNUM_WIDTH-1:0] vib_val_p2;
+    logic [PIPELINE_DELAY:0] vib_p;
 
     always_comb pre_mult_p0 = fnum << block;
 
@@ -86,8 +89,17 @@ module calc_phase_inc
         post_mult_p2 <= post_mult_p1;
     end
 
+    pipeline_sr #(
+        .type_t(logic),
+        .ENDING_CYCLE(PIPELINE_DELAY)
+    ) vib_sr (
+        .clk,
+        .in(vib),
+        .out(vib_p)
+    );
+
     always_comb
-        if (vib)
+        if (vib_p[2])
             phase_inc_p2 = post_mult_p2 + vib_val_p2;
         else
             phase_inc_p2 = post_mult_p2;
