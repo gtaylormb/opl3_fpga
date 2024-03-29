@@ -58,6 +58,9 @@ module mem_multi_bank #(
         );
     end
 
-    always_comb dob = dob_array[bankb_p[OUTPUT_DELAY]];
+    if (OUTPUT_DELAY == 0)
+        always_comb dob = dob_array[bankb];
+    else
+        always_comb dob = dob_array[bankb_p[OUTPUT_DELAY]];
 endmodule
 `default_nettype wire
