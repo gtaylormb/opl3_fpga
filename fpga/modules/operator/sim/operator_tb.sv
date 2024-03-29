@@ -112,6 +112,7 @@ module operator_tb
         output am;
         output dam;
         output nts;
+        output fb;
     endclocking
 
     clk_div #(
@@ -152,6 +153,7 @@ module operator_tb
         mclk.egt <= 1;
         mclk.am <= 0;
         mclk.dam <= 1;
+        mclk.fb <= 7;
         ##1000;
         mclk.kon[0][0] <= 1;
         ##(CLK_FREQ/3);

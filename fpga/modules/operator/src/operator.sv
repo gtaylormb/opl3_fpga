@@ -79,32 +79,58 @@ module operator
     input var operator_t op_type,
     output logic signed [OP_OUT_WIDTH-1:0] out_p6
 );
+    localparam PIPELINE_DELAY = 6;
+
+    logic [PIPELINE_DELAY:0] sample_clk_en_p;
+    logic [PIPELINE_DELAY:0] [BANK_NUM_WIDTH-1:0] bank_num_p;
+    logic [PIPELINE_DELAY:0] [OP_NUM_WIDTH-1:0] op_num_p;
     logic [PHASE_ACC_WIDTH-1:0] phase_inc_p2;
     logic key_on_pulse_p0;
     logic key_off_pulse_p0;
     logic [ENV_WIDTH-1:0] env_p3;
-    logic signed [OP_OUT_WIDTH-1:0] feedback [NUM_BANKS][NUM_OPERATORS_PER_BANK][2] =
-     '{default: 0};
-    logic signed [OP_OUT_WIDTH-1:0] feedback_result;
-    logic signed [OP_OUT_WIDTH+1+2**REG_FB_WIDTH-1:0] feedback_result_p0;
+    logic signed [OP_OUT_WIDTH-1:0] feedback_result_p0;
+    logic signed [OP_OUT_WIDTH+1+2**REG_FB_WIDTH-1:0] feedback_result_tmp_p0;
     logic bd_on_pulse;
     logic sd_on_pulse;
     logic tom_on_pulse;
     logic tc_on_pulse;
     logic hh_on_pulse;
     logic rhythm_kon_pulse;
-    logic sample_clk_en_p1;
-    logic [BANK_NUM_WIDTH-1:0] bank_num_p1;
-    logic [OP_NUM_WIDTH-1:0] op_num_p1;
-    logic prev_kon;
+    logic prev_kon_p0;
     logic kon_p1 [NUM_BANKS][NUM_OPERATORS_PER_BANK];
+    logic [1:0] [OP_OUT_WIDTH-1:0] feedback_p0;
+    logic [1:0] [OP_OUT_WIDTH-1:0] feedback_p6;
+    logic [PIPELINE_DELAY:0] [1:0] [OP_OUT_WIDTH-1:0] feedback_p;
 
-    always_ff @(posedge clk) begin
-        sample_clk_en_p1 <= sample_clk_en;
-        bank_num_p1 <= bank_num;
-        op_num_p1 <= op_num;
+    pipeline_sr #(
+        .type_t(logic),
+        .ENDING_CYCLE(PIPELINE_DELAY)
+    ) sample_clk_en_sr (
+        .clk,
+        .in(sample_clk_en),
+        .out(sample_clk_en_p)
+    );
+
+    pipeline_sr #(
+        .type_t(logic [BANK_NUM_WIDTH-1:0]),
+        .ENDING_CYCLE(PIPELINE_DELAY)
+    ) bank_num_sr (
+        .clk,
+        .in(bank_num),
+        .out(bank_num_p)
+    );
+
+    pipeline_sr #(
+        .type_t(logic [OP_NUM_WIDTH-1:0]),
+        .ENDING_CYCLE(PIPELINE_DELAY)
+    ) op_num_sr (
+        .clk,
+        .in(op_num),
+        .out(op_num_p)
+    );
+
+    always_ff @(posedge clk)
         kon_p1 <= kon;
-    end
 
     mem_multi_bank #(
         .type_t(logic),
@@ -114,14 +140,14 @@ module operator
         .NUM_BANKS(NUM_BANKS)
     ) kon_mem (
         .clk,
-        .wea(sample_clk_en_p1),
+        .wea(sample_clk_en_p[1]),
         .reb(sample_clk_en),
-        .banka(bank_num_p1),
-        .addra(op_num_p1),
+        .banka(bank_num_p[1]),
+        .addra(op_num_p[1]),
         .bankb(bank_num),
         .addrb(op_num),
-        .dia(kon_p1[bank_num_p1][op_num_p1]),
-        .dob(prev_kon)
+        .dia(kon_p1[bank_num_p[1]][op_num_p[1]]),
+        .dob(prev_kon_p0)
     );
 
     edge_detector #(
@@ -177,27 +203,8 @@ module operator
      (op_type == OP_TOP_CYMBAL && tc_on_pulse) ||
      (op_type == OP_HI_HAT && hh_on_pulse);
 
-    always_comb key_on_pulse_p0 = ((!prev_kon && kon[bank_num][op_num]) || rhythm_kon_pulse) && sample_clk_en;
-    always_comb key_off_pulse_p0 = prev_kon && !kon[bank_num][op_num] && sample_clk_en;
-
-    /*
-     * latch_feedback_pulse comes in the last cycle of the time slot so out has had a
-     * chance to propagate through
-     */
-    always_ff @(posedge clk)
-        if (latch_feedback_pulse) begin
-            feedback[bank_num][op_num][0] <= out_p6;
-            feedback[bank_num][op_num][1] <= feedback[bank_num][op_num][0];
-        end
-
-    always_comb
-        if (fb == 0)
-            feedback_result_p0 = 0;
-        else
-            feedback_result_p0 = ((feedback[bank_num][op_num][0] +
-             feedback[bank_num][op_num][1]) <<< fb);
-
-    always_comb feedback_result = feedback_result_p0 >>> 9;
+    always_comb key_on_pulse_p0 = ((!prev_kon_p0 && kon[bank_num][op_num]) || rhythm_kon_pulse) && sample_clk_en;
+    always_comb key_off_pulse_p0 = prev_kon_p0 && !kon[bank_num][op_num] && sample_clk_en;
 
     calc_phase_inc calc_phase_inc (
         .*
@@ -212,8 +219,46 @@ module operator
      * input (it is always operator 1 in any channel scheme)
      */
     phase_generator phase_generator (
-        .modulation(use_feedback ? feedback_result : modulation),
+        .modulation(use_feedback ? feedback_result_p0 : modulation),
         .*
     );
+
+    always_comb begin
+        feedback_p6[0] = out_p6;
+        feedback_p6[1] = feedback_p[6][0];
+    end
+
+    mem_multi_bank #(
+        .type_t(logic [1:0] [OP_OUT_WIDTH-1:0]),
+        .DEPTH(NUM_OPERATORS_PER_BANK),
+        .OUTPUT_DELAY(0),
+        .DEFAULT_VALUE(0),
+        .NUM_BANKS(NUM_BANKS)
+    ) feedback_mem (
+        .clk,
+        .wea(sample_clk_en_p[6]),
+        .reb(sample_clk_en),
+        .banka(bank_num_p[6]),
+        .addra(op_num_p[6]),
+        .bankb(bank_num),
+        .addrb(op_num),
+        .dia(feedback_p6),
+        .dob(feedback_p0)
+    );
+
+    pipeline_sr #(
+        .type_t(logic [1:0] [OP_OUT_WIDTH-1:0]),
+        .ENDING_CYCLE(PIPELINE_DELAY)
+    ) feedback_sr (
+        .clk,
+        .in(feedback_p0),
+        .out(feedback_p)
+    );
+
+    always_comb begin
+        // used signed casts because signed on packed 2D array in Verilog doesn't apply individually to inner array, only the outer array
+        feedback_result_tmp_p0 = fb == 0 ? 0 : (signed'(feedback_p0[0]) + signed'(feedback_p0[1])) <<< fb;
+        feedback_result_p0 = feedback_result_tmp_p0 >>> 9;
+    end
 endmodule
 `default_nettype wire  // re-enable implicit net type declarations
