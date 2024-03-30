@@ -1,7 +1,7 @@
 `timescale 1ns / 1ps
 `default_nettype none
 
-module mem_simple_dual_port_auto #(
+module mem_simple_dual_port #(
     parameter type type_t = logic,
     parameter DATA_WIDTH = $bits(type_t),
     parameter DEPTH = 0,
@@ -21,7 +21,6 @@ module mem_simple_dual_port_auto #(
     type_t dob_p1 = DEFAULT_VALUE;
     type_t dob_p2 = DEFAULT_VALUE;
 
-    (* ram_style = "auto" *)
     type_t ram [DEPTH-1:0] = '{default: DEFAULT_VALUE};
 
     always_ff @(posedge clka)

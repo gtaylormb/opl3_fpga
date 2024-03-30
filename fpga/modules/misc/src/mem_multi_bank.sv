@@ -41,7 +41,7 @@ module mem_multi_bank #(
             reb_array[i] = reb && bankb == i;
         end
 
-        mem_simple_dual_port_auto #(
+        mem_simple_dual_port #(
             .type_t(type_t),
             .DEPTH(DEPTH),
             .OUTPUT_DELAY(OUTPUT_DELAY),

@@ -82,10 +82,9 @@ module control_operators
      * 256/36 operators gives us ~7.1 cycles per operator before next
      * sample_clk_en
      */
-    localparam OPERATOR_PIPELINE_DELAY = 7;
+    localparam PIPELINE_DELAY = 6;
     localparam NUM_OPERATOR_UPDATE_STATES = NUM_BANKS*NUM_OPERATORS_PER_BANK + 1; // 36 operators + idle state
-
-    logic [$clog2(OPERATOR_PIPELINE_DELAY)-1:0] delay_counter = 0;
+    logic [$clog2(PIPELINE_DELAY)-1:0] delay_counter = 0;
 
     logic [$clog2(NUM_OPERATOR_UPDATE_STATES)-1:0] state = 0;
     logic [$clog2(NUM_OPERATOR_UPDATE_STATES)-1:0] next_state;
@@ -99,8 +98,14 @@ module control_operators
     logic [REG_FB_WIDTH-1:0] fb_tmp [NUM_BANKS][NUM_OPERATORS_PER_BANK];
     logic use_feedback [NUM_BANKS][NUM_OPERATORS_PER_BANK];
     logic signed [OP_OUT_WIDTH-1:0] modulation [NUM_BANKS][NUM_OPERATORS_PER_BANK];
-    logic signed [OP_OUT_WIDTH-1:0] operator_out_tmp;
     operator_t op_type_tmp [NUM_BANKS][NUM_OPERATORS_PER_BANK] = '{default: OP_NORMAL};
+    logic signed [OP_OUT_WIDTH-1:0] out_p6;
+    logic signed [OP_OUT_WIDTH-1:0] modulation_out_p0;
+    logic [$clog2(NUM_OPERATORS_PER_BANK)-1:0] modulation_out_op_num;
+    logic op_sample_clk_en;
+    logic [PIPELINE_DELAY:1] op_sample_clk_en_p;
+    logic [PIPELINE_DELAY:1] [BANK_NUM_WIDTH-1:0] bank_num_p;
+    logic [PIPELINE_DELAY:1] [OP_NUM_WIDTH-1:0] op_num_p;
 
     always_comb begin
         /*
@@ -122,7 +127,7 @@ module control_operators
         kon_tmp[0][3] = kon[0][0];
         fb_tmp[0][3] = 0;
         use_feedback[0][3] = 0;
-        modulation[0][3] = cnt[0][0] ? 0 : operator_out[0][0];
+        modulation[0][3] = cnt[0][0] ? 0 : modulation_out_p0;
 
         fnum_tmp[0][1] = fnum[0][1];
         block_tmp[0][1] = block[0][1];
@@ -136,7 +141,7 @@ module control_operators
         kon_tmp[0][4] = kon[0][1];
         fb_tmp[0][4] = 0;
         use_feedback[0][4] = 0;
-        modulation[0][4] = cnt[0][1] ? 0 : operator_out[0][1];
+        modulation[0][4] = cnt[0][1] ? 0 : modulation_out_p0;
 
         fnum_tmp[0][2] = fnum[0][2];
         block_tmp[0][2] = block[0][2];
@@ -150,7 +155,7 @@ module control_operators
         kon_tmp[0][5] = kon[0][2];
         fb_tmp[0][5] = 0;
         use_feedback[0][5] = 0;
-        modulation[0][5] = cnt[0][2] ? 0 : operator_out[0][2];
+        modulation[0][5] = cnt[0][2] ? 0 : modulation_out_p0;
 
         fnum_tmp[1][0] = fnum[1][0];
         block_tmp[1][0] = block[1][0];
@@ -164,7 +169,7 @@ module control_operators
         kon_tmp[1][3] = kon[1][0];
         fb_tmp[1][3] = 0;
         use_feedback[1][3] = 0;
-        modulation[1][3] = cnt[1][0] ? 0 : operator_out[1][0];
+        modulation[1][3] = cnt[1][0] ? 0 : modulation_out_p0;
 
         fnum_tmp[1][1] = fnum[1][1];
         block_tmp[1][1] = block[1][1];
@@ -178,7 +183,7 @@ module control_operators
         kon_tmp[1][4] = kon[1][1];
         fb_tmp[1][4] = 0;
         use_feedback[1][4] = 0;
-        modulation[1][4] = cnt[1][1] ? 0 : operator_out[1][1];
+        modulation[1][4] = cnt[1][1] ? 0 : modulation_out_p0;
 
         fnum_tmp[1][2] = fnum[1][2];
         block_tmp[1][2] = block[1][2];
@@ -192,7 +197,7 @@ module control_operators
         kon_tmp[1][5] = kon[1][2];
         fb_tmp[1][5] = 0;
         use_feedback[1][5] = 0;
-        modulation[1][5] = cnt[1][2] ? 0 : operator_out[1][2];
+        modulation[1][5] = cnt[1][2] ? 0 : modulation_out_p0;
 
         // aka bass drum operator 1
         fnum_tmp[0][12] = fnum[0][6];
@@ -210,7 +215,7 @@ module control_operators
         fb_tmp[0][15] = 0;
         op_type_tmp[0][15] = ryt ? OP_BASS_DRUM : OP_NORMAL;
         use_feedback[0][15] = 0;
-        modulation[0][15] = cnt[0][6] ? 0 : operator_out[0][12];
+        modulation[0][15] = cnt[0][6] ? 0 : modulation_out_p0;
 
         // aka hi hat operator
         fnum_tmp[0][13] = fnum[0][7];
@@ -228,7 +233,7 @@ module control_operators
         fb_tmp[0][16] = 0;
         op_type_tmp[0][16] = ryt ? OP_SNARE_DRUM : OP_NORMAL;
         use_feedback[0][16] = 0;
-        modulation[0][16] = cnt[0][7] || ryt ? 0 : operator_out[0][13];
+        modulation[0][16] = cnt[0][7] || ryt ? 0 : modulation_out_p0;
 
         // aka tom tom operator
         fnum_tmp[0][14] = fnum[0][8];
@@ -246,7 +251,7 @@ module control_operators
         fb_tmp[0][17] = 0;
         op_type_tmp[0][17] = ryt ? OP_TOP_CYMBAL : OP_NORMAL;
         use_feedback[0][17] = 0;
-        modulation[0][17] = cnt[0][8] || ryt ? 0 : operator_out[0][14];
+        modulation[0][17] = cnt[0][8] || ryt ? 0 : modulation_out_p0;
 
         fnum_tmp[1][12] = fnum[1][6];
         block_tmp[1][12] = block[1][6];
@@ -260,7 +265,7 @@ module control_operators
         kon_tmp[1][15] = kon[1][6];
         fb_tmp[1][15] = 0;
         use_feedback[1][15] = 0;
-        modulation[1][15] = cnt[1][6] ? 0 : operator_out[1][12];
+        modulation[1][15] = cnt[1][6] ? 0 : modulation_out_p0;
 
         fnum_tmp[1][13] = fnum[1][7];
         block_tmp[1][13] = block[1][7];
@@ -274,7 +279,7 @@ module control_operators
         kon_tmp[1][16] = kon[1][7];
         fb_tmp[1][16] = 0;
         use_feedback[1][16] = 0;
-        modulation[1][16] = cnt[1][7] ? 0 : operator_out[1][13];
+        modulation[1][16] = cnt[1][7] ? 0 : modulation_out_p0;
 
         fnum_tmp[1][14] = fnum[1][8];
         block_tmp[1][14] = block[1][8];
@@ -288,7 +293,7 @@ module control_operators
         kon_tmp[1][17] = kon[1][8];
         fb_tmp[1][17] = 0;
         use_feedback[1][17] = 0;
-        modulation[1][17] = cnt[1][8] ? 0 : operator_out[1][14];
+        modulation[1][17] = cnt[1][8] ? 0 : modulation_out_p0;
 
         if (connection_sel[0]) begin
             fnum_tmp[0][6] = fnum[0][0];
@@ -296,14 +301,14 @@ module control_operators
             kon_tmp[0][6] = kon[0][0];
             fb_tmp[0][6] = 0;
             use_feedback[0][6] = 0;
-            modulation[0][6] = !cnt[0][0] && cnt[0][3] ? 0 : operator_out[0][3];
+            modulation[0][6] = !cnt[0][0] && cnt[0][3] ? 0 : modulation_out_p0;
 
             fnum_tmp[0][9] = fnum[0][0];
             block_tmp[0][9] = block[0][0];
             kon_tmp[0][9] = kon[0][0];
             fb_tmp[0][9] = 0;
             use_feedback[0][9] = 0;
-            modulation[0][9] = cnt[0][0] && cnt[0][3] ? 0 : operator_out[0][6];
+            modulation[0][9] = cnt[0][0] && cnt[0][3] ? 0 : modulation_out_p0;
         end
         else begin
             fnum_tmp[0][6] = fnum[0][3];
@@ -318,7 +323,7 @@ module control_operators
             kon_tmp[0][9] = kon[0][3];
             fb_tmp[0][9] = 0;
             use_feedback[0][9] = 0;
-            modulation[0][9] = cnt[0][3] ? 0 : operator_out[0][6];
+            modulation[0][9] = cnt[0][3] ? 0 : modulation_out_p0;
         end
         if (connection_sel[1]) begin
             fnum_tmp[0][7] = fnum[0][1];
@@ -326,14 +331,14 @@ module control_operators
             kon_tmp[0][7] = kon[0][1];
             fb_tmp[0][7] = 0;
             use_feedback[0][7] = 0;
-            modulation[0][7] = !cnt[0][1] && cnt[0][4] ? 0 : operator_out[0][4];
+            modulation[0][7] = !cnt[0][1] && cnt[0][4] ? 0 : modulation_out_p0;
 
             fnum_tmp[0][10] = fnum[0][1];
             block_tmp[0][10] = block[0][1];
             kon_tmp[0][10] = kon[0][1];
             fb_tmp[0][10] = 0;
             use_feedback[0][10] = 0;
-            modulation[0][10] = cnt[0][1] && cnt[0][4] ? 0 : operator_out[0][7];
+            modulation[0][10] = cnt[0][1] && cnt[0][4] ? 0 : modulation_out_p0;
         end
         else begin
             fnum_tmp[0][7] = fnum[0][4];
@@ -348,7 +353,7 @@ module control_operators
             kon_tmp[0][10] = kon[0][4];
             fb_tmp[0][10] = 0;
             use_feedback[0][10] = 0;
-            modulation[0][10] = cnt[0][4] ? 0 : operator_out[0][7];
+            modulation[0][10] = cnt[0][4] ? 0 : modulation_out_p0;
         end
         if (connection_sel[2]) begin
             fnum_tmp[0][8] = fnum[0][2];
@@ -356,14 +361,14 @@ module control_operators
             kon_tmp[0][8] = kon[0][2];
             fb_tmp[0][8] = 0;
             use_feedback[0][8] = 0;
-            modulation[0][8] = !cnt[0][2] && cnt[0][5] ? 0 : operator_out[0][5];
+            modulation[0][8] = !cnt[0][2] && cnt[0][5] ? 0 : modulation_out_p0;
 
             fnum_tmp[0][11] = fnum[0][2];
             block_tmp[0][11] = block[0][2];
             kon_tmp[0][11] = kon[0][2];
             fb_tmp[0][11] = 0;
             use_feedback[0][11] = 0;
-            modulation[0][11] = cnt[0][2] && cnt[0][5] ? 0 : operator_out[0][8];
+            modulation[0][11] = cnt[0][2] && cnt[0][5] ? 0 : modulation_out_p0;
         end
         else begin
             fnum_tmp[0][8] = fnum[0][5];
@@ -378,7 +383,7 @@ module control_operators
             kon_tmp[0][11] = kon[0][5];
             fb_tmp[0][11] = 0;
             use_feedback[0][11] = 0;
-            modulation[0][11] = cnt[0][5] ? 0 : operator_out[0][8];
+            modulation[0][11] = cnt[0][5] ? 0 : modulation_out_p0;
         end
         if (connection_sel[3]) begin
             fnum_tmp[1][6] = fnum[1][0];
@@ -386,14 +391,14 @@ module control_operators
             kon_tmp[1][6] = kon[1][0];
             fb_tmp[1][6] = 0;
             use_feedback[1][6] = 0;
-            modulation[1][6] = !cnt[1][0] && cnt[1][3] ? 0 : operator_out[1][3];
+            modulation[1][6] = !cnt[1][0] && cnt[1][3] ? 0 : modulation_out_p0;
 
             fnum_tmp[1][9] = fnum[1][0];
             block_tmp[1][9] = block[1][0];
             kon_tmp[1][9] = kon[1][0];
             fb_tmp[1][9] = 0;
             use_feedback[1][9] = 0;
-            modulation[1][9] = cnt[1][0] && cnt[1][3] ? 0 : operator_out[1][6];
+            modulation[1][9] = cnt[1][0] && cnt[1][3] ? 0 : modulation_out_p0;
         end
         else begin
             fnum_tmp[1][6] = fnum[1][3];
@@ -408,7 +413,7 @@ module control_operators
             kon_tmp[1][9] = kon[1][3];
             fb_tmp[1][9] = 0;
             use_feedback[1][9] = 0;
-            modulation[1][9] = cnt[1][3] ? 0 : operator_out[1][6];
+            modulation[1][9] = cnt[1][3] ? 0 : modulation_out_p0;
         end
         if (connection_sel[4]) begin
             fnum_tmp[1][7] = fnum[1][1];
@@ -416,14 +421,14 @@ module control_operators
             kon_tmp[1][7] = kon[1][1];
             fb_tmp[1][7] = 0;
             use_feedback[1][7] = 0;
-            modulation[1][7] = !cnt[1][1] && cnt[1][4] ? 0 : operator_out[1][4];
+            modulation[1][7] = !cnt[1][1] && cnt[1][4] ? 0 : modulation_out_p0;
 
             fnum_tmp[1][10] = fnum[1][1];
             block_tmp[1][10] = block[1][1];
             kon_tmp[1][10] = kon[1][1];
             fb_tmp[1][10] = 0;
             use_feedback[1][10] = 0;
-            modulation[1][10] = cnt[1][1] && cnt[1][4] ? 0 : operator_out[1][7];
+            modulation[1][10] = cnt[1][1] && cnt[1][4] ? 0 : modulation_out_p0;
         end
         else begin
             fnum_tmp[1][7] = fnum[1][4];
@@ -438,7 +443,7 @@ module control_operators
             kon_tmp[1][10] = kon[1][4];
             fb_tmp[1][10] = 0;
             use_feedback[1][10] = 0;
-            modulation[1][10] = cnt[1][4] ? 0 : operator_out[1][7];
+            modulation[1][10] = cnt[1][4] ? 0 : modulation_out_p0;
         end
         if (connection_sel[5]) begin
             fnum_tmp[1][8] = fnum[1][2];
@@ -446,14 +451,14 @@ module control_operators
             kon_tmp[1][8] = kon[1][2];
             fb_tmp[1][8] = 0;
             use_feedback[1][8] = 0;
-            modulation[1][8] = !cnt[1][2] && cnt[1][5] ? 0 : operator_out[1][5];
+            modulation[1][8] = !cnt[1][2] && cnt[1][5] ? 0 : modulation_out_p0;
 
             fnum_tmp[1][11] = fnum[1][2];
             block_tmp[1][11] = block[1][2];
             kon_tmp[1][11] = kon[1][2];
             fb_tmp[1][11] = 0;
             use_feedback[1][11] = 0;
-            modulation[1][11] = cnt[1][2] && cnt[1][5] ? 0 : operator_out[1][8];
+            modulation[1][11] = cnt[1][2] && cnt[1][5] ? 0 : modulation_out_p0;
         end
         else begin
             fnum_tmp[1][8] = fnum[1][5];
@@ -468,7 +473,7 @@ module control_operators
             kon_tmp[1][11] = kon[1][5];
             fb_tmp[1][11] = 0;
             use_feedback[1][11] = 0;
-            modulation[1][11] = cnt[1][5] ? 0 : operator_out[1][8];
+            modulation[1][11] = cnt[1][5] ? 0 : modulation_out_p0;
         end
     end
 
@@ -477,8 +482,8 @@ module control_operators
 
     always_comb
         if (state == 0)
-            next_state = sample_clk_en ? 1 : 0;
-        else if (delay_counter == OPERATOR_PIPELINE_DELAY - 1)
+            next_state = sample_clk_en;
+        else if (delay_counter == PIPELINE_DELAY)
             if (state == NUM_OPERATOR_UPDATE_STATES - 1)
                 next_state = 0;
             else
@@ -489,7 +494,7 @@ module control_operators
     always_ff @(posedge clk)
         if (next_state != state)
             delay_counter <= 0;
-        else if (delay_counter == OPERATOR_PIPELINE_DELAY - 1)
+        else if (delay_counter == PIPELINE_DELAY )
             delay_counter <= 0;
         else
             delay_counter <= delay_counter + 1;
@@ -503,13 +508,15 @@ module control_operators
         else
             op_num = state - 1;
 
+    always_comb op_sample_clk_en = state != 0 && delay_counter == 0;
+
     /*
      * The sample_clk_en input for each operator slot is pulsed in the first
      * cycle of that time slot
      */
     operator operator (
         .clk,
-        .sample_clk_en(state != 0 && delay_counter == 0),
+        .sample_clk_en(op_sample_clk_en),
         .is_new,
         .bank_num,
         .op_num,
@@ -540,7 +547,55 @@ module control_operators
         .fb(fb_tmp[bank_num][op_num]),
         .modulation(modulation[bank_num][op_num]),
         .op_type(op_type_tmp[bank_num][op_num]),
-        .out_p6(operator_out_tmp)
+        .out_p6
+    );
+
+    pipeline_sr #(
+        .type_t(logic),
+        .ENDING_CYCLE(PIPELINE_DELAY)
+    ) sample_clk_en_sr (
+        .clk,
+        .in(op_sample_clk_en),
+        .out(op_sample_clk_en_p)
+    );
+
+    pipeline_sr #(
+        .type_t(logic [BANK_NUM_WIDTH-1:0]),
+        .ENDING_CYCLE(PIPELINE_DELAY)
+    ) bank_num_sr (
+        .clk,
+        .in(bank_num),
+        .out(bank_num_p)
+    );
+
+    pipeline_sr #(
+        .type_t(logic [OP_NUM_WIDTH-1:0]),
+        .ENDING_CYCLE(PIPELINE_DELAY)
+    ) op_num_sr (
+        .clk,
+        .in(op_num),
+        .out(op_num_p)
+    );
+
+    // load the output from 3 operators ago but don't read out of range
+    always_comb modulation_out_op_num = op_num >= 3 ? op_num - 3 : 0;
+
+    mem_multi_bank #(
+        .type_t(logic [OP_OUT_WIDTH-1:0]),
+        .DEPTH(NUM_OPERATORS_PER_BANK),
+        .OUTPUT_DELAY(0),
+        .DEFAULT_VALUE(0),
+        .NUM_BANKS(NUM_BANKS)
+    ) sample_out_mem (
+        .clk,
+        .wea(op_sample_clk_en_p[6]),
+        .reb(op_sample_clk_en),
+        .banka(bank_num_p[6]),
+        .addra(op_num_p[6]),
+        .bankb(bank_num),
+        .addrb(modulation_out_op_num),
+        .dia(out_p6),
+        .dob(modulation_out_p0)
     );
 
     for (genvar i = 0; i < NUM_BANKS; i++)
@@ -549,8 +604,7 @@ module control_operators
              * Capture output from operator in the last cycle of the time slot
              */
             always_ff @(posedge clk)
-                if (i == bank_num && j == op_num &&
-                 delay_counter == OPERATOR_PIPELINE_DELAY - 1)
-                    operator_out[i][j] <= operator_out_tmp;
+                if (i == bank_num && j == op_num && op_sample_clk_en_p[6])
+                    operator_out[i][j] <= out_p6;
 endmodule
 `default_nettype wire  // re-enable implicit net type declarations
