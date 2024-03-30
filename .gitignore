@@ -1,0 +1,7 @@
+build/
+.Xil/
+fpga/modules/operator/work/
+fpga/sim_lib/
+fpga/work/
+transcript
+software/opl3_standalone_bsp_0/ps7_cortexa9_0/libsrc/standalone_v5_0/src/
