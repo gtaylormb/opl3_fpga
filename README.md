@@ -12,8 +12,8 @@ opl3_fpga
 * FPGA and software build flows have been updated for Vivado 2016.1.
 * I have been working with one of the ScummVM devs, Walter van Niftrik, to use the OPL3_FPGA as an OPL3 output device in ScummVM and DOSBox over USB. His code is over at https://github.com/waltervn/opl3_fpga-apps and https://github.com/waltervn/dosbox. He has a daemon running on top of PetaLinux instead of bare metal on the ARM. This is very cool and something I always envisioned.
 
-## About            
-Reverse engineered SystemVerilog RTL version of the 
+## About
+Reverse engineered SystemVerilog RTL version of the
 <a href="http://en.wikipedia.org/wiki/Yamaha_YMF262">Yamaha OPL3 (YMF262)</a> FM Synthesizer.
 Design is complete and working on the Digilent ZYBO board.
 
@@ -26,7 +26,7 @@ Every effort possible has been made to replicate, bit-true, the math of the orig
 There are some differences between this version and the original chip in the external interface due to the hardware on
 the board that I'm using. The design is targeted to the <a href="https://www.digilentinc.com/Products/Detail.cfm?Prod=ZYBO">Digilent ZYBO board</a>
 which has the <a href="http://www.xilinx.com/products/silicon-devices/soc/zynq-7000.html">Xilinx Zynq-7000
-SoC</a> containing an ARM dual-core Cortex-A9 and an FPGA. The board also has an 
+SoC</a> containing an ARM dual-core Cortex-A9 and an FPGA. The board also has an
 <a href="http://www.analog.com/en/products/audio-video/audio-codecs/ssm2603.html#product-overview">Analog Devices SSM2603
 audio codec</a> with dual 24-bit DACs. The interface to the CPU is AXI4-Lite
 and the interface to the DAC is I<sup>2</sup>S, matching the particular hardware I have to work with. These
@@ -84,44 +84,37 @@ Close up of the attack phase:
 
 ## Utilization in xc7z010:
 
-    +----------------------------+-------+-------+-----------+-------+
-    |          Site Type         |  Used | Fixed | Available | Util% |
-    +----------------------------+-------+-------+-----------+-------+
-    | Slice LUTs                 |  6042 |     0 |     17600 | 34.33 |
-    |   LUT as Logic             |  5972 |     0 |     17600 | 33.93 |
-    |   LUT as Memory            |    70 |     0 |      6000 |  1.17 |
-    |     LUT as Distributed RAM |     0 |     0 |           |       |
-    |     LUT as Shift Register  |    70 |     0 |           |       |
-    | Slice Registers            | 10105 |     0 |     35200 | 28.71 |
-    |   Register as Flip Flop    | 10105 |     0 |     35200 | 28.71 |
-    |   Register as Latch        |     0 |     0 |     35200 |  0.00 |
-    | F7 Muxes                   |   837 |     0 |      8800 |  9.51 |
-    | F8 Muxes                   |   126 |     0 |      4400 |  2.86 |
-    +----------------------------+-------+-------+-----------+-------+
-    
+    +----------------------------+------+-------+-----------+-------+
+    |          Site Type         | Used | Fixed | Available | Util% |
+    +----------------------------+------+-------+-----------+-------+
+    | Slice LUTs                 | 4668 |     0 |     17600 | 26.52 |
+    |   LUT as Logic             | 4501 |     0 |     17600 | 25.57 |
+    |   LUT as Memory            |  167 |     0 |      6000 |  2.78 |
+    |     LUT as Distributed RAM |   88 |     0 |           |       |
+    |     LUT as Shift Register  |   79 |     0 |           |       |
+    | Slice Registers            | 6466 |     0 |     35200 | 18.37 |
+    |   Register as Flip Flop    | 6466 |     0 |     35200 | 18.37 |
+    |   Register as Latch        |    0 |     0 |     35200 |  0.00 |
+    | F7 Muxes                   |  508 |     0 |      8800 |  5.77 |
+    | F8 Muxes                   |   86 |     0 |      4400 |  1.95 |
+    +----------------------------+------+-------+-----------+-------+
+
     +-------------------+------+-------+-----------+-------+
     |     Site Type     | Used | Fixed | Available | Util% |
     +-------------------+------+-------+-----------+-------+
-    | Block RAM Tile    |    1 |     0 |        60 |  1.67 |
+    | Block RAM Tile    |    2 |     0 |        60 |  3.33 |
     |   RAMB36/FIFO*    |    0 |     0 |        60 |  0.00 |
-    |   RAMB18          |    2 |     0 |       120 |  1.67 |
-    |     RAMB18E1 only |    2 |       |           |       |
+    |   RAMB18          |    4 |     0 |       120 |  3.33 |
+    |     RAMB18E1 only |    4 |       |           |       |
     +-------------------+------+-------+-----------+-------+
-    
-    +----------------+------+-------+-----------+-------+
-    |    Site Type   | Used | Fixed | Available | Util% |
-    +----------------+------+-------+-----------+-------+
-    | DSPs           |    1 |     0 |        80 |  1.25 |
-    |   DSP48E1 only |    1 |       |           |       |
-    +----------------+------+-------+-----------+-------+
-    
+
 ## Serial command line interface
 
-I've added a simple command line interface for playing songs. 
+I've added a simple command line interface for playing songs.
 Set your terminal to 115200 baud, 8-N-1.
-    
+
     Welcome to the OPL3 FPGA
-    
+
     Type 'help' for a list of commands
     >ls
     descent.dro 381376
@@ -142,17 +135,17 @@ Set your terminal to 115200 baud, 8-N-1.
     hexen.dro 122449
     war_000.dro 120658
     >play doom_000.dro
-    DRO 2.0 file 
-    
+    DRO 2.0 file
+
 ## Build/run instructions (Linux)
 1. If you want to add any .dro files, you may place them in software/opl3dro.
 They will be included in the in-memory filesystem for playback.
 
 2. Source the Vivado and SDK settings so all the build tools are in your path.
-Example: 
+Example:
 
         source /opt/Xilinx/Vivado/2016.1/settings64.sh
-      
+
 3. Run 'make' to build the FPGA and software necessary to run the OPL3
 and create an SD card image.
 
