@@ -98,7 +98,7 @@ module control_operators
     logic [REG_FB_WIDTH-1:0] fb_tmp [NUM_BANKS][NUM_OPERATORS_PER_BANK];
     logic use_feedback [NUM_BANKS][NUM_OPERATORS_PER_BANK];
     logic signed [OP_OUT_WIDTH-1:0] modulation [NUM_BANKS][NUM_OPERATORS_PER_BANK];
-    operator_t op_type_tmp [NUM_BANKS][NUM_OPERATORS_PER_BANK] = '{default: OP_NORMAL};
+    operator_t op_type_tmp [NUM_BANKS][NUM_OPERATORS_PER_BANK];
     logic signed [OP_OUT_WIDTH-1:0] out_p6;
     logic signed [OP_OUT_WIDTH-1:0] modulation_out_p0;
     logic [$clog2(NUM_OPERATORS_PER_BANK)-1:0] modulation_out_op_num;
@@ -108,6 +108,8 @@ module control_operators
     logic [PIPELINE_DELAY:1] [OP_NUM_WIDTH-1:0] op_num_p;
 
     always_comb begin
+        op_type_tmp = '{default: OP_NORMAL};
+
         /*
          * Operator input mappings
          *
