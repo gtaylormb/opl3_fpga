@@ -1,6 +1,10 @@
 opl3_fpga
 =========
 ## News
+2024-3-30
+* I've done some logic reduction work to bring the area down by replacing a bunch of register arrays with memories and careful pipelining.
+This reduced LUTs by 24% and registers by 36%. There are some other fixes (rhythm operators) and general cleanup.
+
 2019-11-7
 * The OPL2 subset of OPL3_FPGA was converted to Verilog by Magnus Karlsson, and then ported to the Panologic thin client (a Spartan-3E based board) by Skip Hansen. The project can be found here: https://github.com/skiphansen/panog1_opl3
 
@@ -87,16 +91,16 @@ Close up of the attack phase:
     +----------------------------+------+-------+-----------+-------+
     |          Site Type         | Used | Fixed | Available | Util% |
     +----------------------------+------+-------+-----------+-------+
-    | Slice LUTs                 | 4668 |     0 |     17600 | 26.52 |
-    |   LUT as Logic             | 4501 |     0 |     17600 | 25.57 |
+    | Slice LUTs                 | 4601 |     0 |     17600 | 26.14 |
+    |   LUT as Logic             | 4434 |     0 |     17600 | 25.19 |
     |   LUT as Memory            |  167 |     0 |      6000 |  2.78 |
     |     LUT as Distributed RAM |   88 |     0 |           |       |
     |     LUT as Shift Register  |   79 |     0 |           |       |
-    | Slice Registers            | 6466 |     0 |     35200 | 18.37 |
-    |   Register as Flip Flop    | 6466 |     0 |     35200 | 18.37 |
+    | Slice Registers            | 6488 |     0 |     35200 | 18.43 |
+    |   Register as Flip Flop    | 6488 |     0 |     35200 | 18.43 |
     |   Register as Latch        |    0 |     0 |     35200 |  0.00 |
-    | F7 Muxes                   |  508 |     0 |      8800 |  5.77 |
-    | F8 Muxes                   |   86 |     0 |      4400 |  1.95 |
+    | F7 Muxes                   |  428 |     0 |      8800 |  4.86 |
+    | F8 Muxes                   |   54 |     0 |      4400 |  1.23 |
     +----------------------------+------+-------+-----------+-------+
 
     +-------------------+------+-------+-----------+-------+
