@@ -102,6 +102,7 @@ module channels
     logic signed [CHAN_4_OP_WIDTH-1:0] channel_c_ops [2][9] = '{default: 0};
     logic signed [CHANNEL_ACCUMULATOR_WIDTH-1:0] channel_d_acc_pre_clamp = 0;
     logic signed [CHAN_4_OP_WIDTH-1:0] channel_d_ops [2][9] = '{default: 0};
+    logic latch_channels = 0;
 
     enum {
         IDLE,
@@ -131,6 +132,9 @@ module channels
             bank <= 0;
         else if (channel == 8)
             bank <= 1;
+
+    always_ff @(posedge clk)
+        latch_channels = state == CALC_OUTPUTS && next_state == IDLE;
 
     /*
      * One operator is instantiated; it replicates the necessary registers for
@@ -397,7 +401,7 @@ module channels
      * Clamp output channels
      */
     always_ff @(posedge clk)
-        if (sample_clk_en) begin
+        if (latch_channels) begin
             if (channel_a_acc_pre_clamp > 2**15 - 1)
                 channel_a <= 2**15 - 1;
             else if (channel_a_acc_pre_clamp < -2**15)
