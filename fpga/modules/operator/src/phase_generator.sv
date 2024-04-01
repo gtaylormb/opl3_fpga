@@ -313,5 +313,5 @@ module phase_generator
         default:      out_p6 <= tmp_out2_p5 << 1;
         endcase
 endmodule
-`default_nettype wire  // re-enable implicit net type declarations
+`default_nettype wire
 

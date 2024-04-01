@@ -43,23 +43,25 @@
 
 module opl3
     import opl3_pkg::*;
-#(
-    parameter integer C_S_AXI_DATA_WIDTH = 0,
-    parameter NUM_AXI_REGISTERS = 0
-) (
-    input wire clk125,
-    output wire clk,
-    output wire i2s_sclk,
-    output wire i2s_ws,
-    output wire i2s_sd,
-    output logic ac_mute_n,
-    output logic [3:0] led,
-    output logic clk_locked,
-    input wire [7:0] slv8_reg[NUM_AXI_REGISTERS*4]
+(
+    input wire clk, // opl3 clk
+    input wire clk_host,
+    input wire ic_n, // clk_host reset
+    input wire cs_n,
+    input wire rd_n,
+    input wire wr_n,
+    input wire [1:0] address,
+    input wire [REG_FILE_DATA_WIDTH-1:0] din,
+    output logic [REG_FILE_DATA_WIDTH-1:0] dout,
+    output logic sample_clk_en,
+    output logic signed [DAC_OUTPUT_WIDTH-1:0] sample_l = 0, // synced to opl3 clk and sample_clk_en
+    output logic signed [DAC_OUTPUT_WIDTH-1:0] sample_r = 0,
+    output logic [NUM_LEDS-1:0] led,
+    output logic irq_n
 );
     logic reset;
-    logic sample_clk_en;
 
+    logic [REG_FILE_DATA_WIDTH-1:0] opl3_reg [NUM_BANKS][NUM_REGISTERS_PER_BANK];
     logic [REG_TIMER_WIDTH-1:0] timer1;
     logic [REG_TIMER_WIDTH-1:0] timer2;
     logic irq_rst;
@@ -99,29 +101,22 @@ module opl3
     logic chd [NUM_BANKS][NUM_CHANNELS_PER_BANK];
     logic [REG_FB_WIDTH-1:0] fb [NUM_BANKS][NUM_CHANNELS_PER_BANK];
     logic cnt [NUM_BANKS][NUM_CHANNELS_PER_BANK];
-    logic irq;
-
-    logic signed [DAC_OUTPUT_WIDTH-1:0] sample_l = 0;
-    logic signed [DAC_OUTPUT_WIDTH-1:0] sample_r = 0;
     logic signed [SAMPLE_WIDTH-1:0] channel_a;
     logic signed [SAMPLE_WIDTH-1:0] channel_b;
     logic signed [SAMPLE_WIDTH-1:0] channel_c;
     logic signed [SAMPLE_WIDTH-1:0] channel_d;
+    logic ft1;
+    logic ft2;
+    logic irq;
 
-    /*
-     * Generate the 12.727MHz clock
-     */
-    clk_gen clk_gen (
-        .*
+    reset_sync reset_sync (
+        .clk,
+        .arst_n(ic_n),
+        .reset
     );
-    always_comb reset = !clk_locked;
 
-    /*
-     * Generate the 12.727MHz/256 sample clock enable
-     */
     clk_div #(
-        .INPUT_CLK_FREQ(CLK_FREQ),
-        .OUTPUT_CLK_EN_FREQ(SAMPLE_FREQ)
+        .CLK_DIV_COUNT(CLK_DIV_COUNT)
     ) sample_clk_gen (
         .clk_en(sample_clk_en),
         .*
@@ -133,31 +128,22 @@ module opl3
 
     /*
      * The 4 16-bit output channels are normally combined in the analog domain
-     * after the YAC512 DAC outputs. Here we'll just add and output to our DAC
-     * in 24-bit mode.
+     * after the YAC512 DAC outputs. Here we'll just add digitally.
      */
     always_ff @(posedge clk) begin
-        sample_l <= (channel_a + channel_c) <<< 6;
-        sample_r <= (channel_b + channel_d) <<< 6;
+        sample_l <= (channel_a + channel_c) <<< DAC_LEFT_SHIFT;
+        sample_r <= (channel_b + channel_d) <<< DAC_LEFT_SHIFT;
     end
 
-    i2s i2s (
-        .left_channel(sample_l),
-        .right_channel(sample_r),
+    for (genvar i = 0; i < NUM_LEDS; ++i)
+        always_ff @(posedge clk)
+            led[i] <= kon[0][i];
+
+    host_if host_if (
         .*
     );
 
-    always_comb led[0] = kon[0][0];
-    always_comb led[1] = kon[0][1];
-    always_comb led[2] = kon[0][2];
-    always_comb led[3] = kon[0][3];
-
-    always_comb ac_mute_n = 1;
-
-    register_file_axi #(
-        .C_S_AXI_DATA_WIDTH(C_S_AXI_DATA_WIDTH),
-        .NUM_AXI_REGISTERS(NUM_AXI_REGISTERS)
-    ) register_file_axi (
+    register_file register_file (
         .*
     );
 
@@ -171,4 +157,4 @@ module opl3
         );
     endgenerate
 endmodule
-`default_nettype wire  // re-enable implicit net type declarations
+`default_nettype wire

@@ -38,7 +38,7 @@
 #   Copyright (C) 2010-2013 by carbon14 and opl3
 #
 #******************************************************************************/
-`default_nettype none  // disable implicit net type declarations
+`default_nettype none
 `timescale 1ns / 1ps
 
 module opl3_tb;
@@ -127,4 +127,4 @@ module opl3_tb;
         end
     endprogram
 endmodule
-`default_nettype wire  // re-enable implicit net type declarations
+`default_nettype wire

@@ -41,7 +41,7 @@
 #
 #******************************************************************************/
 `timescale 1ns / 1ps
-`default_nettype none  // disable implicit net type declarations
+`default_nettype none
 
 module control_operators
     import opl3_pkg::*;
@@ -609,4 +609,4 @@ module control_operators
                 if (i == bank_num && j == op_num && op_sample_clk_en_p[6])
                     operator_out[i][j] <= out_p6;
 endmodule
-`default_nettype wire  // re-enable implicit net type declarations
+`default_nettype wire

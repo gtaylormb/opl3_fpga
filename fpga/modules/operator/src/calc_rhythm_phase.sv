@@ -126,4 +126,4 @@ module calc_rhythm_phase
             else
                 rand_num <= rand_num >> 1;
 endmodule
-`default_nettype wire  // re-enable implicit net type declarations
+`default_nettype wire

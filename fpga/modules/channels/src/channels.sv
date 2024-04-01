@@ -39,7 +39,7 @@
 #
 #******************************************************************************/
 `timescale 1ns / 1ps
-`default_nettype none  // disable implicit net type declarations
+`default_nettype none
 
 module channels
     import opl3_pkg::*;
@@ -402,34 +402,34 @@ module channels
      */
     always_ff @(posedge clk)
         if (latch_channels) begin
-            if (channel_a_acc_pre_clamp > 2**15 - 1)
-                channel_a <= 2**15 - 1;
-            else if (channel_a_acc_pre_clamp < -2**15)
-                channel_a <= -2**15;
+            if (channel_a_acc_pre_clamp > 2**(SAMPLE_WIDTH - 1) - 1)
+                channel_a <= 2**(SAMPLE_WIDTH - 1) - 1;
+            else if (channel_a_acc_pre_clamp < -2**(SAMPLE_WIDTH - 1))
+                channel_a <= -2**(SAMPLE_WIDTH - 1);
             else
                 channel_a <= channel_a_acc_pre_clamp;
 
-            if (channel_b_acc_pre_clamp > 2**15 - 1)
-                channel_b <= 2**15 - 1;
-            else if (channel_b_acc_pre_clamp < -2**15)
-                channel_b <= -2**15;
+            if (channel_b_acc_pre_clamp > 2**(SAMPLE_WIDTH - 1) - 1)
+                channel_b <= 2**(SAMPLE_WIDTH - 1) - 1;
+            else if (channel_b_acc_pre_clamp < -2**(SAMPLE_WIDTH - 1))
+                channel_b <= -2**(SAMPLE_WIDTH - 1);
             else
                 channel_b <= channel_b_acc_pre_clamp;
 
-            if (channel_c_acc_pre_clamp > 2**15 - 1)
-                channel_c <= 2**15 - 1;
-            else if (channel_c_acc_pre_clamp < -2**15)
-                channel_c <= -2**15;
+            if (channel_c_acc_pre_clamp > 2**(SAMPLE_WIDTH - 1) - 1)
+                channel_c <= 2**(SAMPLE_WIDTH - 1) - 1;
+            else if (channel_c_acc_pre_clamp < -2**(SAMPLE_WIDTH - 1))
+                channel_c <= -2**(SAMPLE_WIDTH - 1);
             else
                 channel_c <= channel_c_acc_pre_clamp;
 
-            if (channel_d_acc_pre_clamp > 2**15 - 1)
-                channel_d <= 2**15 - 1;
-            else if (channel_d_acc_pre_clamp < -2**15)
-                channel_d <= -2**15;
+            if (channel_d_acc_pre_clamp > 2**(SAMPLE_WIDTH - 1) - 1)
+                channel_d <= 2**(SAMPLE_WIDTH - 1) - 1;
+            else if (channel_d_acc_pre_clamp < -2**(SAMPLE_WIDTH - 1))
+                channel_d <= -2**(SAMPLE_WIDTH - 1);
             else
                 channel_d <= channel_d_acc_pre_clamp;
         end
 
 endmodule
-`default_nettype wire  // re-enable implicit net type declarations
+`default_nettype wire

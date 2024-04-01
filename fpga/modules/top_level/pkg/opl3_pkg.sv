@@ -49,11 +49,15 @@ package opl3_pkg;
      * give us a 49.7148KHz sample clock. We don't have to worry about clock
      * domain crossings.
      */
-    parameter int CLK_FREQ = 12.727e6;
-    parameter DAC_OVERSAMPLE = 256;
-    parameter SAMPLE_FREQ = CLK_FREQ/DAC_OVERSAMPLE;
+    parameter CLK_FREQ = 12.727e6;
+    parameter DAC_OUTPUT_WIDTH = 24;
+    parameter INSTANTIATE_TIMERS = 0; // set to 1 to use timers, 0 to save area
+    parameter NUM_LEDS = 4; // connected to kon bank 0 starting at 0
 
-    parameter REG_FILE_ADDRESS_WIDTH = $clog2('hF5);
+    parameter DESIRED_SAMPLE_FREQ = 49.7159e3;
+    parameter CLK_DIV_COUNT = $ceil(CLK_FREQ/DESIRED_SAMPLE_FREQ);
+
+    parameter NUM_REG_PER_BANK = 'hF6;
     parameter REG_FILE_DATA_WIDTH = 8;
     parameter REG_TIMER_WIDTH = 8;
     parameter REG_CONNECTION_SEL_WIDTH = 6;
@@ -66,8 +70,16 @@ package opl3_pkg;
     parameter REG_KSL_WIDTH = 2;
     parameter REG_FB_WIDTH = 3;
 
-    parameter SAMPLE_WIDTH = 16;
-    parameter DAC_OUTPUT_WIDTH = 24;
+    /*
+     * SAMPLE_WIDTH is the width of channels a, b, c, and d. With the real OPL3,
+     * the channels are combined into right and left in the analog domain. Here
+     * we add them together digitally. Use a max of 16 as this matches the
+     * YAK512. Channel accumulators are clamped to avoid overflow. Reduce
+     * SAMPLE_WIDTH depending on final output to avoid overflow on the add, and
+     * left shift if necessary.
+     */
+    parameter SAMPLE_WIDTH = DAC_OUTPUT_WIDTH > 16 ? 16 : DAC_OUTPUT_WIDTH - 1;
+    parameter DAC_LEFT_SHIFT = DAC_OUTPUT_WIDTH - SAMPLE_WIDTH - 1;
     parameter ENV_WIDTH = 9;
     parameter OP_OUT_WIDTH = 13;
     parameter PHASE_ACC_WIDTH = 20;
@@ -80,7 +92,6 @@ package opl3_pkg;
     parameter BANK_NUM_WIDTH = $clog2(NUM_BANKS);
     parameter OP_NUM_WIDTH = $clog2(NUM_OPERATORS_PER_BANK);
 
-    parameter INSTANTIATE_TIMERS = 0; // set to 1 to use timers
     parameter TIMER1_TICK_INTERVAL = 80e-6;  // in seconds
     parameter TIMER2_TICK_INTERVAL = 320e-6; // in seconds
 

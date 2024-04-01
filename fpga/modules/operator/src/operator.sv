@@ -39,7 +39,7 @@
 #
 #******************************************************************************/
 `timescale 1ns / 1ps
-`default_nettype none  // disable implicit net type declarations
+`default_nettype none
 
 module operator
     import opl3_pkg::*;
@@ -261,4 +261,4 @@ module operator
         feedback_result_p0 = feedback_result_tmp_p0 >>> 9;
     end
 endmodule
-`default_nettype wire  // re-enable implicit net type declarations
+`default_nettype wire

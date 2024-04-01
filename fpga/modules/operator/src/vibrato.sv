@@ -40,7 +40,7 @@
 #
 #******************************************************************************/
 `timescale 1ns / 1ps
-`default_nettype none  // disable implicit net type declarations
+`default_nettype none
 
 module vibrato
     import opl3_pkg::*;
@@ -82,4 +82,4 @@ module vibrato
     always_ff @(posedge clk)
         vib_val_p2 <= ((vibrato_index_p1 >> 10) & 4) != 0 ? ~delta2_p1 : delta2_p1;
 endmodule
-`default_nettype wire  // re-enable implicit net type declarations
+`default_nettype wire

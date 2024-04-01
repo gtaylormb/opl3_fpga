@@ -238,4 +238,4 @@ module envelope_generator
         else
             env_p3 <= env_tmp_p2;
 endmodule
-`default_nettype wire  // re-enable implicit net type declarations
+`default_nettype wire

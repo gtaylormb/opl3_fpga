@@ -148,4 +148,4 @@ module env_rate_counter
     always_ff @(posedge clk)
         counter_new_p2 <= overflow_tmp_p1;
 endmodule
-`default_nettype wire  // re-enable implicit net type declarations
+`default_nettype wire
