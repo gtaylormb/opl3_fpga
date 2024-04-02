@@ -42,7 +42,7 @@
 #include "xuartps.h"
 
 /* Redefine the XPAR constants */
-#define IIC_DEVICE_ID		XPAR_XIICPS_0_DEVICE_ID
+//#define IIC_DEVICE_ID		XPAR_IIC_0_DEVICE_ID
 //#define I2S_ADDRESS 		XPAR_AXI_I2S_ADI_0_BASEADDR
 #define TIMER_DEVICE_ID 	XPAR_SCUTIMER_DEVICE_ID
 
@@ -91,7 +91,7 @@ int AudioInitialize()
 	 * Look up the configuration in the config table,
 	 * then initialize it.
 	 */
-	Config = XIicPs_LookupConfig(IIC_DEVICE_ID);
+	Config = XIicPs_LookupConfig(XPAR_I2C0_BASEADDR);
 	if (NULL == Config) {
 		return XST_FAILURE;
 	}

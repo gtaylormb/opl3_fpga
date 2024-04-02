@@ -80,7 +80,7 @@ typedef struct
 	filetype type;
 } fileinfo;
 
-void opl2_out(unsigned char reg, unsigned char data, unsigned char bank = 0)
+void opl2_out(unsigned char reg, unsigned char data, unsigned char bank)
 {
 	int actual_reg = reg - reg%4 + (bank ? 256 : 0);
 	union {
@@ -92,10 +92,10 @@ void opl2_out(unsigned char reg, unsigned char data, unsigned char bank = 0)
 	 * Write 8-bit value using 32-bit read/modify/write. Only 32-bit
 	 * word-aligned addresses are available (0, 4, 8, etc).
 	 */
-	actual_data.int_value = OPL3_FPGA_mReadReg(XPAR_OPL3_FPGA_0_S_AXI_BASEADDR, actual_reg);
+	actual_data.int_value = OPL3_FPGA_mReadReg(XPAR_OPL3_FPGA_0_BASEADDR, actual_reg);
 	actual_data.char_array[reg%4] = data;
 
-	OPL3_FPGA_mWriteReg(XPAR_OPL3_FPGA_0_S_AXI_BASEADDR, actual_reg, actual_data.int_value);
+	OPL3_FPGA_mWriteReg(XPAR_OPL3_FPGA_0_BASEADDR, actual_reg, actual_data.int_value);
 	shadow_opl[reg] = data;
 }
 
@@ -103,7 +103,7 @@ void opl2_clear(void)
 {
 	int i;
 	for (i = 0; i < 256; i++) {
-		opl2_out(i, 0);
+		opl2_out(i, 0, 0);
 		opl2_out(i, 0, 1);
 	}
 
@@ -116,7 +116,7 @@ void mute_toggle(int channel)
 	mutemask[channel] = !mutemask[channel];
 
 	if (mutemask[channel])
-		opl2_out(0xB0 + channel, shadow_opl[0xB0 + channel] & 0xDF);
+		opl2_out(0xB0 + channel, shadow_opl[0xB0 + channel] & 0xDF, 0);
 
 }
 
@@ -405,7 +405,7 @@ int imfplay(char *filename)
 			if (res == CMD_EOF)
 				run = 0;
 
-			if (XUartPs_IsReceiveData(XPAR_PS7_UART_1_BASEADDR))
+			if (XUartPs_IsReceiveData(XPAR_XUARTPS_0_BASEADDR))
 				run = 0;
 
 			if (run == 0)
@@ -415,7 +415,7 @@ int imfplay(char *filename)
 			{
 				if (c.reg < 0x100)
 				{
-					opl2_out(c.reg, c.data);
+					opl2_out(c.reg, c.data, 0);
 					shadow_opl_written[c.reg] = 1;
 				}
 				else {
