@@ -48,7 +48,7 @@ import opl3_pkg::*;
 
 module i2s (
     input wire clk,
-    input wire sample_clk_en,
+    input wire sample_valid,
     input wire [DAC_OUTPUT_WIDTH-1:0] left_channel,
     input wire [DAC_OUTPUT_WIDTH-1:0] right_channel,
     output logic i2s_sclk = 0,
@@ -71,7 +71,7 @@ module i2s (
      * a sample
      */
     always_ff @(posedge clk)
-        if (sample_clk_en) begin
+        if (sample_valid) begin
             left_channel_r[0] <= left_channel;
             right_channel_r[0] <= right_channel;
         end

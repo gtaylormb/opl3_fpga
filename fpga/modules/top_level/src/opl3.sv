@@ -53,13 +53,14 @@ module opl3
     input wire [1:0] address,
     input wire [REG_FILE_DATA_WIDTH-1:0] din,
     output logic [REG_FILE_DATA_WIDTH-1:0] dout,
-    output logic sample_clk_en,
-    output logic signed [DAC_OUTPUT_WIDTH-1:0] sample_l = 0, // synced to opl3 clk and sample_clk_en
+    output logic sample_valid = 0,
+    output logic signed [DAC_OUTPUT_WIDTH-1:0] sample_l = 0, // synced to opl3 clk and sample_valid
     output logic signed [DAC_OUTPUT_WIDTH-1:0] sample_r = 0,
     output logic [NUM_LEDS-1:0] led,
     output logic irq_n
 );
     logic reset;
+    logic sample_clk_en;
 
     logic [REG_FILE_DATA_WIDTH-1:0] opl3_reg [NUM_BANKS][NUM_REG_PER_BANK];
     logic [REG_TIMER_WIDTH-1:0] timer1;
@@ -109,6 +110,7 @@ module opl3
     logic ft2;
     logic irq;
     logic [REG_FILE_DATA_WIDTH-1:0] status;
+    logic channel_valid;
 
     reset_sync reset_sync (
         .clk,
@@ -132,6 +134,7 @@ module opl3
      * after the YAC512 DAC outputs. Here we'll just add digitally.
      */
     always_ff @(posedge clk) begin
+        sample_valid <= channel_valid;
         sample_l <= (channel_a + channel_c) <<< DAC_LEFT_SHIFT;
         sample_r <= (channel_b + channel_d) <<< DAC_LEFT_SHIFT;
     end
