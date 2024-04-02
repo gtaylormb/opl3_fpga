@@ -87,8 +87,11 @@ SIM_SRC = \
 BD_SRC = \
 	bd/vivado_2023.2_bd.tcl
 
-XDC_SRC = \
+PRE_SYN_XDC_SRC = \
 	constraints/ZYBO_Master.xdc
+
+POST_SYN_XDC_SRC = \
+	constraints/post_synth.xdc
 
 INC_DIR0 = \
 	modules/
@@ -134,16 +137,16 @@ clean:
 	rm -rf *~ core csrc simv* vc_hdrs.h ucli.key urg* *.log core.* synlog.tcl
 	rm -rf sim_lib build usage_stat* ipshared/ .Xil fpga/.Xil fpga/.gen fpga/.srcs
 
-build/design_1/design_1.bd: $(BD_SRC) ${PKG_SRC} $(RTL_SRC) $(XDC_SRC)
+build/design_1/design_1.bd: $(BD_SRC) ${PKG_SRC} $(RTL_SRC)
 	test -e build || mkdir build
 	vivado -mode batch -source scripts/vivado_bd.tcl -nojournal \
 	-log build/bd_log.txt -tclargs "$(BD_SRC)" "${BOARD}"
 
-build/post_syn.dcp: build/design_1/design_1.bd
+build/post_syn.dcp: build/design_1/design_1.bd $(PRE_SYN_XDC_SRC) $(POST_SYN_XDC_SRC)
 	test -e build || mkdir build
 	rm -rf ipshared
 	vivado -mode batch -source scripts/vivado_syn.tcl -nojournal \
-	-log build/syn_log.txt -tclargs "${PKG_SRC}" "$(RTL_SRC)" "$(INC_DIR0)" "$(XDC_SRC)"
+	-log build/syn_log.txt -tclargs "${PKG_SRC}" "$(RTL_SRC)" "$(INC_DIR0)" "$(PRE_SYN_XDC_SRC)" "$(POST_SYN_XDC_SRC)"
 
 build/post_place.dcp: build/post_syn.dcp
 	vivado -mode batch -source scripts/vivado_place.tcl -log build/place_log.txt -nojournal

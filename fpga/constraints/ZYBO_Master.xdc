@@ -7,7 +7,7 @@
 ##IO_L11P_T1_SRCC_35
 set_property PACKAGE_PIN L16 [get_ports clk125]
 set_property IOSTANDARD LVCMOS33 [get_ports clk125]
-create_clock -add -name sys_clk_pin -period 8.00 -waveform {0 4} [get_ports clk125]
+create_clock -add -name clk125 -period 8.00 -waveform {0 4} [get_ports clk125]
 
 ##Switches
 ##IO_L19N_T3_VREF_35

@@ -1,7 +1,8 @@
 set PKG_SRC [lindex $argv 0]
 set RTL_SRC [lindex $argv 1]
 set INC_DIR0 [lindex $argv 2]
-set XDC_SRC [lindex $argv 3]
+set PRE_SYN_XDC_SRC [lindex $argv 3]
+set POST_SYN_XDC_SRC [lindex $argv 4]
 
 set outputDir build
 
@@ -22,11 +23,12 @@ make_wrapper -files [get_files $outputDir/design_1/design_1.bd] -top -import -fo
 
 read_verilog -sv ${PKG_SRC}
 read_verilog -sv ${RTL_SRC}
-read_xdc ${XDC_SRC}
-
+read_xdc ${PRE_SYN_XDC_SRC}
 
 synth_design -name opl3 -part xc7z010clg400-1 -top design_1_wrapper -include_dirs \
  ${INC_DIR0} -directive AreaOptimized_high
+
+read_xdc ${POST_SYN_XDC_SRC}
 
 opt_design
 
