@@ -55,7 +55,7 @@ package opl3_pkg;
     parameter NUM_LEDS = 4; // connected to kon bank 0 starting at 0
 
     parameter DESIRED_SAMPLE_FREQ = 49.7159e3;
-    parameter CLK_DIV_COUNT = $ceil(CLK_FREQ/DESIRED_SAMPLE_FREQ);
+    parameter int CLK_DIV_COUNT = $ceil(CLK_FREQ/DESIRED_SAMPLE_FREQ);
     parameter ACTUAL_SAMPLE_FREQ = CLK_FREQ/CLK_DIV_COUNT;
 
     parameter NUM_REG_PER_BANK = 'hF6;

@@ -46,8 +46,9 @@
 #******************************************************************************
 uname_O := $(shell sh -c 'uname -o 2>/dev/null || echo not')
 
+BOARD = zybo
+
 RTL_SRC = \
-	bd/opl3_cpu/hdl/opl3_cpu_wrapper.v \
 	modules/top_level/src/opl3.sv \
 	modules/channels/src/channels.sv \
 	modules/channels/src/control_operators.sv \
@@ -83,11 +84,8 @@ SIM_SRC = \
 	modules/clks/ip/clk_gen/clk_gen_sim_netlist.v \
 	modules/operator/sim/save_dac_input.sv
 
-IP_SRC = \
-	modules/clks/ip/clk_gen/clk_gen.xci
-
 BD_SRC = \
-	bd/opl3_cpu/opl3_cpu.bd
+	bd/vivado_2023.2_bd.tcl
 
 XDC_SRC = \
 	constraints/ZYBO_Master.xdc
@@ -116,6 +114,8 @@ else
 	vsim -L sim_lib opl3_tb glbl -voptargs=+acc
 endif
 
+bd: build/design_1/design_1.bd
+
 syn: build/post_syn.dcp
 
 place: build/post_place.dcp
@@ -132,13 +132,18 @@ program: build/opl3.bit
 clean:
 	rm -rf  *.tmp  *.log  log transcript work *.wlf vsim.fcdb
 	rm -rf *~ core csrc simv* vc_hdrs.h ucli.key urg* *.log core.* synlog.tcl
-	rm -rf sim_lib build usage_stat* ipshared/ .Xil
+	rm -rf sim_lib build usage_stat* ipshared/ .Xil fpga/.Xil fpga/.gen fpga/.srcs
 
-build/post_syn.dcp: ${PKG_SRC} $(RTL_SRC) $(IP_SRC) $(BD_SRC) $(XDC_SRC)
+build/design_1/design_1.bd: $(BD_SRC) ${PKG_SRC} $(RTL_SRC) $(XDC_SRC)
+	test -e build || mkdir build
+	vivado -mode batch -source scripts/vivado_bd.tcl -nojournal \
+	-log build/bd_log.txt -tclargs "$(BD_SRC)" "${BOARD}"
+
+build/post_syn.dcp: build/design_1/design_1.bd
 	test -e build || mkdir build
 	rm -rf ipshared
 	vivado -mode batch -source scripts/vivado_syn.tcl -nojournal \
-	-log build/syn_log.txt -tclargs "${PKG_SRC}" "$(RTL_SRC)" "$(INC_DIR0)" "$(IP_SRC)" "$(BD_SRC)" "$(XDC_SRC)"
+	-log build/syn_log.txt -tclargs "${PKG_SRC}" "$(RTL_SRC)" "$(INC_DIR0)" "$(XDC_SRC)"
 
 build/post_place.dcp: build/post_syn.dcp
 	vivado -mode batch -source scripts/vivado_place.tcl -log build/place_log.txt -nojournal
