@@ -81,7 +81,6 @@ PKG_SRC = \
 
 SIM_SRC = \
 	modules/top_level/sim/opl3_tb.sv \
-	modules/clks/ip/clk_gen/clk_gen_sim_netlist.v \
 	modules/operator/sim/save_dac_input.sv
 
 BD_SRC = \
