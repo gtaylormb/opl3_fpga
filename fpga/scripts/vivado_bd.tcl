@@ -3,10 +3,7 @@ set BOARD [lindex $argv 1]
 
 set outputDir build
 
-if {[string equal ${BOARD} "zybo"]} {
-    create_project -part xc7z010clg400-1 -in_memory
-    #set_property board_part digilentinc.com:zybo:part0:1.0 [current_project]
-}
+create_project -part xc7z010clg400-1 -in_memory
 set_property IP_REPO_PATHS {"modules/opl3_fpga_2_0"} [current_project]
 update_ip_catalog -rebuild
 
