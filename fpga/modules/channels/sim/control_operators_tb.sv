@@ -100,7 +100,7 @@ module control_operators_tb;
 
     clk_div #(
         .INPUT_CLK_FREQ(CLK_FREQ),
-        .OUTPUT_CLK_EN_FREQ(SAMPLE_FREQ)
+        .OUTPUT_CLK_EN_FREQ(ACTUAL_SAMPLE_FREQ)
     ) sample_clk_gen_inst (
         .clk_en(sample_clk_en),
         .*

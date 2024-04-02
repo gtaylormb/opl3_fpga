@@ -52,6 +52,7 @@ RTL_SRC = \
 	modules/channels/src/channels.sv \
 	modules/channels/src/control_operators.sv \
 	modules/clks/src/clk_div.sv \
+	modules/clks/src/reset_sync.sv \
 	modules/i2s/src/i2s.sv \
 	modules/operator/src/operator.sv \
 	modules/operator/src/calc_phase_inc.sv \
@@ -70,7 +71,9 @@ RTL_SRC = \
 	modules/misc/src/mem_simple_dual_port.sv \
 	modules/misc/src/mem_multi_bank.sv \
 	modules/misc/src/pipeline_sr.sv \
-    modules/register_file/src/register_file_axi.sv
+	modules/misc/src/synchronizer.sv \
+    modules/register_file/src/register_file.sv \
+	modules/register_file/src/host_if.sv
 
 PKG_SRC = \
 	modules/top_level/pkg/opl3_pkg.sv

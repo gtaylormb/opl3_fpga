@@ -61,7 +61,7 @@ module opl3
 );
     logic reset;
 
-    logic [REG_FILE_DATA_WIDTH-1:0] opl3_reg [NUM_BANKS][NUM_REGISTERS_PER_BANK];
+    logic [REG_FILE_DATA_WIDTH-1:0] opl3_reg [NUM_BANKS][NUM_REG_PER_BANK];
     logic [REG_TIMER_WIDTH-1:0] timer1;
     logic [REG_TIMER_WIDTH-1:0] timer2;
     logic irq_rst;

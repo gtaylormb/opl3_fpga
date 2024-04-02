@@ -54,8 +54,8 @@ module host_if
     input wire [1:0] address,
     input wire [REG_FILE_DATA_WIDTH-1:0] din,
     output logic [REG_FILE_DATA_WIDTH-1:0] dout = 0,
-    output wire [REG_FILE_DATA_WIDTH-1:0] opl3_reg [NUM_BANKS][NUM_REGISTERS_PER_BANK] = '{default: 0},
-    input wire [REG_FILE_DATA_WIDTH-1:0] status,
+    output logic [REG_FILE_DATA_WIDTH-1:0] opl3_reg [NUM_BANKS][NUM_REG_PER_BANK] = '{default: 0},
+    input wire [REG_FILE_DATA_WIDTH-1:0] status
 );
     logic cs_p1 = 0;
     logic cs_p2 = 0;
@@ -122,7 +122,7 @@ module host_if
                 opl3_address <= din;
             end
             'b011: // data write mode
-                opl3_reg[opl3_bank] <= din;
+                opl3_reg[opl3_bank][opl3_address] <= din;
             'b100: // status read mode
                 dout_opl3 <= status;
             endcase
@@ -136,7 +136,9 @@ module host_if
     end
 
     // bits do not need to be coherant, can use synchronizer
-    synchronizer dout_sync (
+    synchronizer #(
+        .DATA_WIDTH(REG_FILE_DATA_WIDTH)
+    ) dout_sync (
         .clk(clk_host),
         .in(dout_opl3),
         .out(dout)

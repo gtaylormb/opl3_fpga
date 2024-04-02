@@ -45,10 +45,13 @@ module register_file
     import opl3_pkg::*;
 (
     input wire clk,
-    input wire [REG_FILE_DATA_WIDTH-1:0] opl3_reg [NUM_BANKS][NUM_REGISTERS_PER_BANK],
+    input wire [REG_FILE_DATA_WIDTH-1:0] opl3_reg [NUM_BANKS][NUM_REG_PER_BANK],
     input wire irq,
     input wire ft1,
     input wire ft2,
+    output logic [REG_TIMER_WIDTH-1:0] timer1,
+    output logic [REG_TIMER_WIDTH-1:0] timer2,
+    output logic irq_rst,
     output logic mt1,
     output logic mt2,
     output logic st1,
@@ -95,9 +98,9 @@ module register_file
         mt2 = opl3_reg[0][4][5];
         st2 = opl3_reg[0][4][1];
         st1 = opl3_reg[0][4][0];
-        connection_sel = opl3_reg[1][REG_CONNECTION_SEL_WIDTH-1:0];
+        connection_sel = opl3_reg[1][4][REG_CONNECTION_SEL_WIDTH-1:0];
 
-        is_new = opl3_reg[1][0];
+        is_new = opl3_reg[1][5][0];
         nts = opl3_reg[0][8][6];
 
         dam = opl3_reg[0]['hBD][7];
@@ -188,11 +191,11 @@ module register_file
                 cnt[bank][i] = opl3_reg[bank]['hC0][0];
             end
     end
-    always_ff @(posedge clk) begin
-        status <= 0;
-        status[7] <= irq;
-        status[6] <= ft1;
-        status[5] <= ft2;
+    always_comb begin
+        status = 0;
+        status[7] = irq;
+        status[6] = ft1;
+        status[5] = ft2;
     end
 endmodule
 `default_nettype wire
