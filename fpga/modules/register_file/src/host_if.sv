@@ -53,7 +53,7 @@ module host_if
     input wire wr_n,
     input wire [1:0] address,
     input wire [REG_FILE_DATA_WIDTH-1:0] din,
-    output logic [REG_FILE_DATA_WIDTH-1:0] dout = 0,
+    output logic [REG_FILE_DATA_WIDTH-1:0] dout,
     output logic [REG_FILE_DATA_WIDTH-1:0] opl3_reg [NUM_BANKS][NUM_REG_PER_BANK] = '{default: 0},
     input wire [REG_FILE_DATA_WIDTH-1:0] status
 );

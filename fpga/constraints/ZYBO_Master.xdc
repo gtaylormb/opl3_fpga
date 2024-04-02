@@ -4,7 +4,7 @@
 ## - rename the used signals according to the project
 
 ##Clock signal
-##IO_L11P_T1_SRCC_35	
+##IO_L11P_T1_SRCC_35
 set_property PACKAGE_PIN L16 [get_ports clk125]
 set_property IOSTANDARD LVCMOS33 [get_ports clk125]
 create_clock -add -name sys_clk_pin -period 8.00 -waveform {0 4} [get_ports clk125]
@@ -94,12 +94,12 @@ set_property IOB TRUE [get_ports i2s_ws]
 
 ##Audio Codec/external EEPROM IIC bus
 ##IO_L13P_T2_MRCC_34
-set_property PACKAGE_PIN N18 [get_ports iic_0_scl_io]
-set_property IOSTANDARD LVCMOS33 [get_ports iic_0_scl_io]
+set_property PACKAGE_PIN N18 [get_ports IIC_0_scl_io]
+set_property IOSTANDARD LVCMOS33 [get_ports IIC_0_scl_io]
 
 ##IO_L23P_T3_34
-set_property PACKAGE_PIN N17 [get_ports iic_0_sda_io]
-set_property IOSTANDARD LVCMOS33 [get_ports iic_0_sda_io]
+set_property PACKAGE_PIN N17 [get_ports IIC_0_sda_io]
+set_property IOSTANDARD LVCMOS33 [get_ports IIC_0_sda_io]
 
 ##Additional Ethernet signals
 ##IO_L6P_T0_35

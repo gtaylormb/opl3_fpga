@@ -76,7 +76,7 @@ module control_operators
     input wire hh,
     input wire [REG_FB_WIDTH-1:0] fb [NUM_BANKS][NUM_CHANNELS_PER_BANK],
     input wire cnt [NUM_BANKS][NUM_CHANNELS_PER_BANK],
-    output logic signed [OP_OUT_WIDTH-1:0] operator_out [NUM_BANKS][NUM_OPERATORS_PER_BANK] = '{default: '0}
+    output logic signed [OP_OUT_WIDTH-1:0] operator_out [NUM_BANKS][NUM_OPERATORS_PER_BANK] = '{default: 0}
 );
     /*
      * 256/36 operators gives us ~7.1 cycles per operator before next

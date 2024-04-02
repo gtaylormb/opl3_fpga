@@ -108,6 +108,7 @@ module opl3
     logic ft1;
     logic ft2;
     logic irq;
+    logic [REG_FILE_DATA_WIDTH-1:0] status;
 
     reset_sync reset_sync (
         .clk,
