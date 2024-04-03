@@ -65,12 +65,11 @@ sd: all BOOT.bin
 
 all:
 	cd fpga && make bitstream
-	vitis -s ./vitis_builder.py
+	vitis -s software/vitis_builder.py
 
 clean:
 	cd fpga && make clean
-	rm -rf vitis_project
-	rm -f BOOT.bin
+	rm -rf vitis_project BOOT.bin logs
 
 BOOT.bin:
 	bootgen -image software/bif/imfplay_port.bif -arch zynq -o BOOT.bin -w on

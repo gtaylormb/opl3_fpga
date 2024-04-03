@@ -14,4 +14,4 @@ fpga/clockInfo.txt
 fpga/tight_setup_hold_pins.txt
 vitis_project/
 BOOT.bin
-vitis.log
+logs/
