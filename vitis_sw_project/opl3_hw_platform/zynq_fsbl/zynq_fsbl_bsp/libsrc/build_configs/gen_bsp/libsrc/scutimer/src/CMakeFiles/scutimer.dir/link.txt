@@ -1,2 +1,0 @@
-arm-none-eabi-ar qc libscutimer.a CMakeFiles/scutimer.dir/xscutimer.c.obj CMakeFiles/scutimer.dir/xscutimer_g.c.obj CMakeFiles/scutimer.dir/xscutimer_selftest.c.obj CMakeFiles/scutimer.dir/xscutimer_sinit.c.obj
-/opt/Xilinx/Vitis/2023.2/gnu/aarch32/lin/gcc-arm-none-eabi/bin/arm-none-eabi-ranlib libscutimer.a

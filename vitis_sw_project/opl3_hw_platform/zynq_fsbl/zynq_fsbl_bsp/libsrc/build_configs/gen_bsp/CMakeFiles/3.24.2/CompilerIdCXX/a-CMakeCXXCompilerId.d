@@ -1,1 +1,0 @@
-CMakeCXXCompilerId.o: CMakeCXXCompilerId.cpp

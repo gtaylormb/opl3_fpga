@@ -1,1 +1,0 @@
-CMakeCCompilerId.o: CMakeCCompilerId.c

@@ -1,2 +1,0 @@
-arm-none-eabi-ar qc libgpiops.a CMakeFiles/gpiops.dir/xgpiops_g.c.obj CMakeFiles/gpiops.dir/xgpiops_selftest.c.obj CMakeFiles/gpiops.dir/xgpiops.c.obj CMakeFiles/gpiops.dir/xgpiops_hw.c.obj CMakeFiles/gpiops.dir/xgpiops_sinit.c.obj CMakeFiles/gpiops.dir/xgpiops_intr.c.obj
-/opt/Xilinx/Vitis/2023.2/gnu/aarch32/lin/gcc-arm-none-eabi/bin/arm-none-eabi-ranlib libgpiops.a

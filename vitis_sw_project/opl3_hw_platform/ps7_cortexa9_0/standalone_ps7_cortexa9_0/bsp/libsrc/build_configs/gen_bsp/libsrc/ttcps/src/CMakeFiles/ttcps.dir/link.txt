@@ -1,2 +1,0 @@
-arm-none-eabi-ar qc libttcps.a CMakeFiles/ttcps.dir/xttcps_options.c.obj CMakeFiles/ttcps.dir/xttcps_selftest.c.obj CMakeFiles/ttcps.dir/xttcps.c.obj CMakeFiles/ttcps.dir/xttcps_g.c.obj CMakeFiles/ttcps.dir/xttcps_sinit.c.obj
-/opt/Xilinx/Vitis/2023.2/gnu/aarch32/lin/gcc-arm-none-eabi/bin/arm-none-eabi-ranlib libttcps.a

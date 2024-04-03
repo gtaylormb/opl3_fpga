@@ -1,2 +1,0 @@
-arm-none-eabi-ar qc libdevcfg.a CMakeFiles/devcfg.dir/xdevcfg.c.obj CMakeFiles/devcfg.dir/xdevcfg_g.c.obj CMakeFiles/devcfg.dir/xdevcfg_hw.c.obj CMakeFiles/devcfg.dir/xdevcfg_intr.c.obj CMakeFiles/devcfg.dir/xdevcfg_selftest.c.obj CMakeFiles/devcfg.dir/xdevcfg_sinit.c.obj
-/opt/Xilinx/Vitis/2023.2/gnu/aarch32/lin/gcc-arm-none-eabi/bin/arm-none-eabi-ranlib libdevcfg.a

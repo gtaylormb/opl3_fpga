@@ -1,2 +1,0 @@
-arm-none-eabi-ar qc libdmaps.a CMakeFiles/dmaps.dir/xdmaps.c.obj CMakeFiles/dmaps.dir/xdmaps_g.c.obj CMakeFiles/dmaps.dir/xdmaps_hw.c.obj CMakeFiles/dmaps.dir/xdmaps_selftest.c.obj CMakeFiles/dmaps.dir/xdmaps_sinit.c.obj
-/opt/Xilinx/Vitis/2023.2/gnu/aarch32/lin/gcc-arm-none-eabi/bin/arm-none-eabi-ranlib libdmaps.a

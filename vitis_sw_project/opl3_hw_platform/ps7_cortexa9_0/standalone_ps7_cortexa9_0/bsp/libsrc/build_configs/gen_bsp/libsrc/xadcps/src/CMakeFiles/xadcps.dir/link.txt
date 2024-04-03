@@ -1,2 +1,0 @@
-arm-none-eabi-ar qc libxadcps.a CMakeFiles/xadcps.dir/xadcps.c.obj CMakeFiles/xadcps.dir/xadcps_g.c.obj CMakeFiles/xadcps.dir/xadcps_intr.c.obj CMakeFiles/xadcps.dir/xadcps_selftest.c.obj CMakeFiles/xadcps.dir/xadcps_sinit.c.obj
-/opt/Xilinx/Vitis/2023.2/gnu/aarch32/lin/gcc-arm-none-eabi/bin/arm-none-eabi-ranlib libxadcps.a

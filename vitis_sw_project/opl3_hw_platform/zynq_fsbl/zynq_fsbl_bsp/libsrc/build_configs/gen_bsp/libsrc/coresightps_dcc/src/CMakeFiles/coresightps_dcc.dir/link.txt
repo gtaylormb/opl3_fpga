@@ -1,2 +1,0 @@
-arm-none-eabi-ar qc libcoresightps_dcc.a CMakeFiles/coresightps_dcc.dir/xcoresightpsdcc.c.obj
-/opt/Xilinx/Vitis/2023.2/gnu/aarch32/lin/gcc-arm-none-eabi/bin/arm-none-eabi-ranlib libcoresightps_dcc.a

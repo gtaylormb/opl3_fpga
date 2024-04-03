@@ -1,3 +1,0 @@
-domain_path: /home/gtaylor/git/opl3_fpga/vitis_sw_project/opl3_hw_platform/zynq_fsbl/zynq_fsbl_bsp
-app_src_dir: /opt/Xilinx/Vitis/2023.2/data/embeddedsw/lib/sw_apps/zynq_fsbl
-template: zynq_fsbl

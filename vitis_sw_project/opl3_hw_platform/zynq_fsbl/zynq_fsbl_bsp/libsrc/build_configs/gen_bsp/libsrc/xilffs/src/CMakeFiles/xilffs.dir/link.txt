@@ -1,2 +1,0 @@
-arm-none-eabi-ar qc libxilffs.a CMakeFiles/xilffs.dir/diskio.c.obj CMakeFiles/xilffs.dir/ff.c.obj CMakeFiles/xilffs.dir/ffsystem.c.obj CMakeFiles/xilffs.dir/ffunicode.c.obj
-/opt/Xilinx/Vitis/2023.2/gnu/aarch32/lin/gcc-arm-none-eabi/bin/arm-none-eabi-ranlib libxilffs.a

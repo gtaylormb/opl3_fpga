@@ -1,2 +1,0 @@
-arm-none-eabi-ar qc libuartps.a CMakeFiles/uartps.dir/xuartps_hw.c.obj CMakeFiles/uartps.dir/xuartps_selftest.c.obj CMakeFiles/uartps.dir/xuartps_intr.c.obj CMakeFiles/uartps.dir/xuartps_g.c.obj CMakeFiles/uartps.dir/xuartps.c.obj CMakeFiles/uartps.dir/xuartps_sinit.c.obj CMakeFiles/uartps.dir/xuartps_options.c.obj
-/opt/Xilinx/Vitis/2023.2/gnu/aarch32/lin/gcc-arm-none-eabi/bin/arm-none-eabi-ranlib libuartps.a

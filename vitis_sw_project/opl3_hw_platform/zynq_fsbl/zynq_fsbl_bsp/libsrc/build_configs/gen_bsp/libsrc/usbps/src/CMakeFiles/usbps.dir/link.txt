@@ -1,2 +1,0 @@
-arm-none-eabi-ar qc libusbps.a CMakeFiles/usbps.dir/xusbps.c.obj CMakeFiles/usbps.dir/xusbps_endpoint.c.obj CMakeFiles/usbps.dir/xusbps_g.c.obj CMakeFiles/usbps.dir/xusbps_hw.c.obj CMakeFiles/usbps.dir/xusbps_intr.c.obj CMakeFiles/usbps.dir/xusbps_sinit.c.obj
-/opt/Xilinx/Vitis/2023.2/gnu/aarch32/lin/gcc-arm-none-eabi/bin/arm-none-eabi-ranlib libusbps.a

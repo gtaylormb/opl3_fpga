@@ -1,2 +1,0 @@
-arm-none-eabi-ar qc libscuwdt.a CMakeFiles/scuwdt.dir/xscuwdt.c.obj CMakeFiles/scuwdt.dir/xscuwdt_g.c.obj CMakeFiles/scuwdt.dir/xscuwdt_selftest.c.obj CMakeFiles/scuwdt.dir/xscuwdt_sinit.c.obj
-/opt/Xilinx/Vitis/2023.2/gnu/aarch32/lin/gcc-arm-none-eabi/bin/arm-none-eabi-ranlib libscuwdt.a

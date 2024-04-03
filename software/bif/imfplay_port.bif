@@ -1,0 +1,7 @@
+//arch = zynq; split = false; format = BIN
+the_ROM_image:
+{
+	[bootloader]vitis_project/opl3_platform/export/opl3_platform/sw/boot/fsbl.elf
+	fpga/build/opl3.bit
+	vitis_project/imfplay_port/build/imfplay_port.elf
+}

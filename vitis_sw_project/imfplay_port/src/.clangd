@@ -1,4 +1,0 @@
-
-CompileFlags:
-    Add: [-Wno-unknown-warning-option, -U__linux__, -U__clang__]
-    Remove: [-m*, -f*]
