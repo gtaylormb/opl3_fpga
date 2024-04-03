@@ -1,0 +1,75 @@
+-- The ASM compiler identification is GNU
+-- Found assembler: /opt/Xilinx/Vitis/2023.2/gnu/aarch32/lin/gcc-arm-none-eabi/bin/arm-none-eabi-gcc
+-- Configuring done
+-- Generating done
+-- Build files have been written to: /home/gtaylor/git/opl3_fpga/vitis_sw_project/opl3_hw_platform/ps7_cortexa9_0/standalone_ps7_cortexa9_0/bsp/libsrc/build_configs/gen_bsp
+-- Cache values
+// Choose the type of build, options are: None Debug Release RelWithDebInfo MinSizeRel ...
+CMAKE_BUILD_TYPE:STRING=
+
+// Install path prefix, prepended onto install directories.
+CMAKE_INSTALL_PREFIX:PATH=/usr/local
+
+// Size
+CMAKE_SIZE:FILEPATH=arm-none-eabi-size
+
+// Specs file path for using CMAKE toolchain files
+CMAKE_SPECS_FILE:STRING=/home/gtaylor/git/opl3_fpga/vitis_sw_project/opl3_hw_platform/ps7_cortexa9_0/standalone_ps7_cortexa9_0/bsp/Xilinx.spec
+
+// Device Id
+DEVICE_ID:STRING=7z010
+
+// The directory containing a CMake configuration file for INTC.
+INTC_DIR:PATH=INTC_DIR-NOTFOUND
+
+// Non Yocto embeddedsw FLOW
+NON_YOCTO:BOOL=ON
+
+// Number of slrs
+NUMBER_OF_SLRS:STRING=0x1
+
+// ASM FLAGS
+TOOLCHAIN_ASM_FLAGS:STRING= -O2 -DSDT -mcpu=cortex-a9 -mfpu=vfpv3 -mfloat-abi=hard
+
+// CXXFLAGS
+TOOLCHAIN_CXX_FLAGS:STRING= -O2 -DSDT -mcpu=cortex-a9 -mfpu=vfpv3 -mfloat-abi=hard
+
+// CFLAGS
+TOOLCHAIN_C_FLAGS:STRING= -O2 -DSDT -mcpu=cortex-a9 -mfpu=vfpv3 -mfloat-abi=hard
+
+// Flags used by compiler to generate dependency files
+TOOLCHAIN_DEP_FLAGS:STRING= -MMD -MP
+
+// Extra CFLAGS
+TOOLCHAIN_EXTRA_C_FLAGS:STRING= -g -Wall -Wextra -fno-tree-loop-distribute-patterns
+
+// Enable Interval Timer
+XILTIMER_en_interval_timer:BOOL=OFF
+
+// This parameter is used to select specific timer for sleep functionality
+XILTIMER_sleep_timer:STRING=ps7_ttc_0
+
+// This parameter is used to select specific timer for tick functionality
+XILTIMER_tick_timer:STRING=ps7_scutimer_0
+
+// Archiver
+proc_archiver:STRING=arm-none-eabi-gcc-ar
+
+// Assembler
+proc_assembler:STRING=arm-none-eabi-gcc
+
+// Compiler
+proc_compiler:STRING=arm-none-eabi-gcc
+
+// Compiler Flags
+proc_compiler_flags:STRING= -O2 -DSDT -mcpu=cortex-a9 -mfpu=vfpv3 -mfloat-abi=hard;-c
+
+// Extra Compiler Flags
+proc_extra_compiler_flags:STRING= -g -Wall -Wextra -fno-tree-loop-distribute-patterns
+
+// stdin peripheral
+standalone_stdin:STRING=ps7_uart_1
+
+// stdout peripheral
+standalone_stdout:STRING=ps7_uart_1
+

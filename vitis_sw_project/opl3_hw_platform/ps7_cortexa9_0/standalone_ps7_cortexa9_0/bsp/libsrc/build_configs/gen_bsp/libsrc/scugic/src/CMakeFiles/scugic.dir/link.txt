@@ -1,0 +1,2 @@
+arm-none-eabi-ar qc libscugic.a CMakeFiles/scugic.dir/xscugic_hw.c.obj CMakeFiles/scugic.dir/xscugic_g.c.obj CMakeFiles/scugic.dir/xscugic_sinit.c.obj CMakeFiles/scugic.dir/xscugic_intr.c.obj CMakeFiles/scugic.dir/xscugic_selftest.c.obj CMakeFiles/scugic.dir/xscugic.c.obj
+/opt/Xilinx/Vitis/2023.2/gnu/aarch32/lin/gcc-arm-none-eabi/bin/arm-none-eabi-ranlib libscugic.a

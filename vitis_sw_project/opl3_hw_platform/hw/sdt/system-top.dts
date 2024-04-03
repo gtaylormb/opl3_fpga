@@ -1,0 +1,73 @@
+/dts-v1/;
+#include "zynq-7000.dtsi"
+#include "pl.dtsi"
+#include "pcw.dtsi"
+/ {
+	device_id = "7z010";
+	slrcount = <1>;
+	ps7_ddr_0_memory: memory@00100000 {
+		compatible = "xlnx,ps7-ddr-1.00.a";
+		device_type = "memory";
+		reg = <0x00100000 0x1ff00000>;
+	};
+	ps7_ram_0_memory: memory@0 {
+		compatible = "xlnx,ps7-ram-1.00.a";
+		device_type = "memory";
+		reg = <0x0 0x30000>;
+	};
+	ps7_ram_1_memory: memory@ffff0000 {
+		compatible = "xlnx,ps7-ram-1.00.a";
+		device_type = "memory";
+		reg = <0xffff0000 0xfe00>;
+	};
+	chosen {
+		stdout-path = "serial0:115200n8";
+	};
+	aliases {
+		serial0 = &uart1;
+		spi0 = &qspi;
+		serial1 = &coresight;
+		i2c0 = &i2c0;
+		ethernet0 = &gem0;
+	};
+	cpus_a9: cpus-a9@0 {
+		compatible = "cpus,cluster";
+		address-map = <0xf0000000 &amba 0xf0000000 0x10000000>, 
+			      <0x00100000 &ps7_ddr_0_memory 0x00100000 0x1ff00000>, 
+			      <0x0 &ps7_ram_0_memory 0x0 0x30000>, 
+			      <0xffff0000 &ps7_ram_1_memory 0xffff0000 0xfe00>, 
+			      <0x43c00000 &opl3_fpga_0 0x43c00000 0x10000>, 
+			      <0xf8008000 &ps7_afi_0 0xf8008000 0x1000>, 
+			      <0xf8009000 &ps7_afi_1 0xf8009000 0x1000>, 
+			      <0xf800a000 &ps7_afi_2 0xf800a000 0x1000>, 
+			      <0xf800b000 &ps7_afi_3 0xf800b000 0x1000>, 
+			      <0xf8800000 &coresight 0xf8800000 0x100000>, 
+			      <0xf8006000 &mc 0xf8006000 0x1000>, 
+			      <0xf8007000 &devcfg 0xf8007000 0x100>, 
+			      <0xf8004000 &ps7_dma_ns 0xf8004000 0x1000>, 
+			      <0xf8003000 &dmac_s 0xf8003000 0x1000>, 
+			      <0xe000b000 &gem0 0xe000b000 0x1000>, 
+			      <0xf8f00200 &global_timer 0xf8f00200 0x100>, 
+			      <0xe000a000 &gpio0 0xe000a000 0x1000>, 
+			      <0xf8900000 &ps7_gpv_0 0xf8900000 0x100000>, 
+			      <0xe0004000 &i2c0 0xe0004000 0x1000>, 
+			      <0xf8f01000 &intc 0xf8f01000 0x1000>, 
+			      <0xe0200000 &ps7_iop_bus_config_0 0xe0200000 0x1000>, 
+			      <0xf8f02000 &L2 0xf8f02000 0x1000>, 
+			      <0xf800c000 &ps7_ocmc_0 0xf800c000 0x1000>, 
+			      <0xf8891000 &ps7_pmu_0 0xf8891000 0x1000>, 
+			      <0xe000d000 &qspi 0xe000d000 0x1000>, 
+			      <0xfc000000 &ps7_qspi_linear_0 0xfc000000 0x1000000>, 
+			      <0xf8f00000 &ps7_scuc_0 0xf8f00000 0xfd>, 
+			      <0xf8f00600 &scutimer 0xf8f00600 0x20>, 
+			      <0xf8f00620 &scuwdt 0xf8f00620 0xe0>, 
+			      <0xe0100000 &sdhci0 0xe0100000 0x1000>, 
+			      <0xf8000000 &slcr 0xf8000000 0x1000>, 
+			      <0xf8001000 &ttc0 0xf8001000 0x1000>, 
+			      <0xe0001000 &uart1 0xe0001000 0x1000>, 
+			      <0xe0002000 &usb0 0xe0002000 0x1000>, 
+			      <0xf8007100 &adc 0xf8007100 0x21>;
+		#ranges-address-cells = <0x1>;
+		#ranges-size-cells = <0x1>;
+	};
+};

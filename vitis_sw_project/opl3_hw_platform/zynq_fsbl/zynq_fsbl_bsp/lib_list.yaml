@@ -1,0 +1,85 @@
+ps7_cortexa9_0:
+  standalone:
+    xilflash:
+      description: Xilinx Flash library for Intel/AMD CFI compliant parallel flash.
+      depends_libs: []
+      path:
+      - /opt/Xilinx/Vitis/2023.2/data/embeddedsw/lib/sw_services/xilflash_v4_10
+    xilffs:
+      description: Generic Fat File System Library.
+      depends_libs: []
+      path:
+      - /opt/Xilinx/Vitis/2023.2/data/embeddedsw/lib/sw_services/xilffs_v5_1
+    xilrsa:
+      description: Xilinx RSA Library to access RSA and SHA software algorithms on Zynq.
+      depends_libs: []
+      path:
+      - /opt/Xilinx/Vitis/2023.2/data/embeddedsw/lib/sw_services/xilrsa_v1_7
+    xiltimer:
+      description: Xiltimer library provides generic timer interface for the timer IP's.
+      depends_libs: []
+      path:
+      - /opt/Xilinx/Vitis/2023.2/data/embeddedsw/lib/sw_services/xiltimer_v1_3
+    xilskey:
+      description: Xilinx Secure Key Library supports programming efuse and bbram.
+      depends_libs: []
+      path:
+      - /opt/Xilinx/Vitis/2023.2/data/embeddedsw/lib/sw_services/xilskey_v7_5
+    libmetal:
+      description: Provide runtime primitives APIs across heterogenous processors.
+      depends_libs: []
+      path:
+      - /opt/Xilinx/Vitis/2023.2/data/embeddedsw/ThirdParty/sw_services/libmetal_v2_6
+    lwip213:
+      description: lwip213 library lwIP (light weight IP) is an open source TCP/IP stack configured for AMD hard and soft Ethernet MACs.
+      depends_libs: []
+      path:
+      - /opt/Xilinx/Vitis/2023.2/data/embeddedsw/ThirdParty/sw_services/lwip213_v1_1
+    openamp:
+      description: Enable IPC and lifecycle management across heterogeneous processors.
+      depends_libs:
+      - libmetal
+      path:
+      - /opt/Xilinx/Vitis/2023.2/data/embeddedsw/ThirdParty/sw_services/openamp_v1_9
+  freertos:
+    xilflash:
+      description: Xilinx Flash library for Intel/AMD CFI compliant parallel flash.
+      depends_libs: []
+      path:
+      - /opt/Xilinx/Vitis/2023.2/data/embeddedsw/lib/sw_services/xilflash_v4_10
+    xilffs:
+      description: Generic Fat File System Library.
+      depends_libs: []
+      path:
+      - /opt/Xilinx/Vitis/2023.2/data/embeddedsw/lib/sw_services/xilffs_v5_1
+    xilrsa:
+      description: Xilinx RSA Library to access RSA and SHA software algorithms on Zynq.
+      depends_libs: []
+      path:
+      - /opt/Xilinx/Vitis/2023.2/data/embeddedsw/lib/sw_services/xilrsa_v1_7
+    xiltimer:
+      description: Xiltimer library provides generic timer interface for the timer IP's.
+      depends_libs: []
+      path:
+      - /opt/Xilinx/Vitis/2023.2/data/embeddedsw/lib/sw_services/xiltimer_v1_3
+    xilskey:
+      description: Xilinx Secure Key Library supports programming efuse and bbram.
+      depends_libs: []
+      path:
+      - /opt/Xilinx/Vitis/2023.2/data/embeddedsw/lib/sw_services/xilskey_v7_5
+    libmetal:
+      description: Provide runtime primitives APIs across heterogenous processors.
+      depends_libs: []
+      path:
+      - /opt/Xilinx/Vitis/2023.2/data/embeddedsw/ThirdParty/sw_services/libmetal_v2_6
+    lwip213:
+      description: lwip213 library lwIP (light weight IP) is an open source TCP/IP stack configured for AMD hard and soft Ethernet MACs.
+      depends_libs: []
+      path:
+      - /opt/Xilinx/Vitis/2023.2/data/embeddedsw/ThirdParty/sw_services/lwip213_v1_1
+    openamp:
+      description: Enable IPC and lifecycle management across heterogeneous processors.
+      depends_libs:
+      - libmetal
+      path:
+      - /opt/Xilinx/Vitis/2023.2/data/embeddedsw/ThirdParty/sw_services/openamp_v1_9

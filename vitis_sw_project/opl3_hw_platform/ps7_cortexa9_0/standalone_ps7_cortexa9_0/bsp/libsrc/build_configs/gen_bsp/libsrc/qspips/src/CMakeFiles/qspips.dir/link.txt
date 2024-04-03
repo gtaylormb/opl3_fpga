@@ -1,0 +1,2 @@
+arm-none-eabi-ar qc libqspips.a CMakeFiles/qspips.dir/xqspips.c.obj CMakeFiles/qspips.dir/xqspips_g.c.obj CMakeFiles/qspips.dir/xqspips_hw.c.obj CMakeFiles/qspips.dir/xqspips_options.c.obj CMakeFiles/qspips.dir/xqspips_selftest.c.obj CMakeFiles/qspips.dir/xqspips_sinit.c.obj
+/opt/Xilinx/Vitis/2023.2/gnu/aarch32/lin/gcc-arm-none-eabi/bin/arm-none-eabi-ranlib libqspips.a

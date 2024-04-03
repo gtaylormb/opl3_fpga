@@ -1,0 +1,2 @@
+arm-none-eabi-ar qc libemacps.a CMakeFiles/emacps.dir/xemacps_g.c.obj CMakeFiles/emacps.dir/xemacps_hw.c.obj CMakeFiles/emacps.dir/xemacps_control.c.obj CMakeFiles/emacps.dir/xemacps.c.obj CMakeFiles/emacps.dir/xemacps_bdring.c.obj CMakeFiles/emacps.dir/xemacps_sinit.c.obj CMakeFiles/emacps.dir/xemacps_intr.c.obj
+/opt/Xilinx/Vitis/2023.2/gnu/aarch32/lin/gcc-arm-none-eabi/bin/arm-none-eabi-ranlib libemacps.a
