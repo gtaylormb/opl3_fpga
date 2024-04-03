@@ -55,7 +55,7 @@ XScuTimer TimerInstance;	/* Cortex A9 Scu Private Timer Instance */
 **				 error.
 **
 */
-int TimerInitialize(u16 TimerDeviceId)
+int TimerInitialize(UINTPTR TimerBaseAddr)
 {
 	int Status;
 	XScuTimer *TimerInstancePtr = &TimerInstance;
@@ -64,7 +64,7 @@ int TimerInitialize(u16 TimerDeviceId)
 	/*
 	 * Initialize the Scu Private Timer driver.
 	 */
-	ConfigTmrPtr = XScuTimer_LookupConfig(TimerDeviceId);
+	ConfigTmrPtr = XScuTimer_LookupConfig(TimerBaseAddr);
 
 	/*
 	 * This is where the virtual address would be used, this example

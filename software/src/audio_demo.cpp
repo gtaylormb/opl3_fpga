@@ -40,12 +40,10 @@
 #include "timer_ps.h"
 #include "xiicps.h"
 #include "xuartps.h"
-#include "sleep.h"
 
 /* Redefine the XPAR constants */
 //#define IIC_DEVICE_ID		XPAR_IIC_0_DEVICE_ID
 //#define I2S_ADDRESS 		XPAR_AXI_I2S_ADI_0_BASEADDR
-#define TIMER_DEVICE_ID 	XPAR_SCUTIMER_DEVICE_ID
 
 /* ------------------------------------------------------------ */
 /*				Global Variables								*/
@@ -123,7 +121,7 @@ int AudioInitialize()
 	 */
 
 //	Status = AudioRegSet(&Iic, 15, 0b000000000); //Perform Reset
-	usleep(75000);
+	TimerDelay(75000);
 	Status |= AudioRegSet(&Iic, 6, 0b000110000); //Power up
 	Status |= AudioRegSet(&Iic, 0, 0b000010111);
 	Status |= AudioRegSet(&Iic, 1, 0b000010111);
@@ -133,7 +131,7 @@ int AudioInitialize()
 	Status |= AudioRegSet(&Iic, 5, 0b000000000);
 	Status |= AudioRegSet(&Iic, 7, 0b000001010);
 	Status |= AudioRegSet(&Iic, 8, 0b000000000); //Changed so no CLKDIV2
-	usleep(75000);
+	TimerDelay(75000);
 	Status |= AudioRegSet(&Iic, 9, 0b000000001);
 	Status |= AudioRegSet(&Iic, 6, 0b000100000);
 
@@ -243,14 +241,14 @@ int AudioRunDemo(u32 i2sAddr, u32 uartAddr, u32 swAddr, u32 btnAddr)
 			else
 			{
 				xil_printf("\n\rInvalid Selection");
-				usleep(500000);
+				TimerDelay(500000);
 			}
 			break;
 		case 'q':
 			break;
 		default :
 			xil_printf("\n\rInvalid Selection");
-			usleep(500000);
+			TimerDelay(500000);
 		}
 	}
 
@@ -392,7 +390,7 @@ int AudioRec(u32 i2sAddr, u8 useMic)
 	Xil_Out32(i2sAddr + I2S_CTRL_REG, 0b00); //Disable RX Fifo
 	xil_printf("Done!\n\r");
 
-	usleep(500000);
+	TimerDelay(500000);
 
 	recordingValid = 1;
 
@@ -437,7 +435,7 @@ int AudioPlayRec(u32 i2sAddr)
 	Xil_Out32(i2sAddr + I2S_CTRL_REG, 0b00); //Disable TX Fifo
 	xil_printf("Done!\n\r");
 
-	usleep(500000);
+	TimerDelay(500000);
 
 	return XST_SUCCESS;
 }

@@ -37,6 +37,7 @@ subject to the following restrictions:
 #include "xparameters.h"
 #include "opl3_fpga.h"
 #include "audio_demo.h"
+#include "timer_ps.h"
 
 #include "global.h"
 
@@ -396,8 +397,8 @@ int imfplay(char *filename)
 		while (run)
 		{
 			for (long clock_ticks = 0; clock_ticks < next_event; clock_ticks++)
-			//	usleep((1/freq_div)*1000000);
-				usleep(1000);
+			//	TimerDelay((1/freq_div)*1000000);
+				TimerDelay(1000);
 
 			res = read_next_cmd(&f, &c);
 			if (res == CMD_EOF)
@@ -429,7 +430,7 @@ int imfplay(char *filename)
 			 * event.
 			 */
 			if (next_event == 0)
-				usleep(1);
+				TimerDelay(1);
 		}
 	}
 
