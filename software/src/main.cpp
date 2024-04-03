@@ -51,8 +51,6 @@ int main(int argc, char **argv) {
 	char cmd[CMD_BUF_LEN];
 	char singleChar;
 
-	TimerInitialize(TIMER_DEVICE_ID);
-
 	AudioInitialize();
 
 	mfs_init_genimage(2660000, (char *) 0x10000000, MFSINIT_IMAGE);
