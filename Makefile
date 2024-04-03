@@ -66,10 +66,11 @@ sd: all BOOT.bin
 all:
 	cd fpga && make bitstream
 	vitis -s software/vitis_builder.py
+	cd software/opl3dro && mfsgen -c *.dro
 
 clean:
 	cd fpga && make clean
-	rm -rf vitis_project BOOT.bin logs
+	rm -rf vitis_project BOOT.bin logs software/opl3dro/filesystem.mfs
 
 BOOT.bin:
 	bootgen -image software/bif/imfplay_port.bif -arch zynq -o BOOT.bin -w on

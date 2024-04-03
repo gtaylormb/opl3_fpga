@@ -80,22 +80,21 @@ typedef struct
 	filetype type;
 } fileinfo;
 
-void opl2_out(unsigned char reg, unsigned char data, unsigned char bank)
+void opl2_out(unsigned char reg, unsigned char data_in, unsigned char bank)
 {
-	int actual_reg = reg - reg%4 + (bank ? 256 : 0);
-	union {
-		u32 int_value;
-		char char_array[4];
-	} actual_data;
+	int address;
+	u32 data;
 
-	/*
-	 * Write 8-bit value using 32-bit read/modify/write. Only 32-bit
-	 * word-aligned addresses are available (0, 4, 8, etc).
-	 */
-	actual_data.int_value = OPL3_FPGA_mReadReg(XPAR_OPL3_FPGA_0_BASEADDR, actual_reg);
-	actual_data.char_array[reg%4] = data;
+	// write OPL3 address
+	address = bank ? 0x2 : 0x0;
+	data = reg;
+	OPL3_FPGA_mWriteReg(XPAR_OPL3_FPGA_0_BASEADDR, address, data);
 
-	OPL3_FPGA_mWriteReg(XPAR_OPL3_FPGA_0_BASEADDR, actual_reg, actual_data.int_value);
+	// write OPL3 data
+	address = 0x1;
+	data = data_in;
+	OPL3_FPGA_mWriteReg(XPAR_OPL3_FPGA_0_BASEADDR, address, data);
+
 	shadow_opl[reg] = data;
 }
 
