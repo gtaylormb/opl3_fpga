@@ -84,8 +84,8 @@
 		output reg rd_n,
 		output reg wr_n,
 		output reg [1:0] address,
-		output reg [REG_FILE_DATA_WIDTH-1:0] din,
-		input wire [REG_FILE_DATA_WIDTH-1:0] dout
+		output reg [7:0] din,
+		input wire [7:0] dout
 	);
 
 	// AXI4LITE signals
@@ -212,20 +212,10 @@
 	assign slv_reg_wren = axi_wready && S_AXI_WVALID && axi_awready && S_AXI_AWVALID;
 
 	always @( posedge S_AXI_ACLK ) begin
-		address <= axi_awaddr[1:0];
+		address <= axi_awaddr[ADDR_LSB+1:ADDR_LSB];
 		din <= 0;
-	    if (slv_reg_wren) begin
-	        case ( axi_awaddr[ADDR_LSB+OPT_MEM_ADDR_BITS:ADDR_LSB] )
-	          2'h0:
-	            for ( byte_index = 0; byte_index <= (C_S_AXI_DATA_WIDTH/8)-1; byte_index = byte_index+1 )
-	              if ( S_AXI_WSTRB[byte_index] == 1 ) begin
-	                // Respective byte enables are asserted as per write strobes
-	                // Slave register 0
-	                din <= S_AXI_WDATA;
-	              end
-	          default;
-	        endcase
-		end
+	    if (slv_reg_wren && S_AXI_WSTRB[0] == 1)
+			din <= S_AXI_WDATA;
 	end
 
 	// Implement write response logic generation
