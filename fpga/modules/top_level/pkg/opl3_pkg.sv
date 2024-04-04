@@ -49,42 +49,54 @@ package opl3_pkg;
      * give us a 49.7148KHz sample clock. We don't have to worry about clock
      * domain crossings.
      */
-    parameter int CLK_FREQ = 12.727e6;
-    parameter DAC_OVERSAMPLE = 256;
-    parameter SAMPLE_FREQ = CLK_FREQ/DAC_OVERSAMPLE;
+    localparam CLK_FREQ = 12.727e6;
+    localparam DAC_OUTPUT_WIDTH = 24;
+    localparam INSTANTIATE_TIMERS = 0; // set to 1 to use timers, 0 to save area
+    localparam NUM_LEDS = 4; // connected to kon bank 0 starting at 0
 
-    parameter REG_FILE_ADDRESS_WIDTH = $clog2('hF5);
-    parameter REG_FILE_DATA_WIDTH = 8;
-    parameter REG_TIMER_WIDTH = 8;
-    parameter REG_CONNECTION_SEL_WIDTH = 6;
-    parameter REG_MULT_WIDTH = 4;
-    parameter REG_FNUM_WIDTH = 10;
-    parameter REG_BLOCK_WIDTH = 3;
-    parameter REG_WS_WIDTH = 3;
-    parameter REG_ENV_WIDTH = 4;
-    parameter REG_TL_WIDTH = 6;
-    parameter REG_KSL_WIDTH = 2;
-    parameter REG_FB_WIDTH = 3;
+    localparam DESIRED_SAMPLE_FREQ = 49.7159e3;
+    localparam int CLK_DIV_COUNT = $ceil(CLK_FREQ/DESIRED_SAMPLE_FREQ);
+    localparam ACTUAL_SAMPLE_FREQ = CLK_FREQ/CLK_DIV_COUNT;
 
-    parameter SAMPLE_WIDTH = 16;
-    parameter DAC_OUTPUT_WIDTH = 24;
-    parameter ENV_WIDTH = 9;
-    parameter OP_OUT_WIDTH = 13;
-    parameter PHASE_ACC_WIDTH = 20;
-    parameter AM_VAL_WIDTH = 5;
-    parameter ENV_RATE_COUNTER_OVERFLOW_WIDTH = 8;
+    localparam NUM_REG_PER_BANK = 'hF6;
+    localparam REG_FILE_DATA_WIDTH = 8;
+    localparam REG_TIMER_WIDTH = 8;
+    localparam REG_CONNECTION_SEL_WIDTH = 6;
+    localparam REG_MULT_WIDTH = 4;
+    localparam REG_FNUM_WIDTH = 10;
+    localparam REG_BLOCK_WIDTH = 3;
+    localparam REG_WS_WIDTH = 3;
+    localparam REG_ENV_WIDTH = 4;
+    localparam REG_TL_WIDTH = 6;
+    localparam REG_KSL_WIDTH = 2;
+    localparam REG_FB_WIDTH = 3;
 
-    parameter NUM_BANKS = 2;
-    parameter NUM_OPERATORS_PER_BANK = 18;
-    parameter NUM_CHANNELS_PER_BANK = 9;
-    parameter BANK_NUM_WIDTH = $clog2(NUM_BANKS);
-    parameter OP_NUM_WIDTH = $clog2(NUM_OPERATORS_PER_BANK);
+    /*
+     * SAMPLE_WIDTH is the width of channels a, b, c, and d. With the real OPL3,
+     * the channels are combined into right and left in the analog domain. Here
+     * we add them together digitally. Use a max of 16 as this matches the
+     * YAK512. Channel accumulators are clamped to avoid overflow. Reduce
+     * SAMPLE_WIDTH depending on final output to avoid overflow on the add, and
+     * left shift if necessary.
+     */
+    localparam SAMPLE_WIDTH = DAC_OUTPUT_WIDTH > 16 ? 16 : DAC_OUTPUT_WIDTH - 1;
+    localparam DAC_LEFT_SHIFT = DAC_OUTPUT_WIDTH - SAMPLE_WIDTH - 2;
+    localparam ENV_WIDTH = 9;
+    localparam OP_OUT_WIDTH = 13;
+    localparam PHASE_ACC_WIDTH = 20;
+    localparam AM_VAL_WIDTH = 5;
+    localparam ENV_RATE_COUNTER_OVERFLOW_WIDTH = 8;
 
-    parameter INSTANTIATE_TIMERS = 0; // set to 1 to use timers
-    parameter TIMER1_TICK_INTERVAL = 80e-6;  // in seconds
-    parameter TIMER2_TICK_INTERVAL = 320e-6; // in seconds
+    localparam NUM_BANKS = 2;
+    localparam NUM_OPERATORS_PER_BANK = 18;
+    localparam NUM_CHANNELS_PER_BANK = 9;
+    localparam BANK_NUM_WIDTH = $clog2(NUM_BANKS);
+    localparam OP_NUM_WIDTH = $clog2(NUM_OPERATORS_PER_BANK);
 
-    typedef enum logic [31:0] {
+    localparam TIMER1_TICK_INTERVAL = 80e-6;  // in seconds
+    localparam TIMER2_TICK_INTERVAL = 320e-6; // in seconds
+
+    typedef enum logic [2:0] {
         OP_NORMAL,
         OP_BASS_DRUM,
         OP_HI_HAT,

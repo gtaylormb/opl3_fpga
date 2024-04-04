@@ -39,7 +39,7 @@
 #
 #******************************************************************************/
 `timescale 1ns / 1ps
-`default_nettype none  // disable implicit net type declarations
+`default_nettype none
 
 module operator
     import opl3_pkg::*;
@@ -102,7 +102,6 @@ module operator
     logic [PIPELINE_DELAY:1] [1:0] [OP_OUT_WIDTH-1:0] feedback_p;
 
     pipeline_sr #(
-        .type_t(logic),
         .ENDING_CYCLE(PIPELINE_DELAY)
     ) sample_clk_en_sr (
         .clk,
@@ -111,7 +110,7 @@ module operator
     );
 
     pipeline_sr #(
-        .type_t(logic [BANK_NUM_WIDTH-1:0]),
+        .DATA_WIDTH(BANK_NUM_WIDTH),
         .ENDING_CYCLE(PIPELINE_DELAY)
     ) bank_num_sr (
         .clk,
@@ -120,7 +119,7 @@ module operator
     );
 
     pipeline_sr #(
-        .type_t(logic [OP_NUM_WIDTH-1:0]),
+        .DATA_WIDTH(OP_NUM_WIDTH),
         .ENDING_CYCLE(PIPELINE_DELAY)
     ) op_num_sr (
         .clk,
@@ -132,7 +131,7 @@ module operator
         kon_p1 <= kon;
 
     mem_multi_bank #(
-        .type_t(logic),
+        .DATA_WIDTH(1),
         .DEPTH(NUM_OPERATORS_PER_BANK),
         .OUTPUT_DELAY(0),
         .DEFAULT_VALUE(0),
@@ -229,7 +228,7 @@ module operator
     end
 
     mem_multi_bank #(
-        .type_t(logic [1:0] [OP_OUT_WIDTH-1:0]),
+        .DATA_WIDTH(OP_OUT_WIDTH*2),
         .DEPTH(NUM_OPERATORS_PER_BANK),
         .OUTPUT_DELAY(0),
         .DEFAULT_VALUE(0),
@@ -247,7 +246,7 @@ module operator
     );
 
     pipeline_sr #(
-        .type_t(logic [1:0] [OP_OUT_WIDTH-1:0]),
+        .DATA_WIDTH(OP_OUT_WIDTH*2),
         .ENDING_CYCLE(PIPELINE_DELAY)
     ) feedback_sr (
         .clk,
@@ -261,4 +260,4 @@ module operator
         feedback_result_p0 = feedback_result_tmp_p0 >>> 9;
     end
 endmodule
-`default_nettype wire  // re-enable implicit net type declarations
+`default_nettype wire

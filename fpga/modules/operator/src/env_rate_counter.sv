@@ -75,7 +75,6 @@ module env_rate_counter
     logic [PIPELINE_DELAY:1] [OP_NUM_WIDTH-1:0] op_num_p;
 
     pipeline_sr #(
-        .type_t(logic),
         .ENDING_CYCLE(PIPELINE_DELAY)
     ) sample_clk_en_sr (
         .clk,
@@ -84,7 +83,7 @@ module env_rate_counter
     );
 
     pipeline_sr #(
-        .type_t(logic [BANK_NUM_WIDTH-1:0]),
+        .DATA_WIDTH(BANK_NUM_WIDTH),
         .ENDING_CYCLE(PIPELINE_DELAY)
     ) bank_num_sr (
         .clk,
@@ -93,7 +92,7 @@ module env_rate_counter
     );
 
     pipeline_sr #(
-        .type_t(logic [OP_NUM_WIDTH-1:0]),
+        .DATA_WIDTH(OP_NUM_WIDTH),
         .ENDING_CYCLE(PIPELINE_DELAY)
     ) op_num_sr (
         .clk,
@@ -102,7 +101,7 @@ module env_rate_counter
     );
 
     pipeline_sr #(
-        .type_t(logic [REG_ENV_WIDTH-1:0]),
+        .DATA_WIDTH(REG_ENV_WIDTH),
         .ENDING_CYCLE(PIPELINE_DELAY)
     ) requested_rate_sr (
         .clk,
@@ -125,7 +124,7 @@ module env_rate_counter
     always_comb rof_p1 = effective_rate_p1[1:0];
 
     mem_multi_bank #(
-        .type_t(logic [COUNTER_WIDTH-1:0]),
+        .DATA_WIDTH(COUNTER_WIDTH),
         .DEPTH(NUM_OPERATORS_PER_BANK),
         .OUTPUT_DELAY(1),
         .DEFAULT_VALUE(0),
@@ -148,4 +147,4 @@ module env_rate_counter
     always_ff @(posedge clk)
         counter_new_p2 <= overflow_tmp_p1;
 endmodule
-`default_nettype wire  // re-enable implicit net type declarations
+`default_nettype wire

@@ -97,4 +97,4 @@ module ksl_add_rom
         endcase
     end
 endmodule
-`default_nettype wire  // re-enable implicit net type declarations
+`default_nettype wire

@@ -99,7 +99,6 @@ module envelope_generator
     logic [PIPELINE_DELAY:1] [OP_NUM_WIDTH-1:0] op_num_p;
 
     pipeline_sr #(
-        .type_t(logic),
         .ENDING_CYCLE(PIPELINE_DELAY)
     ) sample_clk_en_sr (
         .clk,
@@ -108,7 +107,7 @@ module envelope_generator
     );
 
     pipeline_sr #(
-        .type_t(logic [BANK_NUM_WIDTH-1:0]),
+        .DATA_WIDTH(BANK_NUM_WIDTH),
         .ENDING_CYCLE(PIPELINE_DELAY)
     ) bank_num_sr (
         .clk,
@@ -117,7 +116,7 @@ module envelope_generator
     );
 
     pipeline_sr #(
-        .type_t(logic [OP_NUM_WIDTH-1:0]),
+        .DATA_WIDTH(OP_NUM_WIDTH),
         .ENDING_CYCLE(PIPELINE_DELAY)
     ) op_num_sr (
         .clk,
@@ -130,7 +129,7 @@ module envelope_generator
     );
 
     mem_multi_bank #(
-        .type_t(state_t),
+        .DATA_WIDTH($bits(state_t)),
         .DEPTH(NUM_OPERATORS_PER_BANK),
         .OUTPUT_DELAY(0),
         .DEFAULT_VALUE(RELEASE),
@@ -143,8 +142,8 @@ module envelope_generator
         .addra(op_num_p[1]),
         .bankb(bank_num),
         .addrb(op_num),
-        .dia(state_p1),
-        .dob(state_p0)
+        .dia({state_p1}),
+        .dob({state_p0})
     );
 
     always_ff @(posedge clk)
@@ -181,7 +180,7 @@ module envelope_generator
     );
 
     mem_multi_bank #(
-        .type_t(logic [ENV_WIDTH-1:0]),
+        .DATA_WIDTH(ENV_WIDTH),
         .DEPTH(NUM_OPERATORS_PER_BANK),
         .OUTPUT_DELAY(0),
         .DEFAULT_VALUE(SILENCE),
@@ -238,4 +237,4 @@ module envelope_generator
         else
             env_p3 <= env_tmp_p2;
 endmodule
-`default_nettype wire  // re-enable implicit net type declarations
+`default_nettype wire

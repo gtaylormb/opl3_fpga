@@ -38,7 +38,7 @@
 #   Copyright (C) 2010-2013 by carbon14 and opl3
 #
 #******************************************************************************/
-`default_nettype none  // disable implicit net type declarations
+`default_nettype none
 `timescale 1ns / 1ps
 
 module operator_tb
@@ -115,9 +115,8 @@ module operator_tb
     endclocking
 
     clk_div #(
-        .INPUT_CLK_FREQ(CLK_FREQ),
-        .OUTPUT_CLK_EN_FREQ(SAMPLE_FREQ)
-    ) sample_clk_gen_inst (
+        .CLK_DIV_COUNT(CLK_DIV_COUNT)
+    ) sample_clk_gen (
         .clk_en(sample_clk_en),
         .*
     );
@@ -174,4 +173,4 @@ module operator_tb
     end
 
 endmodule
-`default_nettype wire  // re-enable implicit net type declarations
+`default_nettype wire

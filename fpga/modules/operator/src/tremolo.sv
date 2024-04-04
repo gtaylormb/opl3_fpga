@@ -88,4 +88,4 @@ module tremolo
             am_val_p2 <= am_val_tmp1_p1 >> 2;
     end
 endmodule
-`default_nettype wire  // re-enable implicit net type declarations
+`default_nettype wire

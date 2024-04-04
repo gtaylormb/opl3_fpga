@@ -40,7 +40,7 @@
 #
 #******************************************************************************/
 `timescale 1ns / 1ps
-`default_nettype none  // disable implicit net type declarations
+`default_nettype none
 
 module calc_phase_inc
     import opl3_pkg::*;
@@ -90,7 +90,6 @@ module calc_phase_inc
     end
 
     pipeline_sr #(
-        .type_t(logic),
         .ENDING_CYCLE(PIPELINE_DELAY)
     ) vib_sr (
         .clk,
@@ -111,4 +110,4 @@ module calc_phase_inc
         .*
     );
 endmodule
-`default_nettype wire  // re-enable implicit net type declarations
+`default_nettype wire

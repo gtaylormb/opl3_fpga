@@ -4,7 +4,7 @@
 #   FILENAME: edge_detector.sv
 #   AUTHOR: Greg Taylor     CREATION DATE: 1 April 2009
 #
-#   DESCRIPTION: 
+#   DESCRIPTION:
 #       Detect edge on i_in. Create single pulse on o_edge_detected upon edge
 #       detection. i_in must be synchronous to i_sys_clk (this is not an
 #       asynchronous edge detector!). Use 1 clock delay for glitch free output
@@ -17,35 +17,35 @@
 #       Added clock delay configuration parameter
 #
 #   Copyright (C) 2014 Greg Taylor <gtaylor@sonic.net>
-#    
+#
 #   This file is part of OPL3 FPGA.
-#    
+#
 #   OPL3 FPGA is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU Lesser General Public License as published by
 #   the Free Software Foundation, either version 3 of the License, or
 #   (at your option) any later version.
-#   
+#
 #   OPL3 FPGA is distributed in the hope that it will be useful,
 #   but WITHOUT ANY WARRANTY; without even the implied warranty of
 #   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 #   GNU Lesser General Public License for more details.
-#   
+#
 #   You should have received a copy of the GNU Lesser General Public License
 #   along with OPL3 FPGA.  If not, see <http://www.gnu.org/licenses/>.
-#   
-#   Original Java Code: 
+#
+#   Original Java Code:
 #   Copyright (C) 2008 Robson Cozendey <robson@cozendey.com>
-#   
-#   Original C++ Code: 
+#
+#   Original C++ Code:
 #   Copyright (C) 2012  Steffen Ohrendorf <steffen.ohrendorf@gmx.de>
-#   
-#   Some code based on forum posts in: 
+#
+#   Some code based on forum posts in:
 #   http://forums.submarine.org.uk/phpBB/viewforum.php?f=9,
-#   Copyright (C) 2010-2013 by carbon14 and opl3    
-#   
+#   Copyright (C) 2010-2013 by carbon14 and opl3
+#
 #******************************************************************************/
 `timescale 1ns / 1ps
-`default_nettype none  // disable implicit net type declarations
+`default_nettype none
 
 module edge_detector #(
     parameter EDGE_LEVEL = 1, // 1 = positive edge, 0 = negative edge
@@ -54,12 +54,12 @@ module edge_detector #(
 ) (
     input wire clk,
     input wire clk_en,
-    input wire in, 
+    input wire in,
     output logic edge_detected = 0
 );
     logic in_r0 = INITIAL_INPUT_LEVEL;
     logic in_r1 = INITIAL_INPUT_LEVEL;
-    
+
     always_ff @(posedge clk)
     	if (!CLK_DLY)
             in_r0 <= in;
@@ -67,7 +67,7 @@ module edge_detector #(
             in_r0 <= in;
             in_r1 <= in_r0;
         end
-    
+
     always_comb
         if (EDGE_LEVEL)
             if (!CLK_DLY)
@@ -77,7 +77,7 @@ module edge_detector #(
         else
             if (!CLK_DLY)
                 edge_detected = !in && in_r0;
-            else 
-                edge_detected = !in_r0 && in_r1;        
+            else
+                edge_detected = !in_r0 && in_r1;
 endmodule
-`default_nettype wire  // re-enable implicit net type declarations
+`default_nettype wire
