@@ -129,7 +129,7 @@ module envelope_generator
     );
 
     mem_multi_bank #(
-        .type_t(state_t),
+        .DATA_WIDTH($bits(state_t)),
         .DEPTH(NUM_OPERATORS_PER_BANK),
         .OUTPUT_DELAY(0),
         .DEFAULT_VALUE(RELEASE),
@@ -142,8 +142,8 @@ module envelope_generator
         .addra(op_num_p[1]),
         .bankb(bank_num),
         .addrb(op_num),
-        .dia(state_p1),
-        .dob(state_p0)
+        .dia({state_p1}),
+        .dob({state_p0})
     );
 
     always_ff @(posedge clk)
@@ -180,7 +180,7 @@ module envelope_generator
     );
 
     mem_multi_bank #(
-        .type_t(logic [ENV_WIDTH-1:0]),
+        .DATA_WIDTH(ENV_WIDTH),
         .DEPTH(NUM_OPERATORS_PER_BANK),
         .OUTPUT_DELAY(0),
         .DEFAULT_VALUE(SILENCE),

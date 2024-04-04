@@ -42,8 +42,7 @@
 `default_nettype none
 
 module mem_simple_dual_port #(
-    parameter type type_t = logic,
-    parameter DATA_WIDTH = $bits(type_t),
+    parameter DATA_WIDTH = 0,
     parameter DEPTH = 0,
     parameter OUTPUT_DELAY = 0, // 0, 1, or 2
     parameter DEFAULT_VALUE = 0
@@ -54,14 +53,14 @@ module mem_simple_dual_port #(
     input wire reb, // only used if OUTPUT_DELAY >0
     input wire [$clog2(DEPTH)-1:0] addra,
     input wire [$clog2(DEPTH)-1:0] addrb,
-    input var type_t dia,
-    output type_t dob
+    input wire [DATA_WIDTH-1:0] dia,
+    output logic [DATA_WIDTH-1:0] dob
 );
-    type_t dob_p0;
-    type_t dob_p1 = DEFAULT_VALUE;
-    type_t dob_p2 = DEFAULT_VALUE;
+    logic [DATA_WIDTH-1:0] dob_p0;
+    logic [DATA_WIDTH-1:0] dob_p1 = DEFAULT_VALUE;
+    logic [DATA_WIDTH-1:0] dob_p2 = DEFAULT_VALUE;
 
-    type_t ram [DEPTH-1:0] = '{default: DEFAULT_VALUE};
+    logic [DATA_WIDTH-1:0] ram [DEPTH-1:0] = '{default: DEFAULT_VALUE};
 
     always_ff @(posedge clka)
         if (wea)

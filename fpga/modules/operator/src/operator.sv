@@ -131,7 +131,7 @@ module operator
         kon_p1 <= kon;
 
     mem_multi_bank #(
-        .type_t(logic),
+        .DATA_WIDTH(1),
         .DEPTH(NUM_OPERATORS_PER_BANK),
         .OUTPUT_DELAY(0),
         .DEFAULT_VALUE(0),
@@ -228,7 +228,7 @@ module operator
     end
 
     mem_multi_bank #(
-        .type_t(logic [1:0] [OP_OUT_WIDTH-1:0]),
+        .DATA_WIDTH(OP_OUT_WIDTH*2),
         .DEPTH(NUM_OPERATORS_PER_BANK),
         .OUTPUT_DELAY(0),
         .DEFAULT_VALUE(0),

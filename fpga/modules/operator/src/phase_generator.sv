@@ -146,7 +146,7 @@ module phase_generator
         env_p4 <= env_p3;
 
     mem_multi_bank #(
-        .type_t(logic [PHASE_ACC_WIDTH-1:0]),
+        .DATA_WIDTH(PHASE_ACC_WIDTH),
         .DEPTH(NUM_OPERATORS_PER_BANK),
         .OUTPUT_DELAY(2),
         .DEFAULT_VALUE(0),
@@ -201,7 +201,7 @@ module phase_generator
             end
 
     mem_multi_bank #(
-        .type_t(logic),
+        .DATA_WIDTH(1),
         .DEPTH(NUM_OPERATORS_PER_BANK),
         .OUTPUT_DELAY(2),
         .DEFAULT_VALUE(0),
@@ -219,7 +219,7 @@ module phase_generator
     );
 
     mem_multi_bank #(
-        .type_t(logic),
+        .DATA_WIDTH(1),
         .DEPTH(NUM_OPERATORS_PER_BANK),
         .OUTPUT_DELAY(2),
         .DEFAULT_VALUE(0),

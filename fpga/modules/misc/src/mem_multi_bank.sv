@@ -42,7 +42,7 @@
 `default_nettype none
 
 module mem_multi_bank #(
-    parameter type type_t = logic,
+    parameter DATA_WIDTH = 0,
     parameter DEPTH = 0,
     parameter OUTPUT_DELAY = 0, // 0, 1, or 2
     parameter DEFAULT_VALUE = 0,
@@ -56,14 +56,14 @@ module mem_multi_bank #(
     input wire [$clog2(DEPTH)-1:0] addra,
     input wire [BANK_WIDTH-1:0] bankb,
     input wire [$clog2(DEPTH)-1:0] addrb,
-    input var type_t dia,
-    output type_t dob
+    input wire [DATA_WIDTH-1:0] dia,
+    output logic [DATA_WIDTH-1:0] dob
 );
     localparam PIPELINE_DELAY = 2;
 
     logic [NUM_BANKS-1:0] wea_array;
     logic [NUM_BANKS-1:0] reb_array;
-    type_t dob_array [NUM_BANKS];
+    logic [DATA_WIDTH-1:0] dob_array [NUM_BANKS];
     logic [PIPELINE_DELAY:1] [BANK_WIDTH-1:0] bankb_p;
 
     pipeline_sr #(
@@ -82,7 +82,7 @@ module mem_multi_bank #(
         end
 
         mem_simple_dual_port #(
-            .type_t(type_t),
+            .DATA_WIDTH(DATA_WIDTH),
             .DEPTH(DEPTH),
             .OUTPUT_DELAY(OUTPUT_DELAY),
             .DEFAULT_VALUE(DEFAULT_VALUE)

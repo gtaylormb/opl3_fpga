@@ -124,7 +124,7 @@ module env_rate_counter
     always_comb rof_p1 = effective_rate_p1[1:0];
 
     mem_multi_bank #(
-        .type_t(logic [COUNTER_WIDTH-1:0]),
+        .DATA_WIDTH(COUNTER_WIDTH),
         .DEPTH(NUM_OPERATORS_PER_BANK),
         .OUTPUT_DELAY(1),
         .DEFAULT_VALUE(0),

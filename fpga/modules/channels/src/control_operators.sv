@@ -582,7 +582,7 @@ module control_operators
     always_comb modulation_out_op_num = op_num >= 3 ? op_num - 3 : 0;
 
     mem_multi_bank #(
-        .type_t(logic [OP_OUT_WIDTH-1:0]),
+        .DATA_WIDTH(OP_OUT_WIDTH),
         .DEPTH(NUM_OPERATORS_PER_BANK),
         .OUTPUT_DELAY(0),
         .DEFAULT_VALUE(0),
