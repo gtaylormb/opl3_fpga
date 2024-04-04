@@ -58,46 +58,27 @@ module host_if
     output logic ack_host_wr,
     input wire [REG_FILE_DATA_WIDTH-1:0] status
 );
-    (* mark_debug = "true" *) logic cs_p1 = 0;
-    (* mark_debug = "true" *) logic cs_p2 = 0;
-    (* mark_debug = "true" *)  logic rd_p1 = 0;
-    (* mark_debug = "true" *)  logic wr_p1 = 0;
-    (* mark_debug = "true" *)  logic [1:0] address_p1 = 0;
-    (* mark_debug = "true" *)  logic [REG_FILE_DATA_WIDTH-1:0] din_p1;
-    (* mark_debug = "true" *)  logic cs_latched = 0;
-    (* mark_debug = "true" *)  logic rd_latched = 0;
-    (* mark_debug = "true" *)  logic wr_latched = 0;
-    (* mark_debug = "true" *)  logic [1:0] address_latched = 0;
-    (* mark_debug = "true" *)  logic [REG_FILE_DATA_WIDTH-1:0] din_latched = 0;
-    (* mark_debug = "true" *)  logic cs_opl3;
-    (* mark_debug = "true" *)  logic cs_opl3_p1 = 0;
-    (* mark_debug = "true" *)  logic rd_opl3 = 0;
-    (* mark_debug = "true" *)  logic wr_opl3 = 0;
-    (* mark_debug = "true" *)  logic [1:0] address_opl3 = 0;
-    (* mark_debug = "true" *)  logic [REG_FILE_DATA_WIDTH-1:0] din_opl3 = 0;
-    (* mark_debug = "true" *)  logic internal_bank = 0;
-    (* mark_debug = "true" *)  logic [REG_FILE_DATA_WIDTH-1:0] internal_address = 0;
+    logic cs_p1 = 0;
+    logic cs_p2 = 0;
+    logic rd_p1 = 0;
+    logic wr_p1 = 0;
+    logic [1:0] address_p1 = 0;
+    logic [REG_FILE_DATA_WIDTH-1:0] din_p1;
+    logic cs_latched = 0;
+    logic rd_latched = 0;
+    logic wr_latched = 0;
+    logic [1:0] address_latched = 0;
+    logic [REG_FILE_DATA_WIDTH-1:0] din_latched = 0;
+    logic cs_opl3;
+    logic cs_opl3_p1 = 0;
+    logic rd_opl3 = 0;
+    logic wr_opl3 = 0;
+    logic [1:0] address_opl3 = 0;
+    logic [REG_FILE_DATA_WIDTH-1:0] din_opl3 = 0;
+    logic internal_bank = 0;
+    logic [REG_FILE_DATA_WIDTH-1:0] internal_address = 0;
     logic ack_transaction;
 
-    ila_0 ila_host_if (
-        .clk(clk_host), // input wire clk
-        .probe0({
-            cs_latched,
-            rd_latched,
-            wr_latched,
-            address_latched,
-            din_latched,
-            cs_opl3,
-            cs_opl3_p1,
-            rd_opl3,
-            wr_opl3,
-            address_opl3,
-            din_opl3,
-            ack_transaction,
-            internal_bank,
-            internal_address
-        }) // input wire [49:0] probe0
-);
     /*
      * Handshake signals across clock domains using cs signal
      */
@@ -159,9 +140,9 @@ module host_if
                 internal_bank <= address_opl3[1];
                 internal_address <= din_opl3;
             end
-            'b011: // data write mode
+            'b011:       // data write mode
                 opl3_reg[internal_bank][internal_address] <= din_opl3;
-            'b100:; // status read mode
+            'b100:;      // status read mode
             default:;
             endcase
 
