@@ -212,10 +212,15 @@
 	assign slv_reg_wren = axi_wready && S_AXI_WVALID && axi_awready && S_AXI_AWVALID;
 
 	always @( posedge S_AXI_ACLK ) begin
-		address <= axi_awaddr[ADDR_LSB+1:ADDR_LSB];
+		address <= axi_awaddr[1:0];
 		din <= 0;
-	    if (slv_reg_wren && S_AXI_WSTRB[0] == 1)
-			din <= S_AXI_WDATA;
+	    if (slv_reg_wren)
+			case (axi_awaddr[1:0])
+			'b00: din <= S_AXI_WDATA[7:0];
+			'b01: din <= S_AXI_WDATA[15:8];
+			'b10: din <= S_AXI_WDATA[23:16];
+			default:;
+			endcase
 	end
 
 	// Implement write response logic generation
