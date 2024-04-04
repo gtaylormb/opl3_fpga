@@ -26,16 +26,10 @@ subject to the following restrictions:
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
-#include <time.h>
-#include <unistd.h>
-#include <sys/time.h>
-#include <sys/resource.h>
 #include "xilmfs.h"
 #include "xil_io.h"
 #include "xuartps_hw.h"
 #include "xparameters.h"
-#include "audio_demo.h"
 #include "timer_ps.h"
 
 #include "global.h"
@@ -44,8 +38,6 @@ subject to the following restrictions:
 #define CMD_NULL				0		//no command
 #define CMD_FULL				1		//cmd + delay
 #define CMD_DELAY_ONLY	2		//delay
-
-#define TIMER_DEVICE_ID 	XPAR_SCUTIMER_DEVICE_ID
 
 long freq_div;
 long last_slow_tick;

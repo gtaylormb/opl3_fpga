@@ -5,19 +5,12 @@
  *      Author: greg
  */
 #include <iostream>
-#include <stdio.h>
-#include <time.h>
-#include <unistd.h>
-#include <sys/time.h>
-#include <sys/resource.h>
 #include "xilmfs.h"
-#include "xil_io.h"
 #include "xparameters.h"
-#include "audio_demo.h"
+#include "ssm2603.h"
 #include "timer_ps.h"
 #include "imfplay.h"
 
-#define TIMER_DEVICE_ID 	XPAR_SCUTIMER_DEVICE_ID
 #define CMD_BUF_LEN	256
 
 using namespace std;
@@ -46,14 +39,12 @@ void parseCmd(char *cmd) {
 	}
 }
 
-int main(int argc, char **argv) {
+int main() {
 	char cmd[CMD_BUF_LEN];
 	char singleChar;
 
-	TimerInitialize(XPAR_SCUTIMER_BASEADDR);
-
-	AudioInitialize();
-
+	TimerInitialize(XPAR_SCUTIMER_BASEADDR); // accurate timer
+	ssm2603_init(); // ZYBO DAC init, config is over i2c directly connected to PS
 	mfs_init_genimage(2660000, (char *) 0x10000000, MFSINIT_IMAGE);
 
 	cout << "Welcome to the OPL3 FPGA" << endl << endl;
@@ -85,9 +76,4 @@ int main(int argc, char **argv) {
 			++i;
 		}
 	}
-
-	return 0;
 }
-
-
-
