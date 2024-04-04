@@ -134,8 +134,8 @@ program: build/opl3.bit
 clean:
 	rm -rf  *.tmp  *.log  log transcript work *.wlf vsim.fcdb
 	rm -rf *~ core csrc simv* vc_hdrs.h ucli.key urg* *.log core.* synlog.tcl
-	rm -rf sim_lib build usage_stat* ipshared/ .Xil fpga/.Xil fpga/.gen fpga/.srcs
-	rm -rf clockInfo.txt tight_setup_hold_pins.txt
+	rm -rf sim_lib build usage_stat* ipshared/ .Xil .gen .srcs
+	rm -rf clockInfo.txt tight_setup_hold_pins.txt vivado*
 
 build/design_1/design_1.bd: $(BD_SRC)
 	test -e build || mkdir build

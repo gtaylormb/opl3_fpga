@@ -71,6 +71,7 @@ all:
 clean:
 	cd fpga && make clean
 	rm -rf vitis_project BOOT.bin logs software/opl3dro/filesystem.mfs
+	rm -rf vivado* .Xil
 
 BOOT.bin:
 	bootgen -image software/bif/imfplay_port.bif -arch zynq -o BOOT.bin -w on
