@@ -15,3 +15,4 @@ fpga/tight_setup_hold_pins.txt
 vitis_project/
 BOOT.bin
 logs/
+software/opl3dro/filesystem.mfs
