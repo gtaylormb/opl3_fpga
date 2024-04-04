@@ -1,9 +1,10 @@
 opl3_fpga
 =========
 ## News
-2024-3-30
-* I've done some logic reduction work to bring the area down by replacing a bunch of register arrays with memories and careful pipelining.
-This reduced LUTs by 24% and registers by 36%. There are some other fixes (rhythm operators) and general cleanup.
+2024-4-4
+* I changed up the top level interface to better match the real chip and make it easier to integrate into other projects. The register map is now internal instead of an external AXI version. Clock domain
+cross logic is included to go between CPU and OPL3. This along with some significant internal logic reduction work has massively cut the area down. LUT utilization was reduced by 45%, registers by 48%.
+The design also now requires Vivado/Vitis 2023.2; the integration is a lot cleaner and there's way less files in the repo now. I have some ideas to get the area down further.
 
 2019-11-7
 * The OPL2 subset of OPL3_FPGA was converted to Verilog by Magnus Karlsson, and then ported to the Panologic thin client (a Spartan-3E based board) by Skip Hansen. The project can be found here: https://github.com/skiphansen/panog1_opl3
