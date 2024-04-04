@@ -50,7 +50,7 @@ if { [string first $scripts_vivado_version $current_vivado_version] == -1 } {
 set list_projs [get_projects -quiet]
 if { $list_projs eq "" } {
    create_project project_1 myproj -part xc7z010clg400-1
-set_property BOARD_PART digilentinc.com:zybo:part0:1.0 [current_project]
+   set_property BOARD_PART digilentinc.com:zybo:part0:1.0 [current_project]
 }
 
 
@@ -134,7 +134,6 @@ xilinx.com:ip:processing_system7:5.5\
 xilinx.com:user:opl3_fpga:2.0\
 xilinx.com:ip:clk_wiz:6.0\
 xilinx.com:ip:proc_sys_reset:5.0\
-xilinx.com:ip:system_ila:1.1\
 "
 
    set list_ips_missing ""
@@ -740,22 +739,19 @@ proc create_root_design { parentCell } {
     CONFIG.RESET_PORT {resetn} \
     CONFIG.RESET_TYPE {ACTIVE_LOW} \
     CONFIG.SECONDARY_SOURCE {Single_ended_clock_capable_pin} \
-    CONFIG.USE_LOCKED {false} \
+    CONFIG.USE_LOCKED {true} \
     CONFIG.USE_PHASE_ALIGNMENT {false} \
-    CONFIG.USE_RESET {false} \
+    CONFIG.USE_RESET {true} \
   ] $mmcm_125
-
-
-  # Create instance: ps7_0_axi_periph, and set properties
-  set ps7_0_axi_periph [ create_bd_cell -type ip -vlnv xilinx.com:ip:axi_interconnect:2.1 ps7_0_axi_periph ]
-  set_property CONFIG.NUM_MI {1} $ps7_0_axi_periph
 
 
   # Create instance: rst_ps7_0_100M, and set properties
   set rst_ps7_0_100M [ create_bd_cell -type ip -vlnv xilinx.com:ip:proc_sys_reset:5.0 rst_ps7_0_100M ]
 
-  # Create instance: system_ila_0, and set properties
-  set system_ila_0 [ create_bd_cell -type ip -vlnv xilinx.com:ip:system_ila:1.1 system_ila_0 ]
+  # Create instance: ps7_0_axi_periph, and set properties
+  set ps7_0_axi_periph [ create_bd_cell -type ip -vlnv xilinx.com:ip:axi_interconnect:2.1 ps7_0_axi_periph ]
+  set_property CONFIG.NUM_MI {1} $ps7_0_axi_periph
+
 
   # Create interface connections
   connect_bd_intf_net -intf_net processing_system7_0_DDR [get_bd_intf_ports DDR] [get_bd_intf_pins processing_system7_0/DDR]
@@ -763,20 +759,19 @@ proc create_root_design { parentCell } {
   connect_bd_intf_net -intf_net processing_system7_0_IIC_0 [get_bd_intf_ports IIC_0] [get_bd_intf_pins processing_system7_0/IIC_0]
   connect_bd_intf_net -intf_net processing_system7_0_M_AXI_GP0 [get_bd_intf_pins processing_system7_0/M_AXI_GP0] [get_bd_intf_pins ps7_0_axi_periph/S00_AXI]
   connect_bd_intf_net -intf_net ps7_0_axi_periph_M00_AXI [get_bd_intf_pins ps7_0_axi_periph/M00_AXI] [get_bd_intf_pins opl3_fpga_0/S_AXI]
-connect_bd_intf_net -intf_net [get_bd_intf_nets ps7_0_axi_periph_M00_AXI] [get_bd_intf_pins ps7_0_axi_periph/M00_AXI] [get_bd_intf_pins system_ila_0/SLOT_0_AXI]
 
   # Create port connections
-  connect_bd_net -net ARESETN_1 [get_bd_pins rst_ps7_0_100M/interconnect_aresetn] [get_bd_pins ps7_0_axi_periph/ARESETN]
   connect_bd_net -net clk125_1 [get_bd_ports clk125] [get_bd_pins mmcm_125/clk_in1]
   connect_bd_net -net mmcm_125_clk_out1 [get_bd_pins mmcm_125/clk_out1] [get_bd_pins opl3_fpga_0/clk_12] [get_bd_ports ac_mclk]
+  connect_bd_net -net mmcm_125_locked [get_bd_pins mmcm_125/locked] [get_bd_pins rst_ps7_0_100M/dcm_locked]
   connect_bd_net -net opl3_fpga_0_ac_mute_n [get_bd_pins opl3_fpga_0/ac_mute_n] [get_bd_ports ac_mute_n]
   connect_bd_net -net opl3_fpga_0_i2s_sclk [get_bd_pins opl3_fpga_0/i2s_sclk] [get_bd_ports i2s_sclk]
   connect_bd_net -net opl3_fpga_0_i2s_sd [get_bd_pins opl3_fpga_0/i2s_sd] [get_bd_ports i2s_sd]
   connect_bd_net -net opl3_fpga_0_i2s_ws [get_bd_pins opl3_fpga_0/i2s_ws] [get_bd_ports i2s_ws]
   connect_bd_net -net opl3_fpga_0_led [get_bd_pins opl3_fpga_0/led] [get_bd_ports led]
-  connect_bd_net -net processing_system7_0_FCLK_CLK0 [get_bd_pins processing_system7_0/FCLK_CLK0] [get_bd_pins processing_system7_0/M_AXI_GP0_ACLK] [get_bd_pins ps7_0_axi_periph/S00_ACLK] [get_bd_pins rst_ps7_0_100M/slowest_sync_clk] [get_bd_pins opl3_fpga_0/s_axi_aclk] [get_bd_pins ps7_0_axi_periph/M00_ACLK] [get_bd_pins ps7_0_axi_periph/ACLK] [get_bd_pins system_ila_0/clk]
-  connect_bd_net -net processing_system7_0_FCLK_RESET0_N [get_bd_pins processing_system7_0/FCLK_RESET0_N] [get_bd_pins rst_ps7_0_100M/ext_reset_in]
-  connect_bd_net -net rst_ps7_0_100M_peripheral_aresetn [get_bd_pins rst_ps7_0_100M/peripheral_aresetn] [get_bd_pins opl3_fpga_0/s_axi_aresetn] [get_bd_pins system_ila_0/resetn] [get_bd_pins ps7_0_axi_periph/S00_ARESETN] [get_bd_pins ps7_0_axi_periph/M00_ARESETN]
+  connect_bd_net -net processing_system7_0_FCLK_CLK0 [get_bd_pins processing_system7_0/FCLK_CLK0] [get_bd_pins processing_system7_0/M_AXI_GP0_ACLK] [get_bd_pins rst_ps7_0_100M/slowest_sync_clk] [get_bd_pins opl3_fpga_0/s_axi_aclk] [get_bd_pins ps7_0_axi_periph/ACLK] [get_bd_pins ps7_0_axi_periph/S00_ACLK] [get_bd_pins ps7_0_axi_periph/M00_ACLK]
+  connect_bd_net -net processing_system7_0_FCLK_RESET0_N [get_bd_pins processing_system7_0/FCLK_RESET0_N] [get_bd_pins rst_ps7_0_100M/ext_reset_in] [get_bd_pins mmcm_125/resetn]
+  connect_bd_net -net rst_ps7_0_100M_peripheral_aresetn [get_bd_pins rst_ps7_0_100M/peripheral_aresetn] [get_bd_pins opl3_fpga_0/s_axi_aresetn] [get_bd_pins ps7_0_axi_periph/S00_ARESETN] [get_bd_pins ps7_0_axi_periph/M00_ARESETN] [get_bd_pins ps7_0_axi_periph/ARESETN]
 
   # Create address segments
   assign_bd_address -offset 0x43C00000 -range 0x00000080 -target_address_space [get_bd_addr_spaces processing_system7_0/Data] [get_bd_addr_segs opl3_fpga_0/S_AXI/S_AXI_reg] -force
@@ -785,7 +780,7 @@ connect_bd_intf_net -intf_net [get_bd_intf_nets ps7_0_axi_periph_M00_AXI] [get_b
   # Restore current instance
   current_bd_instance $oldCurInst
 
-validate_bd_design
+  validate_bd_design
   save_bd_design
 }
 # End of create_root_design()

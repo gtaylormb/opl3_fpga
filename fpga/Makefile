@@ -74,8 +74,7 @@ RTL_SRC = \
 	modules/misc/src/pipeline_sr.sv \
 	modules/misc/src/synchronizer.sv \
     modules/register_file/src/register_file.sv \
-	modules/register_file/src/host_if.sv \
-	modules/misc/ila_0/synth/ila_0.v
+	modules/register_file/src/host_if.sv
 
 PKG_SRC = \
 	modules/top_level/pkg/opl3_pkg.sv
@@ -83,9 +82,6 @@ PKG_SRC = \
 SIM_SRC = \
 	modules/top_level/sim/opl3_tb.sv \
 	modules/operator/sim/save_dac_input.sv
-
-IP_SRC = \
-	modules/misc/ila_0/ila_0.xci
 
 BD_SRC = \
 	bd/vivado_2023.2_bd.tcl
@@ -141,16 +137,16 @@ clean:
 	rm -rf sim_lib build usage_stat* ipshared/ .Xil fpga/.Xil fpga/.gen fpga/.srcs
 	rm -rf clockInfo.txt tight_setup_hold_pins.txt
 
-build/design_1/design_1.bd: $(BD_SRC) ${PKG_SRC} $(RTL_SRC)
+build/design_1/design_1.bd: $(BD_SRC)
 	test -e build || mkdir build
 	vivado -mode batch -source scripts/vivado_bd.tcl -nojournal \
 	-log build/bd_log.txt -tclargs "$(BD_SRC)" "${BOARD}"
 
-build/post_syn.dcp: build/design_1/design_1.bd $(PRE_SYN_XDC_SRC) $(POST_SYN_XDC_SRC)
+build/post_syn.dcp: build/design_1/design_1.bd ${PKG_SRC} $(RTL_SRC) $(PRE_SYN_XDC_SRC) $(POST_SYN_XDC_SRC)
 	test -e build || mkdir build
 	rm -rf ipshared
 	vivado -mode batch -source scripts/vivado_syn.tcl -nojournal \
-	-log build/syn_log.txt -tclargs "${PKG_SRC}" "$(RTL_SRC)" "$(INC_DIR0)" "$(PRE_SYN_XDC_SRC)" "$(POST_SYN_XDC_SRC)" "$(IP_SRC)"
+	-log build/syn_log.txt -tclargs "${PKG_SRC}" "$(RTL_SRC)" "$(INC_DIR0)" "$(PRE_SYN_XDC_SRC)" "$(POST_SYN_XDC_SRC)"
 
 build/post_place.dcp: build/post_syn.dcp
 	vivado -mode batch -source scripts/vivado_place.tcl -log build/place_log.txt -nojournal
