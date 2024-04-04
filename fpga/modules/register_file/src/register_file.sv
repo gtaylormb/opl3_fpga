@@ -94,6 +94,9 @@ module register_file
      * Registers that are specific to a particular bank
      */
     always_comb begin
+        timer1 = opl3_reg[0][2];
+        timer2 = opl3_reg[0][3];
+        irq_rst = opl3_reg[0][4][7];
         mt1 = opl3_reg[0][4][6];
         mt2 = opl3_reg[0][4][5];
         st2 = opl3_reg[0][4][1];

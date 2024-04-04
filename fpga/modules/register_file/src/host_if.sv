@@ -55,25 +55,52 @@ module host_if
     input wire [REG_FILE_DATA_WIDTH-1:0] din,
     output logic [REG_FILE_DATA_WIDTH-1:0] dout,
     output logic [REG_FILE_DATA_WIDTH-1:0] opl3_reg [NUM_BANKS][NUM_REG_PER_BANK] = '{default: 0},
+    output logic ack_host_wr,
     input wire [REG_FILE_DATA_WIDTH-1:0] status
 );
-    logic cs_p1 = 0;
-    logic cs_p2 = 0;
-    logic rd_p1 = 0;
-    logic wr_p1 = 0;
-    logic [1:0] address_p1 = 0;
-    logic [REG_FILE_DATA_WIDTH-1:0] din_p1;
-    logic cs_latched = 0;
-    logic rd_latched = 0;
-    logic wr_latched = 0;
-    logic [1:0] address_latched = 0;
-    logic [REG_FILE_DATA_WIDTH-1:0] din_latched = 0;
-    logic cs_opl3;
-    logic ack_host;
-    logic opl3_bank = 0;
-    logic [REG_FILE_DATA_WIDTH-1:0] opl3_address = 0;
-    logic [REG_FILE_DATA_WIDTH-1:0] dout_opl3 = 0;
+    (* mark_debug = "true" *) logic cs_p1 = 0;
+    (* mark_debug = "true" *) logic cs_p2 = 0;
+    (* mark_debug = "true" *)  logic rd_p1 = 0;
+    (* mark_debug = "true" *)  logic wr_p1 = 0;
+    (* mark_debug = "true" *)  logic [1:0] address_p1 = 0;
+    (* mark_debug = "true" *)  logic [REG_FILE_DATA_WIDTH-1:0] din_p1;
+    (* mark_debug = "true" *)  logic cs_latched = 0;
+    (* mark_debug = "true" *)  logic rd_latched = 0;
+    (* mark_debug = "true" *)  logic wr_latched = 0;
+    (* mark_debug = "true" *)  logic [1:0] address_latched = 0;
+    (* mark_debug = "true" *)  logic [REG_FILE_DATA_WIDTH-1:0] din_latched = 0;
+    (* mark_debug = "true" *)  logic cs_opl3;
+    (* mark_debug = "true" *)  logic cs_opl3_p1 = 0;
+    (* mark_debug = "true" *)  logic rd_opl3 = 0;
+    (* mark_debug = "true" *)  logic wr_opl3 = 0;
+    (* mark_debug = "true" *)  logic [1:0] address_opl3 = 0;
+    (* mark_debug = "true" *)  logic [REG_FILE_DATA_WIDTH-1:0] din_opl3 = 0;
+    (* mark_debug = "true" *)  logic internal_bank = 0;
+    (* mark_debug = "true" *)  logic [REG_FILE_DATA_WIDTH-1:0] internal_address = 0;
+    logic ack_transaction;
 
+    ila_0 ila_host_if (
+        .clk(clk_host), // input wire clk
+        .probe0({
+            cs_latched,
+            rd_latched,
+            wr_latched,
+            address_latched,
+            din_latched,
+            cs_opl3,
+            cs_opl3_p1,
+            rd_opl3,
+            wr_opl3,
+            address_opl3,
+            din_opl3,
+            ack_transaction,
+            internal_bank,
+            internal_address
+        }) // input wire [49:0] probe0
+);
+    /*
+     * Handshake signals across clock domains using cs signal
+     */
     always_ff @(posedge clk_host) begin
         cs_p1 <= !cs_n;
         cs_p2 <= cs_p1;
@@ -90,8 +117,11 @@ module host_if
             din_latched <= din_p1;
         end
 
-        if (ack_host)
+        if (ack_transaction) begin
             cs_latched <= 0;
+            rd_latched <= 0;
+            wr_latched <= 0;
+        end
 
         if (!ic_n) begin
             cs_latched <= 0;
@@ -111,36 +141,43 @@ module host_if
     synchronizer ack_sync (
         .clk(clk_host),
         .in(cs_opl3),
-        .out(ack_host)
+        .out(ack_transaction)
     );
 
+    always_comb ack_host_wr = ack_transaction && wr_latched;
+
     always_ff @(posedge clk) begin
-        if (cs_opl3)
-            case ({rd_latched, wr_latched, address_latched[0]})
+        cs_opl3_p1 <= cs_opl3;
+        rd_opl3 <= rd_latched;
+        wr_opl3 <= wr_latched;
+        address_opl3 <= address_latched;
+        din_opl3 <= din_latched;
+
+        if (cs_opl3 && !cs_opl3_p1)
+            unique case ({rd_opl3, wr_opl3, address_opl3[0]})
             'b010: begin // address write mode
-                opl3_bank <= address_latched[1];
-                opl3_address <= din;
+                internal_bank <= address_opl3[1];
+                internal_address <= din_opl3;
             end
             'b011: // data write mode
-                opl3_reg[opl3_bank][opl3_address] <= din;
-            'b100: // status read mode
-                dout_opl3 <= status;
+                opl3_reg[internal_bank][internal_address] <= din_opl3;
+            'b100:; // status read mode
+            default:;
             endcase
 
         if (reset) begin
-            opl3_bank <= 0;
-            opl3_address <= 0;
+            internal_bank <= 0;
+            internal_address <= 0;
             opl3_reg <= '{default: 0};
-            dout_opl3 <= 0;
         end
     end
 
-    // bits do not need to be coherant, can use synchronizer
+    // bits do not need to be coherant, can use synchronizers
     synchronizer #(
         .DATA_WIDTH(REG_FILE_DATA_WIDTH)
     ) dout_sync (
         .clk(clk_host),
-        .in(dout_opl3),
+        .in(status),
         .out(dout)
     );
 endmodule

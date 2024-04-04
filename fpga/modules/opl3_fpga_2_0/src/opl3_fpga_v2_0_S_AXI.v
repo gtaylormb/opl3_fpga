@@ -85,7 +85,8 @@
 		output reg wr_n,
 		output reg [1:0] address,
 		output reg [7:0] din,
-		input wire [7:0] dout
+		input wire [7:0] dout,
+		input wire ack_host_wr
 	);
 
 	// AXI4LITE signals
@@ -131,47 +132,13 @@
 	// S_AXI_AWVALID and S_AXI_WVALID are asserted. axi_awready is
 	// de-asserted when reset is low.
 
-	always @( posedge S_AXI_ACLK )
-	begin
-	  if ( S_AXI_ARESETN == 1'b0 )
-	    begin
-	      axi_awready <= 1'b0;
-	    end
-	  else
-	    begin
-	      if (~axi_awready && S_AXI_AWVALID && S_AXI_WVALID)
-	        begin
-	          // slave is ready to accept write address when
-	          // there is a valid write address and write data
-	          // on the write address and data bus. This design
-	          // expects no outstanding transactions.
-	          axi_awready <= 1'b1;
-	        end
-	      else
-	        begin
-	          axi_awready <= 1'b0;
-	        end
-	    end
-	end
+	always @(posedge S_AXI_ACLK) begin
+		axi_awready <= 0;
 
-	// Implement axi_awaddr latching
-	// This process is used to latch the address when both
-	// S_AXI_AWVALID and S_AXI_WVALID are valid.
-
-	always @( posedge S_AXI_ACLK )
-	begin
-	  if ( S_AXI_ARESETN == 1'b0 )
-	    begin
-	      axi_awaddr <= 0;
-	    end
-	  else
-	    begin
-	      if (~axi_awready && S_AXI_AWVALID && S_AXI_WVALID)
-	        begin
-	          // Write Address latching
-	          axi_awaddr <= S_AXI_AWADDR;
-	        end
-	    end
+		if (slv_reg_wren)
+			axi_awready <= ack_host_wr;
+		else if (slv_reg_rden)
+			axi_awready <= 1;
 	end
 
 	// Implement axi_wready generation
@@ -179,28 +146,8 @@
 	// S_AXI_AWVALID and S_AXI_WVALID are asserted. axi_wready is
 	// de-asserted when reset is low.
 
-	always @( posedge S_AXI_ACLK )
-	begin
-	  if ( S_AXI_ARESETN == 1'b0 )
-	    begin
-	      axi_wready <= 1'b0;
-	    end
-	  else
-	    begin
-	      if (~axi_wready && S_AXI_WVALID && S_AXI_AWVALID)
-	        begin
-	          // slave is ready to accept write data when
-	          // there is a valid write address and write data
-	          // on the write address and data bus. This design
-	          // expects no outstanding transactions.
-	          axi_wready <= 1'b1;
-	        end
-	      else
-	        begin
-	          axi_wready <= 1'b0;
-	        end
-	    end
-	end
+	always @(posedge S_AXI_ACLK)
+		axi_wready = ack_host_wr;
 
 	// Implement memory mapped register select and write logic generation
 	// The write data is accepted and written to memory mapped registers when
@@ -209,13 +156,13 @@
 	// These registers are cleared when reset (active low) is applied.
 	// Slave register write enable is asserted when valid address and data are available
 	// and the slave is ready to accept the write address and write data.
-	assign slv_reg_wren = axi_wready && S_AXI_WVALID && axi_awready && S_AXI_AWVALID;
+	assign slv_reg_wren = S_AXI_WVALID && S_AXI_AWVALID;
 
 	always @( posedge S_AXI_ACLK ) begin
-		address <= axi_awaddr[1:0];
+		address <= S_AXI_AWADDR[1:0];
 		din <= 0;
 	    if (slv_reg_wren)
-			case (axi_awaddr[1:0])
+			case (S_AXI_AWADDR[1:0])
 			'b00: din <= S_AXI_WDATA[7:0];
 			'b01: din <= S_AXI_WDATA[15:8];
 			'b10: din <= S_AXI_WDATA[23:16];
@@ -320,7 +267,7 @@
 	// Implement memory mapped register select and read logic generation
 	// Slave register read enable is asserted when valid address is available
 	// and the slave is ready to accept the read address.
-	assign slv_reg_rden = axi_arready & S_AXI_ARVALID & ~axi_rvalid;
+	assign slv_reg_rden = S_AXI_ARVALID & ~axi_rvalid;
 
 	always @( posedge S_AXI_ACLK ) begin
 		cs_n <= !(slv_reg_rden || slv_reg_wren);

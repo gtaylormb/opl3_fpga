@@ -41,6 +41,7 @@ module opl3_fpga_v2_0 #(
     logic [1:0] address;
     logic [7:0] din;
     logic [7:0] dout;
+    logic ack_host_wr;
     logic sample_valid;
     logic signed [23:0] sample_l;
     logic signed [23:0] sample_r;
