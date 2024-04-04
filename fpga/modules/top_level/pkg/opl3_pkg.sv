@@ -80,7 +80,7 @@ package opl3_pkg;
      * left shift if necessary.
      */
     localparam SAMPLE_WIDTH = DAC_OUTPUT_WIDTH > 16 ? 16 : DAC_OUTPUT_WIDTH - 1;
-    localparam DAC_LEFT_SHIFT = DAC_OUTPUT_WIDTH - SAMPLE_WIDTH - 1;
+    localparam DAC_LEFT_SHIFT = DAC_OUTPUT_WIDTH - SAMPLE_WIDTH - 2;
     localparam ENV_WIDTH = 9;
     localparam OP_OUT_WIDTH = 13;
     localparam PHASE_ACC_WIDTH = 20;
