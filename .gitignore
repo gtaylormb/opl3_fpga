@@ -20,3 +20,5 @@ fpga/NA/ps7_summary.html
 .repo.yaml
 .peers.ini
 .lock
+.vscode/
+.project
