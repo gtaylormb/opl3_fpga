@@ -95,7 +95,6 @@ module phase_generator
     logic [PIPELINE_DELAY:1] [OP_OUT_WIDTH-1:0] modulation_p;
 
     pipeline_sr #(
-        .type_t(logic),
         .ENDING_CYCLE(PIPELINE_DELAY)
     ) sample_clk_en_sr (
         .clk,
@@ -104,7 +103,6 @@ module phase_generator
     );
 
     pipeline_sr #(
-        .type_t(logic),
         .ENDING_CYCLE(PIPELINE_DELAY)
     ) key_on_pulse_sr (
         .clk,
@@ -113,7 +111,7 @@ module phase_generator
     );
 
     pipeline_sr #(
-        .type_t(logic [BANK_NUM_WIDTH-1:0]),
+        .DATA_WIDTH(BANK_NUM_WIDTH),
         .ENDING_CYCLE(PIPELINE_DELAY)
     ) bank_num_sr (
         .clk,
@@ -122,7 +120,7 @@ module phase_generator
     );
 
     pipeline_sr #(
-        .type_t(logic [OP_NUM_WIDTH-1:0]),
+        .DATA_WIDTH(OP_NUM_WIDTH),
         .ENDING_CYCLE(PIPELINE_DELAY)
     ) op_num_sr (
         .clk,
@@ -136,7 +134,7 @@ module phase_generator
     always_comb ws_post_opl_p0 = ws & (is_new ? 'h7 : 'h3);
 
     pipeline_sr #(
-        .type_t(logic [REG_WS_WIDTH-1:0]),
+        .DATA_WIDTH(REG_WS_WIDTH),
         .ENDING_CYCLE(PIPELINE_DELAY)
     ) ws_post_opl_sr (
         .clk,
@@ -174,7 +172,7 @@ module phase_generator
     );
 
     pipeline_sr #(
-        .type_t(logic [OP_OUT_WIDTH-1:0]),
+        .DATA_WIDTH(OP_OUT_WIDTH),
         .ENDING_CYCLE(PIPELINE_DELAY)
     ) modulation_sr (
         .clk,

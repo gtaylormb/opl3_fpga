@@ -553,7 +553,6 @@ module control_operators
     );
 
     pipeline_sr #(
-        .type_t(logic),
         .ENDING_CYCLE(PIPELINE_DELAY)
     ) sample_clk_en_sr (
         .clk,
@@ -562,7 +561,7 @@ module control_operators
     );
 
     pipeline_sr #(
-        .type_t(logic [BANK_NUM_WIDTH-1:0]),
+        .DATA_WIDTH(BANK_NUM_WIDTH),
         .ENDING_CYCLE(PIPELINE_DELAY)
     ) bank_num_sr (
         .clk,
@@ -571,7 +570,7 @@ module control_operators
     );
 
     pipeline_sr #(
-        .type_t(logic [OP_NUM_WIDTH-1:0]),
+        .DATA_WIDTH(OP_NUM_WIDTH),
         .ENDING_CYCLE(PIPELINE_DELAY)
     ) op_num_sr (
         .clk,

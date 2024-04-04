@@ -102,7 +102,6 @@ module operator
     logic [PIPELINE_DELAY:1] [1:0] [OP_OUT_WIDTH-1:0] feedback_p;
 
     pipeline_sr #(
-        .type_t(logic),
         .ENDING_CYCLE(PIPELINE_DELAY)
     ) sample_clk_en_sr (
         .clk,
@@ -111,7 +110,7 @@ module operator
     );
 
     pipeline_sr #(
-        .type_t(logic [BANK_NUM_WIDTH-1:0]),
+        .DATA_WIDTH(BANK_NUM_WIDTH),
         .ENDING_CYCLE(PIPELINE_DELAY)
     ) bank_num_sr (
         .clk,
@@ -120,7 +119,7 @@ module operator
     );
 
     pipeline_sr #(
-        .type_t(logic [OP_NUM_WIDTH-1:0]),
+        .DATA_WIDTH(OP_NUM_WIDTH),
         .ENDING_CYCLE(PIPELINE_DELAY)
     ) op_num_sr (
         .clk,
@@ -247,7 +246,7 @@ module operator
     );
 
     pipeline_sr #(
-        .type_t(logic [1:0] [OP_OUT_WIDTH-1:0]),
+        .DATA_WIDTH(OP_OUT_WIDTH*2),
         .ENDING_CYCLE(PIPELINE_DELAY)
     ) feedback_sr (
         .clk,

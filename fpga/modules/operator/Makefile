@@ -17,6 +17,7 @@ RTL_SRC = \
 	../misc/src/pipeline_sr.sv
 
 SIM_SRC = \
+	../top_level/pkg/opl3_pkg.sv \
 	sim/operator_tb.sv \
 	sim/save_dac_input.sv
 

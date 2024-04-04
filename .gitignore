@@ -16,3 +16,7 @@ vitis_project/
 BOOT.bin
 logs/
 software/opl3dro/filesystem.mfs
+fpga/NA/ps7_summary.html
+.repo.yaml
+.peers.ini
+.lock

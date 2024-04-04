@@ -96,7 +96,7 @@ package opl3_pkg;
     localparam TIMER1_TICK_INTERVAL = 80e-6;  // in seconds
     localparam TIMER2_TICK_INTERVAL = 320e-6; // in seconds
 
-    typedef enum logic [31:0] {
+    typedef enum logic [2:0] {
         OP_NORMAL,
         OP_BASS_DRUM,
         OP_HI_HAT,

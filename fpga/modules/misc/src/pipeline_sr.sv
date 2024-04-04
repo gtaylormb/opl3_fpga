@@ -42,17 +42,17 @@
 `default_nettype none
 
 module pipeline_sr #(
-    parameter type type_t = logic,
+    parameter DATA_WIDTH = 1,
     parameter STARTING_CYCLE = 1,
     parameter ENDING_CYCLE = 1,
     parameter POR_VALUE = 0 // power on reset value of pipeline registers
 ) (
     input wire clk,
-    input var type_t in,
-    output type_t [ENDING_CYCLE:STARTING_CYCLE] out = '{default: POR_VALUE}
+    input wire [DATA_WIDTH-1:0] in,
+    output logic [ENDING_CYCLE:STARTING_CYCLE] [DATA_WIDTH-1:0] out = '{default: POR_VALUE}
 );
     always_ff @(posedge clk) begin
-        out <= out << $bits(type_t);
+        out <= out << DATA_WIDTH;
         out[STARTING_CYCLE] <= in;
     end
 endmodule

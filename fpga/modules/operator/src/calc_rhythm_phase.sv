@@ -67,7 +67,6 @@ module calc_rhythm_phase
     operator_t [PIPELINE_DELAY:1] op_type_p;
 
     pipeline_sr #(
-        .type_t(logic),
         .ENDING_CYCLE(PIPELINE_DELAY)
     ) sample_clk_en_sr (
         .clk,
@@ -76,7 +75,7 @@ module calc_rhythm_phase
     );
 
     pipeline_sr #(
-        .type_t(operator_t),
+        .DATA_WIDTH($bits(operator_t)),
         .ENDING_CYCLE(PIPELINE_DELAY),
         .POR_VALUE(OP_NORMAL)
     ) op_type_sr (

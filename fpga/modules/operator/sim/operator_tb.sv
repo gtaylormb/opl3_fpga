@@ -115,9 +115,8 @@ module operator_tb
     endclocking
 
     clk_div #(
-        .INPUT_CLK_FREQ(CLK_FREQ),
-        .OUTPUT_CLK_EN_FREQ(ACTUAL_SAMPLE_FREQ)
-    ) sample_clk_gen_inst (
+        .CLK_DIV_COUNT(CLK_DIV_COUNT)
+    ) sample_clk_gen (
         .clk_en(sample_clk_en),
         .*
     );

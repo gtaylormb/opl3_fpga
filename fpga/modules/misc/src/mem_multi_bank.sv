@@ -67,7 +67,7 @@ module mem_multi_bank #(
     logic [PIPELINE_DELAY:1] [BANK_WIDTH-1:0] bankb_p;
 
     pipeline_sr #(
-        .type_t(logic [BANK_WIDTH-1:0]),
+        .DATA_WIDTH(BANK_WIDTH),
         .ENDING_CYCLE(PIPELINE_DELAY)
     ) bankb_sr (
         .clk,
