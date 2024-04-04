@@ -13,7 +13,6 @@
 #include "xilmfs.h"
 #include "xil_io.h"
 #include "xparameters.h"
-#include "opl3_fpga.h"
 #include "audio_demo.h"
 #include "timer_ps.h"
 #include "imfplay.h"

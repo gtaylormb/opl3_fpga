@@ -35,7 +35,6 @@ subject to the following restrictions:
 #include "xil_io.h"
 #include "xuartps_hw.h"
 #include "xparameters.h"
-#include "opl3_fpga.h"
 #include "audio_demo.h"
 #include "timer_ps.h"
 
@@ -88,12 +87,12 @@ void opl2_out(unsigned char reg, unsigned char data_in, unsigned char bank)
 	// write OPL3 address
 	address = bank ? 0x2 : 0x0;
 	data = reg;
-	OPL3_FPGA_mWriteReg(XPAR_OPL3_FPGA_0_BASEADDR, address, data);
+	Xil_Out8(XPAR_OPL3_FPGA_0_BASEADDR + address, data);
 
 	// write OPL3 data
 	address = 0x1;
 	data = data_in;
-	OPL3_FPGA_mWriteReg(XPAR_OPL3_FPGA_0_BASEADDR, address, data);
+	Xil_Out8(XPAR_OPL3_FPGA_0_BASEADDR + address, data);
 
 	shadow_opl[reg] = data;
 }
