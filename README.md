@@ -3,7 +3,7 @@ opl3_fpga
 ## News
 2024-4-4
 * I changed up the top level interface to better match the real chip and make it easier to integrate into other projects. The register map is now internal instead of an external AXI version. Clock domain
-cross logic is included to go between CPU and OPL3. This along with some significant internal logic reduction work has massively cut the area down. LUT utilization was reduced by 45%, registers by 48%.
+cross logic is included to go between CPU and OPL3. This along with some significant internal logic reduction work has massively cut down the area. LUT utilization was reduced by 50%, registers by 58%.
 The design also now requires Vivado/Vitis 2023.2; the integration is a lot cleaner and there's way less files in the repo now. I have some ideas to get the area down further.
 
 2019-11-7
@@ -89,29 +89,29 @@ Close up of the attack phase:
 
 ## Utilization in xc7z010:
 
-    +----------------------------+------+-------+-----------+-------+
-    |          Site Type         | Used | Fixed | Available | Util% |
-    +----------------------------+------+-------+-----------+-------+
-    | Slice LUTs                 | 4601 |     0 |     17600 | 26.14 |
-    |   LUT as Logic             | 4434 |     0 |     17600 | 25.19 |
-    |   LUT as Memory            |  167 |     0 |      6000 |  2.78 |
-    |     LUT as Distributed RAM |   88 |     0 |           |       |
-    |     LUT as Shift Register  |   79 |     0 |           |       |
-    | Slice Registers            | 6488 |     0 |     35200 | 18.43 |
-    |   Register as Flip Flop    | 6488 |     0 |     35200 | 18.43 |
-    |   Register as Latch        |    0 |     0 |     35200 |  0.00 |
-    | F7 Muxes                   |  428 |     0 |      8800 |  4.86 |
-    | F8 Muxes                   |   54 |     0 |      4400 |  1.23 |
-    +----------------------------+------+-------+-----------+-------+
+    +----------------------------+------+-------+------------+-----------+-------+
+    |          Site Type         | Used | Fixed | Prohibited | Available | Util% |
+    +----------------------------+------+-------+------------+-----------+-------+
+    | Slice LUTs                 | 3051 |     0 |          0 |     17600 | 17.34 |
+    |   LUT as Logic             | 2882 |     0 |          0 |     17600 | 16.38 |
+    |   LUT as Memory            |  169 |     0 |          0 |      6000 |  2.82 |
+    |     LUT as Distributed RAM |  124 |     0 |            |           |       |
+    |     LUT as Shift Register  |   45 |     0 |            |           |       |
+    | Slice Registers            | 4315 |     0 |          0 |     35200 | 12.26 |
+    |   Register as Flip Flop    | 4315 |     0 |          0 |     35200 | 12.26 |
+    |   Register as Latch        |    0 |     0 |          0 |     35200 |  0.00 |
+    | F7 Muxes                   |  359 |     0 |          0 |      8800 |  4.08 |
+    | F8 Muxes                   |   63 |     0 |          0 |      4400 |  1.43 |
+    +----------------------------+------+-------+------------+-----------+-------+
 
-    +-------------------+------+-------+-----------+-------+
-    |     Site Type     | Used | Fixed | Available | Util% |
-    +-------------------+------+-------+-----------+-------+
-    | Block RAM Tile    |    2 |     0 |        60 |  3.33 |
-    |   RAMB36/FIFO*    |    0 |     0 |        60 |  0.00 |
-    |   RAMB18          |    4 |     0 |       120 |  3.33 |
-    |     RAMB18E1 only |    4 |       |           |       |
-    +-------------------+------+-------+-----------+-------+
+    +-------------------+------+-------+------------+-----------+-------+
+    |     Site Type     | Used | Fixed | Prohibited | Available | Util% |
+    +-------------------+------+-------+------------+-----------+-------+
+    | Block RAM Tile    |    2 |     0 |          0 |        60 |  3.33 |
+    |   RAMB36/FIFO*    |    0 |     0 |          0 |        60 |  0.00 |
+    |   RAMB18          |    4 |     0 |          0 |       120 |  3.33 |
+    |     RAMB18E1 only |    4 |       |            |           |       |
+    +-------------------+------+-------+------------+-----------+-------+
 
 ## Serial command line interface
 
