@@ -58,8 +58,8 @@ module timers
     output logic irq,
     output logic irq_n = 0
 );
-    logic timer1_overflow;
-    logic timer2_overflow;
+    logic timer1_overflow_pulse;
+    logic timer2_overflow_pulse;
 
     timer #(
         .TIMER_TICK_INTERVAL(TIMER1_TICK_INTERVAL)
@@ -67,7 +67,7 @@ module timers
         .clk,
         .timer_reg(timer1),
         .start_timer(st1),
-        .timer_overflow_pulse(timer1_overflow)
+        .timer_overflow_pulse(timer1_overflow_pulse)
     );
 
     timer #(
@@ -76,14 +76,14 @@ module timers
         .clk,
         .timer_reg(timer2),
         .start_timer(st2),
-        .timer_overflow_pulse(timer2_overflow)
+        .timer_overflow_pulse(timer2_overflow_pulse)
     );
 
     always_ff @(posedge clk) begin
-        if (timer1_overflow && mt1)
+        if (timer1_overflow_pulse && mt1)
             ft1 <= 1;
 
-        if (timer2_overflow && mt2)
+        if (timer2_overflow_pulse && mt2)
             ft2 <= 1;
 
         if (reset || irq_rst) begin

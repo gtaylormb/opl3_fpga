@@ -2,9 +2,10 @@ opl3_fpga
 =========
 ## News
 2024-4-4
-* I changed up the top level interface to better match the real chip and make it easier to integrate into other projects. The register map is now internal instead of an external AXI version. Clock domain
-cross logic is included to go between CPU and OPL3. This along with some significant internal logic reduction work has massively cut down the area. LUT utilization was reduced by 50%, registers by 58%.
-The design also now requires Vivado/Vitis 2023.2; the integration is a lot cleaner and there's way less files in the repo now. I have some ideas to get the area down further.
+* I changed up the top level interface/bus protocol to better match the real chip and make it easier to integrate into other projects. The register map is now internal instead of an external AXI version. Clock domain
+crossing logic is included to go between CPU and OPL3. This along with significant internal logic reduction work has massively cut down the area. LUT utilization was reduced by 50%, registers by 58%.
+The design also now requires Vivado/Vitis 2023.2; the integration is a lot cleaner and there's way less files in the repo now. I have some ideas to get the area down further. There's also some bug fixes regarding
+rhythm and timers/irq are now properly implemented (but still optional).
 
 2019-11-7
 * The OPL2 subset of OPL3_FPGA was converted to Verilog by Magnus Karlsson, and then ported to the Panologic thin client (a Spartan-3E based board) by Skip Hansen. The project can be found here: https://github.com/skiphansen/panog1_opl3
@@ -149,7 +150,7 @@ They will be included in the in-memory filesystem for playback.
 2. Source the Vivado and SDK settings so all the build tools are in your path.
 Example:
 
-        source /opt/Xilinx/Vivado/2016.1/settings64.sh
+        source /opt/Xilinx/Vivado/2023.2/settings64.sh
 
 3. Run 'make' to build the FPGA and software necessary to run the OPL3
 and create an SD card image.
