@@ -95,26 +95,16 @@ POST_SYN_XDC_SRC = \
 INC_DIR0 = \
 	modules/
 
-SIM_LIB = \
-	sim_lib_vivado_2016.1/unisims/*.v
-
-compile: compile_sim_lib
+compile:
 	test -e work || vlib work
 	vlog -incr ${PKG_SRC} $(SIM_SRC) $(RTL_SRC) +define+SIM +incdir+$(INC_DIR0)
 
-compile_sim_lib:
-	test -e sim_lib || (vlib sim_lib && vlog -work sim_lib -incr $(SIM_LIB))
-
-sim: compile-eval
-	vsim -L sim_lib -c opl3_tb glbl -do "run -a"
+sim: compile
+	vsim -c opl3_tb -do "run -a"
 
 # Launch the Modelsim GUI for debugging design
 sim-debug: compile
-ifneq (, $(findstring Cygwin, $(uname_O)))
-	cygstart vsim -L sim_lib opl3_tb glbl -voptargs=+acc
-else
-	vsim -L sim_lib opl3_tb glbl -voptargs=+acc
-endif
+	vsim opl3_tb -voptargs=+acc
 
 bd: build/design_1/design_1.bd
 
