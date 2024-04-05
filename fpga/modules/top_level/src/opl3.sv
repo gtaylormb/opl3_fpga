@@ -57,7 +57,7 @@ module opl3
     output logic sample_valid = 0,
     output logic signed [DAC_OUTPUT_WIDTH-1:0] sample_l = 0, // synced to opl3 clk and sample_valid
     output logic signed [DAC_OUTPUT_WIDTH-1:0] sample_r = 0,
-    output logic [NUM_LEDS-1:0] led,
+    output logic [NUM_LEDS-1:0] led = 0,
     output logic irq_n
 );
     logic reset;
@@ -155,11 +155,16 @@ module opl3
     /*
      * If we don't need timers, don't instantiate to save area
      */
-    generate
     if (INSTANTIATE_TIMERS)
         timers timers (
             .*
         );
-    endgenerate
+    else
+        always_comb begin
+            ft1 = 0;
+            ft2 = 0;
+            irq = 0;
+            irq_n = 1;
+        end
 endmodule
 `default_nettype wire

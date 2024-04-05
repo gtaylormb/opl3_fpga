@@ -41,10 +41,11 @@
 `timescale 1ns / 1ps
 `default_nettype none
 
-import opl3_pkg::*;
-
-module timers (
+module timers
+    import opl3_pkg::*;
+(
     input wire clk,
+    input wire reset,
     input wire [REG_TIMER_WIDTH-1:0] timer1,
     input wire [REG_TIMER_WIDTH-1:0] timer2,
     input wire irq_rst,
@@ -52,7 +53,10 @@ module timers (
     input wire mt2,
     input wire st1, // start timer
     input wire st2,
-    output logic irq = 0
+    output logic ft1 = 0,
+    output logic ft2 = 0,
+    output logic irq,
+    output logic irq_n = 0
 );
     logic timer1_overflow;
     logic timer2_overflow;
@@ -75,11 +79,23 @@ module timers (
         .timer_overflow_pulse(timer2_overflow)
     );
 
+    always_ff @(posedge clk) begin
+        if (timer1_overflow && mt1)
+            ft1 <= 1;
+
+        if (timer2_overflow && mt2)
+            ft2 <= 1;
+
+        if (reset || irq_rst) begin
+            ft1 <= 0;
+            ft2 <= 0;
+        end
+    end
+
+    always_comb irq = ft1 || ft2;
+
     always_ff @(posedge clk)
-        if (irq_rst)
-            irq <= 0;
-        else if ((timer1_overflow && mt1) || (timer2_overflow && mt2))
-            irq <= 1;
+        irq_n <= !irq;
 
 endmodule
 `default_nettype wire

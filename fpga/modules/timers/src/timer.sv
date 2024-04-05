@@ -41,9 +41,9 @@
 `timescale 1ns / 1ps
 `default_nettype none
 
-import opl3_pkg::*;
-
-module timer #(
+module timer
+    import opl3_pkg::*;
+#(
     parameter real TIMER_TICK_INTERVAL = 0 // time in seconds
 ) (
     input wire clk,
@@ -93,7 +93,14 @@ module timer #(
             else
                 timer <= timer + 1;
 
-    always_comb timer_overflow_pulse = timer == 2**REG_TIMER_WIDTH - 1;
-
+    edge_detector #(
+        .EDGE_LEVEL(1),
+        .CLK_DLY(1)
+    ) time_overflow_edge_detect (
+        .clk(clk),
+        .clk_en(1'b1),
+        .in(timer == 2**REG_TIMER_WIDTH - 1),
+        .edge_detected(timer_overflow_pulse)
+    );
 endmodule
 `default_nettype wire
