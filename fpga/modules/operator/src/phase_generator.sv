@@ -93,6 +93,8 @@ module phase_generator
     logic [PIPELINE_DELAY:1] [BANK_NUM_WIDTH-1:0] bank_num_p;
     logic [PIPELINE_DELAY:1] [OP_NUM_WIDTH-1:0] op_num_p;
     logic [PIPELINE_DELAY:1] [OP_OUT_WIDTH-1:0] modulation_p;
+    operator_t [PIPELINE_DELAY:1] op_type_p;
+
 
     pipeline_sr #(
         .ENDING_CYCLE(PIPELINE_DELAY)
@@ -126,6 +128,15 @@ module phase_generator
         .clk,
         .in(op_num),
         .out(op_num_p)
+    );
+
+    pipeline_sr #(
+        .DATA_WIDTH($bits(operator_t)),
+        .ENDING_CYCLE(PIPELINE_DELAY)
+    ) op_type_sr (
+        .clk,
+        .in(op_type),
+        .out(op_type_p)
     );
 
     /*
@@ -305,7 +316,7 @@ module phase_generator
         endcase
 
     always_ff @(posedge clk)
-        unique case (op_type)
+        unique case (op_type_p[6])
         OP_NORMAL:    out_p6 <= tmp_out2_p5;
         OP_BASS_DRUM: out_p6 <= tmp_out2_p5;
         default:      out_p6 <= tmp_out2_p5 << 1;
