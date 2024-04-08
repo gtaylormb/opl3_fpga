@@ -76,7 +76,8 @@ module control_operators
     input wire hh,
     input wire [REG_FB_WIDTH-1:0] fb [NUM_BANKS][NUM_CHANNELS_PER_BANK],
     input wire cnt [NUM_BANKS][NUM_CHANNELS_PER_BANK],
-    output logic signed [OP_OUT_WIDTH-1:0] operator_out [NUM_BANKS][NUM_OPERATORS_PER_BANK] = '{default: 0}
+    output logic signed [OP_OUT_WIDTH-1:0] operator_out [NUM_BANKS][NUM_OPERATORS_PER_BANK] = '{default: 0},
+    output logic ops_done = 0
 );
     /*
      * 256/36 operators gives us ~7.1 cycles per operator before next
@@ -485,13 +486,10 @@ module control_operators
     always_comb
         if (state == 0)
             next_state = sample_clk_en;
-        else if (delay_counter == PIPELINE_DELAY)
-            if (state == NUM_OPERATOR_UPDATE_STATES - 1)
-                next_state = 0;
-            else
-                next_state = state + 1;
+        else if (state == NUM_OPERATOR_UPDATE_STATES - 1)
+            next_state = 0;
         else
-            next_state = state;
+            next_state = state + 1;
 
     always_ff @(posedge clk)
         if (next_state != state)
@@ -510,7 +508,7 @@ module control_operators
         else
             op_num = state - 1;
 
-    always_comb op_sample_clk_en = state != 0 && delay_counter == 0;
+    always_comb op_sample_clk_en = state != 0;
 
     /*
      * The sample_clk_en input for each operator slot is pulsed in the first
@@ -528,7 +526,7 @@ module control_operators
         .ws(ws[bank_num][op_num]),
         .vib(vib[bank_num][op_num]),
         .dvb,
-        .kon(kon_tmp),
+        .kon(kon_tmp[bank_num][op_num]),
         .ar(ar[bank_num][op_num]),
         .dr(dr[bank_num][op_num]),
         .sl(sl[bank_num][op_num]),
@@ -581,6 +579,9 @@ module control_operators
     // load the output from 3 operators ago but don't read out of range
     always_comb modulation_out_op_num = op_num >= 3 ? op_num - 3 : 0;
 
+    always_ff @(posedge clk)
+        ops_done <= op_sample_clk_en_p[6] && !op_sample_clk_en_p[5];
+
     mem_multi_bank #(
         .DATA_WIDTH(OP_OUT_WIDTH),
         .DEPTH(NUM_OPERATORS_PER_BANK),
@@ -605,7 +606,7 @@ module control_operators
              * Capture output from operator in the last cycle of the time slot
              */
             always_ff @(posedge clk)
-                if (i == bank_num && j == op_num && op_sample_clk_en_p[6])
+                if (i == bank_num_p[6] && j == op_num_p[6] && op_sample_clk_en_p[6])
                     operator_out[i][j] <= out_p6;
 endmodule
 `default_nettype wire

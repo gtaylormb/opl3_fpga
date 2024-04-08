@@ -108,6 +108,7 @@ module channels
     logic signed [SAMPLE_WIDTH-1:0] channel_c = 0;
     logic signed [SAMPLE_WIDTH-1:0] channel_d = 0;
     logic channel_valid = 0;
+    logic ops_done;
 
     enum {
         IDLE,
@@ -122,7 +123,7 @@ module channels
 
     always_comb
         unique case (state)
-        IDLE: next_state = sample_clk_en ? CALC_OUTPUTS : IDLE;
+        IDLE: next_state = ops_done ? CALC_OUTPUTS : IDLE;
         CALC_OUTPUTS: next_state = bank == 1 && channel == 8 ? IDLE : CALC_OUTPUTS;
         endcase
 

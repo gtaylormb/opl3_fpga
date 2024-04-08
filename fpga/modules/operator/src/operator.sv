@@ -55,7 +55,7 @@ module operator
     input wire [REG_WS_WIDTH-1:0] ws,
     input wire vib,
     input wire dvb,
-    input wire kon [NUM_BANKS][NUM_OPERATORS_PER_BANK],
+    input wire kon,
     input wire [REG_ENV_WIDTH-1:0] ar, // attack rate
     input wire [REG_ENV_WIDTH-1:0] dr, // decay rate
     input wire [REG_ENV_WIDTH-1:0] sl, // sustain level
@@ -96,7 +96,7 @@ module operator
     logic hh_on_pulse;
     logic rhythm_kon_pulse;
     logic prev_kon_p0;
-    logic kon_p1 [NUM_BANKS][NUM_OPERATORS_PER_BANK];
+    logic kon_p1;
     logic [1:0] [OP_OUT_WIDTH-1:0] feedback_p0;
     logic [1:0] [OP_OUT_WIDTH-1:0] feedback_p6;
     logic [PIPELINE_DELAY:1] [1:0] [OP_OUT_WIDTH-1:0] feedback_p;
@@ -144,7 +144,7 @@ module operator
         .addra(op_num_p[1]),
         .bankb(bank_num),
         .addrb(op_num),
-        .dia(kon_p1[bank_num_p[1]][op_num_p[1]]),
+        .dia(kon_p1),
         .dob(prev_kon_p0)
     );
 
@@ -201,8 +201,8 @@ module operator
      (op_type == OP_TOP_CYMBAL && tc_on_pulse) ||
      (op_type == OP_HI_HAT && hh_on_pulse);
 
-    always_comb key_on_pulse_p0 = ((!prev_kon_p0 && kon[bank_num][op_num]) || rhythm_kon_pulse) && sample_clk_en;
-    always_comb key_off_pulse_p0 = prev_kon_p0 && !kon[bank_num][op_num] && sample_clk_en;
+    always_comb key_on_pulse_p0 = ((!prev_kon_p0 && kon) || rhythm_kon_pulse) && sample_clk_en;
+    always_comb key_off_pulse_p0 = prev_kon_p0 && !kon && sample_clk_en;
 
     calc_phase_inc calc_phase_inc (
         .*

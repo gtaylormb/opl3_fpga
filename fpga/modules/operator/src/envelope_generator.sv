@@ -97,6 +97,7 @@ module envelope_generator
     logic [PIPELINE_DELAY:1] sample_clk_en_p;
     logic [PIPELINE_DELAY:1] [BANK_NUM_WIDTH-1:0] bank_num_p;
     logic [PIPELINE_DELAY:1] [OP_NUM_WIDTH-1:0] op_num_p;
+    logic [PIPELINE_DELAY:1] [REG_TL_WIDTH-1:0] tl_p;
 
     pipeline_sr #(
         .ENDING_CYCLE(PIPELINE_DELAY)
@@ -122,6 +123,15 @@ module envelope_generator
         .clk,
         .in(op_num),
         .out(op_num_p)
+    );
+
+    pipeline_sr #(
+        .DATA_WIDTH(REG_TL_WIDTH),
+        .ENDING_CYCLE(PIPELINE_DELAY)
+    ) tl_sr (
+        .clk,
+        .in(tl),
+        .out(tl_p)
     );
 
     ksl_add_rom ksl_add_rom (
@@ -224,9 +234,9 @@ module envelope_generator
 
     always_comb
         if (am)
-            env_tmp_p2 = env_int_p2 + (tl << 2) + ksl_add_p2 + am_val_p2;
+            env_tmp_p2 = env_int_p2 + (tl_p[2] << 2) + ksl_add_p2 + am_val_p2;
         else
-            env_tmp_p2 = env_int_p2 + (tl << 2) + ksl_add_p2;
+            env_tmp_p2 = env_int_p2 + (tl_p[2] << 2) + ksl_add_p2;
 
     // clamp envelope
     always_ff @(posedge clk)
