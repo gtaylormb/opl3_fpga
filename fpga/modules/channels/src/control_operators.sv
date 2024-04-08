@@ -77,7 +77,7 @@ module control_operators
     input wire [REG_FB_WIDTH-1:0] fb [NUM_BANKS][NUM_CHANNELS_PER_BANK],
     input wire cnt [NUM_BANKS][NUM_CHANNELS_PER_BANK],
     output logic signed [OP_OUT_WIDTH-1:0] operator_out [NUM_BANKS][NUM_OPERATORS_PER_BANK] = '{default: 0},
-    output logic ops_done = 0
+    output logic ops_done_pulse = 0
 );
     /*
      * 256/36 operators gives us ~7.1 cycles per operator before next
@@ -580,7 +580,7 @@ module control_operators
     always_comb modulation_out_op_num = op_num >= 3 ? op_num - 3 : 0;
 
     always_ff @(posedge clk)
-        ops_done <= op_sample_clk_en_p[6] && !op_sample_clk_en_p[5];
+        ops_done_pulse <= op_sample_clk_en_p[6] && !op_sample_clk_en_p[5];
 
     mem_multi_bank #(
         .DATA_WIDTH(OP_OUT_WIDTH),

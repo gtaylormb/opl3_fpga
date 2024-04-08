@@ -69,7 +69,7 @@ module env_rate_counter
     logic [COUNTER_WIDTH-1:0] counter_p1;
     logic [COUNTER_WIDTH-1:0] counter_new_p2;
     logic [$clog2(OVERFLOW_TMP_MAX_VALUE)-1:0] overflow_tmp_p1;
-    logic [PIPELINE_DELAY:1] [REG_ENV_WIDTH-1:0] requested_rate_p;
+    logic [PIPELINE_DELAY:1] requested_rate_not_zero_p;
     logic [PIPELINE_DELAY:1] sample_clk_en_p;
     logic [PIPELINE_DELAY:1] [BANK_NUM_WIDTH-1:0] bank_num_p;
     logic [PIPELINE_DELAY:1] [OP_NUM_WIDTH-1:0] op_num_p;
@@ -101,12 +101,11 @@ module env_rate_counter
     );
 
     pipeline_sr #(
-        .DATA_WIDTH(REG_ENV_WIDTH),
         .ENDING_CYCLE(PIPELINE_DELAY)
-    ) requested_rate_sr (
+    ) requested_rate_not_zero_sr (
         .clk,
-        .in(requested_rate_p0),
-        .out(requested_rate_p)
+        .in(requested_rate_p0 != 0),
+        .out(requested_rate_not_zero_p)
     );
 
     always_comb rate_tmp0_p0 = nts ? fnum[8] : fnum[9];
@@ -131,7 +130,7 @@ module env_rate_counter
         .NUM_BANKS(NUM_BANKS)
     ) counter_mem (
         .clk,
-        .wea(sample_clk_en_p[2] && requested_rate_p[2] != 0),
+        .wea(sample_clk_en_p[2] && requested_rate_not_zero_p[2]),
         .reb(sample_clk_en),
         .banka(bank_num_p[2]),
         .addra(op_num_p[2]),
