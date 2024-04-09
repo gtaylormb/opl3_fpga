@@ -78,7 +78,7 @@ module control_operators
     logic [$clog2(NUM_BANKS)-1:0] bank_num;
     logic [$clog2(NUM_OPERATORS_PER_BANK)-1:0] op_num;
 
-    logic use_feedback [NUM_BANKS][NUM_OPERATORS_PER_BANK];
+    logic use_feedback;
     logic signed [OP_OUT_WIDTH-1:0] modulation [NUM_BANKS][NUM_OPERATORS_PER_BANK];
     operator_t op_type_tmp [NUM_BANKS][NUM_OPERATORS_PER_BANK];
     logic signed [OP_OUT_WIDTH-1:0] out_p6;
@@ -339,6 +339,20 @@ module control_operators
     always_comb begin
         op_type_tmp = '{default: OP_NORMAL};
 
+        unique case (op_num)
+        0, 1, 2, 12:          use_feedback = 1;
+        3, 4, 5, 9, 10, 11,
+        15, 16, 17:           use_feedback = 0;
+        6: if (bank_num == 0) use_feedback = !connection_sel[0];
+           else               use_feedback = !connection_sel[3];
+        7: if (bank_num == 0) use_feedback = !connection_sel[1];
+           else               use_feedback = !connection_sel[4];
+        8: if (bank_num == 0) use_feedback = !connection_sel[2];
+           else               use_feedback = !connection_sel[5];
+        13:                   use_feedback = !(bank_num == 0 && ryt); // aka hi hat operator in bank 0
+        14:                   use_feedback = !(bank_num == 0 && ryt); // aka tom tom operator in bank 0
+        endcase
+
         /*
          * Operator input mappings
          *
@@ -346,172 +360,96 @@ module control_operators
          * in a 2 channel or a 4 channel mode. Next we start mapping connections
          * for operators whose input varies depending on the mode.
          */
-        use_feedback[0][0] = 1;
         modulation[0][0] = 0;
-
-        use_feedback[0][3] = 0;
         modulation[0][3] = cnt ? 0 : modulation_out_p0;
-
-        use_feedback[0][1] = 1;
         modulation[0][1] = 0;
-
-        use_feedback[0][4] = 0;
         modulation[0][4] = cnt ? 0 : modulation_out_p0;
-
-        use_feedback[0][2] = 1;
         modulation[0][2] = 0;
-
-        use_feedback[0][5] = 0;
         modulation[0][5] = cnt ? 0 : modulation_out_p0;
-
-        use_feedback[1][0] = 1;
         modulation[1][0] = 0;
-
-        use_feedback[1][3] = 0;
         modulation[1][3] = cnt ? 0 : modulation_out_p0;
-
-        use_feedback[1][1] = 1;
         modulation[1][1] = 0;
-
-        use_feedback[1][4] = 0;
         modulation[1][4] = cnt ? 0 : modulation_out_p0;
-
-        use_feedback[1][2] = 1;
         modulation[1][2] = 0;
-
-        use_feedback[1][5] = 0;
         modulation[1][5] = cnt ? 0 : modulation_out_p0;
 
         // aka bass drum operator 1
         op_type_tmp[0][12] = ryt ? OP_BASS_DRUM : OP_NORMAL;
-        use_feedback[0][12] = 1;
         modulation[0][12] = 0;
 
         // aka bass drum operator 2
         op_type_tmp[0][15] = ryt ? OP_BASS_DRUM : OP_NORMAL;
-        use_feedback[0][15] = 0;
         modulation[0][15] = cnt ? 0 : modulation_out_p0;
 
         // aka hi hat operator
         op_type_tmp[0][13] = ryt ? OP_HI_HAT : OP_NORMAL;
-        use_feedback[0][13] = ryt ? 0 : 1;
         modulation[0][13] = 0;
 
         // aka snare drum operator
         op_type_tmp[0][16] = ryt ? OP_SNARE_DRUM : OP_NORMAL;
-        use_feedback[0][16] = 0;
         modulation[0][16] = cnt || ryt ? 0 : modulation_out_p0;
 
         // aka tom tom operator
         op_type_tmp[0][14] = ryt ? OP_TOM_TOM : OP_NORMAL;
-        use_feedback[0][14] = ryt ? 0 : 1;
         modulation[0][14] = 0;
 
         // aka top cymbal operator
         op_type_tmp[0][17] = ryt ? OP_TOP_CYMBAL : OP_NORMAL;
-        use_feedback[0][17] = 0;
         modulation[0][17] = cnt || ryt ? 0 : modulation_out_p0;
 
-        use_feedback[1][12] = 1;
         modulation[1][12] = 0;
-
-        use_feedback[1][15] = 0;
         modulation[1][15] = cnt ? 0 : modulation_out_p0;
-
-        use_feedback[1][13] = 1;
         modulation[1][13] = 0;
-
-        use_feedback[1][16] = 0;
         modulation[1][16] = cnt ? 0 : modulation_out_p0;
-
-        use_feedback[1][14] = 1;
         modulation[1][14] = 0;
-
-        use_feedback[1][17] = 0;
         modulation[1][17] = cnt ? 0 : modulation_out_p0;
 
         if (connection_sel[0]) begin
-            use_feedback[0][6] = 0;
             modulation[0][6] = cnt ? 0 : modulation_out_p0;
-
-            use_feedback[0][9] = 0;
             modulation[0][9] = cnt ? 0 : modulation_out_p0;
         end
         else begin
-            use_feedback[0][6] = 1;
             modulation[0][6] = 0;
-
-            use_feedback[0][9] = 0;
             modulation[0][9] = cnt ? 0 : modulation_out_p0;
         end
         if (connection_sel[1]) begin
-            use_feedback[0][7] = 0;
             modulation[0][7] = cnt ? 0 : modulation_out_p0;
-
-            use_feedback[0][10] = 0;
             modulation[0][10] = cnt ? 0 : modulation_out_p0;
         end
         else begin
-            use_feedback[0][7] = 1;
             modulation[0][7] = 0;
-
-            use_feedback[0][10] = 0;
             modulation[0][10] = cnt ? 0 : modulation_out_p0;
         end
         if (connection_sel[2]) begin
-            use_feedback[0][8] = 0;
             modulation[0][8] = cnt ? 0 : modulation_out_p0;
-
-            use_feedback[0][11] = 0;
             modulation[0][11] = cnt ? 0 : modulation_out_p0;
         end
         else begin
-            use_feedback[0][8] = 1;
             modulation[0][8] = 0;
-
-            use_feedback[0][11] = 0;
             modulation[0][11] = cnt ? 0 : modulation_out_p0;
         end
         if (connection_sel[3]) begin
-            use_feedback[1][6] = 0;
             modulation[1][6] = cnt ? 0 : modulation_out_p0;
-
-            use_feedback[1][9] = 0;
             modulation[1][9] = cnt ? 0 : modulation_out_p0;
         end
         else begin
-            use_feedback[1][6] = 1;
             modulation[1][6] = 0;
-
-            use_feedback[1][9] = 0;
             modulation[1][9] = cnt ? 0 : modulation_out_p0;
         end
         if (connection_sel[4]) begin
-            use_feedback[1][7] = 0;
             modulation[1][7] = cnt ? 0 : modulation_out_p0;
-
-            use_feedback[1][10] = 0;
             modulation[1][10] = cnt ? 0 : modulation_out_p0;
         end
         else begin
-            use_feedback[1][7] = 1;
             modulation[1][7] = 0;
-
-            use_feedback[1][10] = 0;
             modulation[1][10] = cnt ? 0 : modulation_out_p0;
         end
         if (connection_sel[5]) begin
-            use_feedback[1][8] = 0;
             modulation[1][8] = cnt ? 0 : modulation_out_p0;
-
-            use_feedback[1][11] = 0;
             modulation[1][11] = cnt ? 0 : modulation_out_p0;
         end
         else begin
-            use_feedback[1][8] = 1;
             modulation[1][8] = 0;
-
-            use_feedback[1][11] = 0;
             modulation[1][11] = cnt ? 0 : modulation_out_p0;
         end
     end
@@ -579,7 +517,7 @@ module control_operators
         .tom,
         .tc,
         .hh,
-        .use_feedback(use_feedback[bank_num][op_num]),
+        .use_feedback,
         .fb,
         .modulation(modulation[bank_num][op_num]),
         .op_type(op_type_tmp[bank_num][op_num]),
