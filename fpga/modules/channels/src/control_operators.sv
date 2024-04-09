@@ -63,6 +63,7 @@ module control_operators
     output logic signed [OP_OUT_WIDTH-1:0] operator_out [NUM_BANKS][NUM_OPERATORS_PER_BANK] = '{default: 0},
     output logic ops_done_pulse = 0
 );
+
     /*
      * 256/36 operators gives us ~7.1 cycles per operator before next
      * sample_clk_en
@@ -107,7 +108,8 @@ module control_operators
     logic kon;
     logic [REG_FB_WIDTH-1:0] fb;
     logic cnt;
-    logic [$clog2('h9)-1:0] channel_mem_rd_address;
+    logic [$clog2('h9)-1:0] kon_block_fnum_channel_mem_rd_address;
+    logic [$clog2('h9)-1:0] fb_cnt_channel_mem_rd_address;
 
     always_comb
         if (op_num < 6)
@@ -219,27 +221,57 @@ module control_operators
 
     always_comb
         unique case (op_num)
-        0, 3: channel_mem_rd_address = 0;
-        1, 4: channel_mem_rd_address = 1;
-        2, 5: channel_mem_rd_address = 2;
+        0, 3: begin
+            kon_block_fnum_channel_mem_rd_address = 0;
+            fb_cnt_channel_mem_rd_address = 0;
+        end
+        1, 4: begin
+            kon_block_fnum_channel_mem_rd_address = 1;
+            fb_cnt_channel_mem_rd_address = 1;
+        end
+        2, 5: begin
+            kon_block_fnum_channel_mem_rd_address = 2;
+            fb_cnt_channel_mem_rd_address = 2;
+        end
         6, 9:
-            if (bank_num == 0)
-                channel_mem_rd_address = connection_sel[0] ? 0 : 3;
-            else
-                channel_mem_rd_address = connection_sel[3] ? 0 : 3;
+            if (bank_num == 0) begin
+                kon_block_fnum_channel_mem_rd_address = connection_sel[0] ? 0 : 3;
+                fb_cnt_channel_mem_rd_address = 3;
+            end
+            else begin
+                kon_block_fnum_channel_mem_rd_address = connection_sel[3] ? 0 : 3;
+                fb_cnt_channel_mem_rd_address = 3;
+            end
         7, 10:
-            if (bank_num == 0)
-                channel_mem_rd_address = connection_sel[1] ? 1 : 4;
-            else
-                channel_mem_rd_address = connection_sel[4] ? 1 : 4;
+            if (bank_num == 0) begin
+                kon_block_fnum_channel_mem_rd_address = connection_sel[1] ? 1 : 4;
+                fb_cnt_channel_mem_rd_address = 4;
+            end
+            else begin
+                kon_block_fnum_channel_mem_rd_address = connection_sel[4] ? 1 : 4;
+                fb_cnt_channel_mem_rd_address = 4;
+            end
         8, 11:
-            if (bank_num == 0)
-                channel_mem_rd_address = connection_sel[2] ? 2 : 5;
-            else
-                channel_mem_rd_address = connection_sel[5] ? 2 : 5;
-        12, 15: channel_mem_rd_address = 6;
-        13, 16: channel_mem_rd_address = 7;
-        14, 17: channel_mem_rd_address = 8;
+            if (bank_num == 0) begin
+                kon_block_fnum_channel_mem_rd_address = connection_sel[2] ? 2 : 5;
+                fb_cnt_channel_mem_rd_address = 5;
+            end
+            else begin
+                kon_block_fnum_channel_mem_rd_address = connection_sel[5] ? 2 : 5;
+                fb_cnt_channel_mem_rd_address = 5;
+            end
+        12, 15: begin
+            kon_block_fnum_channel_mem_rd_address = 6;
+            fb_cnt_channel_mem_rd_address = 6;
+        end
+        13, 16: begin
+            kon_block_fnum_channel_mem_rd_address = 7;
+            fb_cnt_channel_mem_rd_address = 7;
+        end
+        14, 17: begin
+            kon_block_fnum_channel_mem_rd_address = 8;
+            fb_cnt_channel_mem_rd_address = 8;
+        end
         endcase
 
     logic [$clog2('h9)-1:0] fnum_low_mem_wr_address = opl3_reg_wr.address - 'hA0;
@@ -257,7 +289,7 @@ module control_operators
         .banka(opl3_reg_wr.bank_num),
         .addra(fnum_low_mem_wr_address),
         .bankb(bank_num),
-        .addrb(channel_mem_rd_address),
+        .addrb(kon_block_fnum_channel_mem_rd_address),
         .dia(opl3_reg_wr.data),
         .dob(fnum[7:0])
     );
@@ -278,7 +310,7 @@ module control_operators
         .banka(opl3_reg_wr.bank_num),
         .addra(kon_block_fnum_high_mem_wr_address),
         .bankb(bank_num),
-        .addrb(channel_mem_rd_address),
+        .addrb(kon_block_fnum_channel_mem_rd_address),
         .dia(opl3_reg_wr.data[kon_block_fnum_high_mem_width-1:0]),
         .dob({kon, block, fnum[9:8]})
     );
@@ -299,7 +331,7 @@ module control_operators
         .banka(opl3_reg_wr.bank_num),
         .addra(fb_cnt_mem_wr_address),
         .bankb(bank_num),
-        .addrb(channel_mem_rd_address),
+        .addrb(fb_cnt_channel_mem_rd_address),
         .dia(opl3_reg_wr.data[fb_cnt_mem_width-1:0]),
         .dob({fb, cnt})
     );
