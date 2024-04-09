@@ -106,4 +106,11 @@ package opl3_pkg;
         OP_TOP_CYMBAL
     } operator_t;
 
+    typedef struct packed {
+        logic valid;
+        logic bank_num;
+        logic [REG_FILE_DATA_WIDTH-1:0] address;
+        logic [REG_FILE_DATA_WIDTH-1:0] data;
+    } opl3_reg_wr_t;
+
 endpackage

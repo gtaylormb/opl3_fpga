@@ -45,153 +45,85 @@ module register_file
     import opl3_pkg::*;
 (
     input wire clk,
-    input wire [REG_FILE_DATA_WIDTH-1:0] opl3_reg [NUM_BANKS][NUM_REG_PER_BANK],
+    input var opl3_reg_wr_t opl3_reg_wr,
     input wire irq,
     input wire ft1,
     input wire ft2,
-    output logic [REG_TIMER_WIDTH-1:0] timer1,
-    output logic [REG_TIMER_WIDTH-1:0] timer2,
-    output logic irq_rst,
-    output logic mt1,
-    output logic mt2,
-    output logic st1,
-    output logic st2,
-    output logic [REG_CONNECTION_SEL_WIDTH-1:0] connection_sel,
-    output logic is_new,
-    output logic nts,                     // keyboard split selection
-    output logic [REG_FNUM_WIDTH-1:0] fnum [2][9],
-    output logic [REG_MULT_WIDTH-1:0] mult [2][18],
-    output logic [REG_BLOCK_WIDTH-1:0] block [2][9],
-    output logic [REG_WS_WIDTH-1:0] ws [2][18],
-    output logic vib [2][18],
-    output logic dvb,
-    output logic kon [2][9],
-    output logic [REG_ENV_WIDTH-1:0] ar [2][18], // attack rate
-    output logic [REG_ENV_WIDTH-1:0] dr [2][18], // decay rate
-    output logic [REG_ENV_WIDTH-1:0] sl [2][18], // sustain level
-    output logic [REG_ENV_WIDTH-1:0] rr [2][18], // release rate
-    output logic [REG_TL_WIDTH-1:0] tl [2][18],  // total level
-    output logic ksr [2][18],                    // key scale rate
-    output logic [REG_KSL_WIDTH-1:0] ksl [2][18], // key scale level
-    output logic egt [2][18],                     // envelope type
-    output logic am [2][18],                      // amplitude modulation (tremolo)
-    output logic dam,                             // depth of tremolo
-    output logic ryt,
-    output logic bd,
-    output logic sd,
-    output logic tom,
-    output logic tc,
-    output logic hh,
+    output logic [REG_TIMER_WIDTH-1:0] timer1 = 0,
+    output logic [REG_TIMER_WIDTH-1:0] timer2 = 0,
+    output logic irq_rst = 0,
+    output logic mt1 = 0,
+    output logic mt2 = 0,
+    output logic st1 = 0,
+    output logic st2 = 0,
+    output logic [REG_CONNECTION_SEL_WIDTH-1:0] connection_sel = 0,
+    output logic is_new = 0,
+    output logic nts = 0,                     // keyboard split selection
+    output logic dvb = 0,
+    output logic dam = 0,                             // depth of tremolo
+    output logic ryt = 0,
+    output logic bd = 0,
+    output logic sd = 0,
+    output logic tom = 0,
+    output logic tc = 0,
+    output logic hh = 0,
     output logic cha [2][9],
     output logic chb [2][9],
     output logic chc [2][9],
     output logic chd [2][9],
-    output logic [REG_FB_WIDTH-1:0] fb [2][9],
     output logic cnt [2][9],
     output logic [REG_FILE_DATA_WIDTH-1:0] status
 );
     /*
      * Registers that are specific to a particular bank
      */
-    always_comb begin
-        timer1 = opl3_reg[0][2];
-        timer2 = opl3_reg[0][3];
-        irq_rst = opl3_reg[0][4][7];
-        mt1 = opl3_reg[0][4][6];
-        mt2 = opl3_reg[0][4][5];
-        st2 = opl3_reg[0][4][1];
-        st1 = opl3_reg[0][4][0];
-        connection_sel = opl3_reg[1][4][REG_CONNECTION_SEL_WIDTH-1:0];
-        is_new = opl3_reg[1][5][0];
-        nts = opl3_reg[0][8][6];
-        dam = opl3_reg[0]['hBD][7];
-        dvb = opl3_reg[0]['hBD][6];
-        ryt = opl3_reg[0]['hBD][5];
-        bd  = opl3_reg[0]['hBD][4];
-        sd  = opl3_reg[0]['hBD][3];
-        tom = opl3_reg[0]['hBD][2];
-        tc  = opl3_reg[0]['hBD][1];
-        hh  = opl3_reg[0]['hBD][0];
-    end
+    always_ff @(posedge clk)
+        if (opl3_reg_wr.valid) begin
+            if (opl3_reg_wr.bank_num == 0 && opl3_reg_wr.address == 2)
+                timer1 <= opl3_reg_wr.data;
 
-    for (genvar bank = 0; bank < 2; bank++) begin
-        for (genvar i = 0; i < 6; i++)
-            always_comb begin
-                am[bank][i]   = opl3_reg[bank]['h20+i][7];
-                vib[bank][i]  = opl3_reg[bank]['h20+i][6];
-                egt[bank][i]  = opl3_reg[bank]['h20+i][5];
-                ksr[bank][i]  = opl3_reg[bank]['h20+i][4];
-                mult[bank][i] = opl3_reg[bank]['h20+i][3:0];
+            if (opl3_reg_wr.bank_num == 0 && opl3_reg_wr.address == 3)
+                timer2 <= opl3_reg_wr.data;
 
-                ksl[bank][i] = opl3_reg[bank]['h40+i][7:6];
-                tl[bank][i]  = opl3_reg[bank]['h40+i][5:0];
-
-                ar[bank][i] = opl3_reg[bank]['h60+i][7:4];
-                dr[bank][i] = opl3_reg[bank]['h60+i][3:0];
-
-                sl[bank][i] = opl3_reg[bank]['h80+i][7:4];
-                rr[bank][i] = opl3_reg[bank]['h80+i][3:0];
-
-                ws[bank][i] = opl3_reg[bank]['hE0+i][2:0];
+            if (opl3_reg_wr.bank_num == 0 && opl3_reg_wr.address == 4) begin
+                irq_rst <= opl3_reg_wr.data[7];
+                mt1 <= opl3_reg_wr.data[6];
+                mt2 <= opl3_reg_wr.data[5];
+                st2 <= opl3_reg_wr.data[1];
+                st1 <= opl3_reg_wr.data[0];
             end
 
-        for (genvar i = 8; i < 14; i++)
-            always_comb begin
-                am[bank][i-2]   = opl3_reg[bank]['h20+i][7];
-                vib[bank][i-2]  = opl3_reg[bank]['h20+i][6];
-                egt[bank][i-2]  = opl3_reg[bank]['h20+i][5];
-                ksr[bank][i-2]  = opl3_reg[bank]['h20+i][4];
-                mult[bank][i-2] = opl3_reg[bank]['h20+i][3:0];
+            if (opl3_reg_wr.bank_num == 1 && opl3_reg_wr.address == 4)
+                connection_sel <= opl3_reg_wr.data[REG_CONNECTION_SEL_WIDTH-1:0];
 
-                ksl[bank][i-2] = opl3_reg[bank]['h40+i][7:6];
-                tl[bank][i-2]  = opl3_reg[bank]['h40+i][5:0];
+            if (opl3_reg_wr.bank_num == 1 && opl3_reg_wr.address == 5)
+                is_new <= opl3_reg_wr.data[0];
 
-                ar[bank][i-2] = opl3_reg[bank]['h60+i][7:4];
-                dr[bank][i-2] = opl3_reg[bank]['h60+i][3:0];
+            if (opl3_reg_wr.bank_num == 0 && opl3_reg_wr.address == 8)
+                nts <= opl3_reg_wr.data[6];
 
-                sl[bank][i-2] = opl3_reg[bank]['h80+i][7:4];
-                rr[bank][i-2] = opl3_reg[bank]['h80+i][3:0];
-
-                ws[bank][i-2] = opl3_reg[bank]['hE0+i][2:0];
+            if (opl3_reg_wr.bank_num == 0 && opl3_reg_wr.address == 'hBD) begin
+                dam <= opl3_reg_wr.data[7];
+                dvb <= opl3_reg_wr.data[6];
+                ryt <= opl3_reg_wr.data[5];
+                bd  <= opl3_reg_wr.data[4];
+                sd  <= opl3_reg_wr.data[3];
+                tom <= opl3_reg_wr.data[2];
+                tc  <= opl3_reg_wr.data[1];
+                hh  <= opl3_reg_wr.data[0];
             end
+        end
 
-        for (genvar i = 16; i < 22; i++)
-            always_comb begin
-                am[bank][i-4]   = opl3_reg[bank]['h20+i][7];
-                vib[bank][i-4]  = opl3_reg[bank]['h20+i][6];
-                egt[bank][i-4]  = opl3_reg[bank]['h20+i][5];
-                ksr[bank][i-4]  = opl3_reg[bank]['h20+i][4];
-                mult[bank][i-4] = opl3_reg[bank]['h20+i][3:0];
+    always_ff @(posedge clk)
+        if (opl3_reg_wr.valid && opl3_reg_wr.address >= 'hC0 && opl3_reg_wr.address <= 'hC8) begin
+            chd[opl3_reg_wr.bank_num][opl3_reg_wr.address - 'hC0] = opl3_reg_wr.data[7];
+            chc[opl3_reg_wr.bank_num][opl3_reg_wr.address - 'hC0] = opl3_reg_wr.data[6];
+            chb[opl3_reg_wr.bank_num][opl3_reg_wr.address - 'hC0] = opl3_reg_wr.data[5];
+            cha[opl3_reg_wr.bank_num][opl3_reg_wr.address - 'hC0] = opl3_reg_wr.data[4];
 
-                ksl[bank][i-4] = opl3_reg[bank]['h40+i][7:6];
-                tl[bank][i-4]  = opl3_reg[bank]['h40+i][5:0];
+            cnt[opl3_reg_wr.bank_num][opl3_reg_wr.address - 'hC0] = opl3_reg_wr.data[0];
+        end
 
-                ar[bank][i-4] = opl3_reg[bank]['h60+i][7:4];
-                dr[bank][i-4] = opl3_reg[bank]['h60+i][3:0];
-
-                sl[bank][i-4] = opl3_reg[bank]['h80+i][7:4];
-                rr[bank][i-4] = opl3_reg[bank]['h80+i][3:0];
-
-                ws[bank][i-4] = opl3_reg[bank]['hE0+i][2:0];
-            end
-
-        for (genvar i = 0; i < 9; i++)
-            always_comb begin
-                fnum[bank][i][7:0] = opl3_reg[bank]['hA0+i];
-
-                kon[bank][i]       = opl3_reg[bank]['hB0+i][5];
-                block[bank][i]     = opl3_reg[bank]['hB0+i][4:2];
-                fnum[bank][i][9:8] = opl3_reg[bank]['hB0+i][1:0];
-
-                chd[bank][i] = opl3_reg[bank]['hC0+i][7];
-                chc[bank][i] = opl3_reg[bank]['hC0+i][6];
-                chb[bank][i] = opl3_reg[bank]['hC0+i][5];
-                cha[bank][i] = opl3_reg[bank]['hC0+i][4];
-
-                fb[bank][i]  = opl3_reg[bank]['hC0+i][3:1];
-                cnt[bank][i] = opl3_reg[bank]['hC0+i][0];
-            end
-    end
     always_comb begin
         status = 0;
         status[7] = irq;

@@ -46,26 +46,12 @@ module channels
 (
     input wire clk,
     input wire clk_host,
+    input var opl3_reg_wr_t opl3_reg_wr,
     input wire sample_clk_en,
     input wire [REG_CONNECTION_SEL_WIDTH-1:0] connection_sel,
     input wire is_new,
     input wire nts,                     // keyboard split selection
-    input wire [REG_FNUM_WIDTH-1:0] fnum [2][9],
-    input wire [REG_MULT_WIDTH-1:0] mult [2][18],
-    input wire [REG_BLOCK_WIDTH-1:0] block [2][9],
-    input wire [REG_WS_WIDTH-1:0] ws [2][18],
-    input wire vib [2][18],
     input wire dvb,
-    input wire kon [2][9],
-    input wire [REG_ENV_WIDTH-1:0] ar [2][18], // attack rate
-    input wire [REG_ENV_WIDTH-1:0] dr [2][18], // decay rate
-    input wire [REG_ENV_WIDTH-1:0] sl [2][18], // sustain level
-    input wire [REG_ENV_WIDTH-1:0] rr [2][18], // release rate
-    input wire [REG_TL_WIDTH-1:0] tl [2][18],  // total level
-    input wire ksr [2][18],                    // key scale rate
-    input wire [REG_KSL_WIDTH-1:0] ksl [2][18], // key scale level
-    input wire egt [2][18],                     // envelope type
-    input wire am [2][18],                      // amplitude modulation (tremolo)
     input wire dam,                             // depth of tremolo
     input wire ryt,
     input wire bd,
@@ -77,7 +63,6 @@ module channels
     input wire chb [2][9],
     input wire chc [2][9],
     input wire chd [2][9],
-    input wire [REG_FB_WIDTH-1:0] fb [2][9],
     input wire cnt [2][9],
     output logic sample_valid,
     output logic signed [DAC_OUTPUT_WIDTH-1:0] sample_l,
