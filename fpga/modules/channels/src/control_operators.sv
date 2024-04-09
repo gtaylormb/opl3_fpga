@@ -51,15 +51,7 @@ module control_operators
     input var opl3_reg_wr_t opl3_reg_wr,
     input wire [REG_CONNECTION_SEL_WIDTH-1:0] connection_sel,
     input wire is_new,
-    input wire nts,                     // keyboard split selection
-    input wire dvb,
-    input wire dam,                             // depth of tremolo
     input wire ryt,
-    input wire bd,
-    input wire sd,
-    input wire tom,
-    input wire tc,
-    input wire hh,
     output logic signed [OP_OUT_WIDTH-1:0] operator_out [NUM_BANKS][NUM_OPERATORS_PER_BANK] = '{default: 0},
     output logic ops_done_pulse = 0
 );
@@ -104,6 +96,31 @@ module control_operators
     logic cnt;                         // operator connection
     logic [$clog2('h9)-1:0] kon_block_fnum_channel_mem_rd_address;
     logic [$clog2('h9)-1:0] fb_cnt_channel_mem_rd_address;
+
+    logic nts = 0; // keyboard split selection
+    logic dvb = 0; // vibrato depth
+    logic dam = 0; // depth of tremolo
+    logic bd = 0;  // bass drum key-on
+    logic sd = 0;  // snare drum key-on
+    logic tom = 0; // tom-tom key-on
+    logic tc = 0;  // top-cymbal key-on
+    logic hh = 0;  // hi-hat key-on
+
+    always_ff @(posedge clk)
+        if (opl3_reg_wr.valid) begin
+            if (opl3_reg_wr.bank_num == 0 && opl3_reg_wr.address == 8)
+                nts <= opl3_reg_wr.data[6];
+
+            if (opl3_reg_wr.bank_num == 0 && opl3_reg_wr.address == 'hBD) begin
+                dam <= opl3_reg_wr.data[7];
+                dvb <= opl3_reg_wr.data[6];
+                bd  <= opl3_reg_wr.data[4];
+                sd  <= opl3_reg_wr.data[3];
+                tom <= opl3_reg_wr.data[2];
+                tc  <= opl3_reg_wr.data[1];
+                hh  <= opl3_reg_wr.data[0];
+            end
+        end
 
     always_comb
         if (op_num < 6)
@@ -383,14 +400,6 @@ module control_operators
             next_state = 0;
         else
             next_state = state + 1;
-
-    always_ff @(posedge clk)
-        if (next_state != state)
-            delay_counter <= 0;
-        else if (delay_counter == PIPELINE_DELAY )
-            delay_counter <= 0;
-        else
-            delay_counter <= delay_counter + 1;
 
     always_comb bank_num = state > NUM_OPERATORS_PER_BANK;
     always_comb

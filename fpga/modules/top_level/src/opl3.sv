@@ -64,36 +64,10 @@ module opl3
     logic sample_clk_en;
 
     opl3_reg_wr_t opl3_reg_wr;
-    logic [REG_TIMER_WIDTH-1:0] timer1;
-    logic [REG_TIMER_WIDTH-1:0] timer2;
-    logic irq_rst;
-    logic mt1;
-    logic mt2;
-    logic st1;
-    logic st2;
-    logic [REG_CONNECTION_SEL_WIDTH-1:0] connection_sel;
-    logic is_new;
-    logic nts;                     // keyboard split selection
-    logic dvb;
-    logic dam;                             // depth of tremolo
-    logic ryt;
-    logic bd;
-    logic sd;
-    logic tom;
-    logic tc;
-    logic hh;
-    logic cha [NUM_BANKS][NUM_CHANNELS_PER_BANK];
-    logic chb [NUM_BANKS][NUM_CHANNELS_PER_BANK];
-    logic chc [NUM_BANKS][NUM_CHANNELS_PER_BANK];
-    logic chd [NUM_BANKS][NUM_CHANNELS_PER_BANK];
-    logic cnt [NUM_BANKS][NUM_CHANNELS_PER_BANK];
     logic signed [SAMPLE_WIDTH-1:0] channel_a;
     logic signed [SAMPLE_WIDTH-1:0] channel_b;
     logic signed [SAMPLE_WIDTH-1:0] channel_c;
     logic signed [SAMPLE_WIDTH-1:0] channel_d;
-    logic ft1;
-    logic ft2;
-    logic irq;
     logic [REG_FILE_DATA_WIDTH-1:0] status;
     logic channel_valid;
 
@@ -122,10 +96,6 @@ module opl3
         .*
     );
 
-    register_file register_file (
-        .*
-    );
-
     /*
      * If we don't need timers, don't instantiate to save area
      */
@@ -134,11 +104,7 @@ module opl3
             .*
         );
     else
-        always_comb begin
-            ft1 = 0;
-            ft2 = 0;
-            irq = 0;
+        always_comb
             irq_n = 1;
-        end
 endmodule
 `default_nettype wire

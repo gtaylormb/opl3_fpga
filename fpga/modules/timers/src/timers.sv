@@ -46,20 +46,50 @@ module timers
 (
     input wire clk,
     input wire reset,
-    input wire [REG_TIMER_WIDTH-1:0] timer1,
-    input wire [REG_TIMER_WIDTH-1:0] timer2,
-    input wire irq_rst,
-    input wire mt1, // mask timer
-    input wire mt2,
-    input wire st1, // start timer
-    input wire st2,
-    output logic ft1 = 0,
-    output logic ft2 = 0,
-    output logic irq,
-    output logic irq_n = 0
+    input var opl3_reg_wr_t opl3_reg_wr,
+    output logic irq_n = 0,
+    output logic [REG_FILE_DATA_WIDTH-1:0] status
 );
+    logic [REG_TIMER_WIDTH-1:0] timer1 = 0;
+    logic [REG_TIMER_WIDTH-1:0] timer2 = 0;
+    logic irq_rst = 0;
+    logic mt1 = 0; // mask timer
+    logic mt2 = 0;
+    logic st1 = 0; // start timer
+    logic st2 = 0;
     logic timer1_overflow_pulse;
     logic timer2_overflow_pulse;
+    logic ft1 = 0;
+    logic ft2 = 0;
+    logic irq;
+
+    always_ff @(posedge clk) begin
+        if (opl3_reg_wr.valid) begin
+            if (opl3_reg_wr.bank_num == 0 && opl3_reg_wr.address == 2)
+                timer1 <= opl3_reg_wr.data;
+
+            if (opl3_reg_wr.bank_num == 0 && opl3_reg_wr.address == 3)
+                timer2 <= opl3_reg_wr.data;
+
+            if (opl3_reg_wr.bank_num == 0 && opl3_reg_wr.address == 4) begin
+                irq_rst <= opl3_reg_wr.data[7];
+                mt1 <= opl3_reg_wr.data[6];
+                mt2 <= opl3_reg_wr.data[5];
+                st2 <= opl3_reg_wr.data[1];
+                st1 <= opl3_reg_wr.data[0];
+            end
+        end
+
+        if (reset) begin
+            timer1 <= 0;
+            timer2 <= 0;
+            irq_rst <= 0;
+            mt1 <= 0;
+            mt2 <= 0;
+            st2 <= 0;
+            st1 <= 0;
+        end
+    end
 
     timer #(
         .TIMER_TICK_INTERVAL(TIMER1_TICK_INTERVAL)
@@ -97,5 +127,11 @@ module timers
     always_ff @(posedge clk)
         irq_n <= !irq;
 
+    always_comb begin
+        status = 0;
+        status[7] = irq;
+        status[6] = ft1;
+        status[5] = ft2;
+    end
 endmodule
 `default_nettype wire
