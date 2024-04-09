@@ -63,14 +63,8 @@ module control_operators
     output logic signed [OP_OUT_WIDTH-1:0] operator_out [NUM_BANKS][NUM_OPERATORS_PER_BANK] = '{default: 0},
     output logic ops_done_pulse = 0
 );
-
-    /*
-     * 256/36 operators gives us ~7.1 cycles per operator before next
-     * sample_clk_en
-     */
     localparam PIPELINE_DELAY = 6;
     localparam NUM_OPERATOR_UPDATE_STATES = NUM_BANKS*NUM_OPERATORS_PER_BANK + 1; // 36 operators + idle state
-    logic [$clog2(PIPELINE_DELAY)-1:0] delay_counter = 0;
 
     logic [$clog2(NUM_OPERATOR_UPDATE_STATES)-1:0] state = 0;
     logic [$clog2(NUM_OPERATOR_UPDATE_STATES)-1:0] next_state;
@@ -80,7 +74,7 @@ module control_operators
 
     logic use_feedback;
     logic signed [OP_OUT_WIDTH-1:0] modulation;
-    operator_t op_type_tmp [NUM_BANKS][NUM_OPERATORS_PER_BANK];
+    operator_t op_type;
     logic signed [OP_OUT_WIDTH-1:0] out_p6;
     logic signed [OP_OUT_WIDTH-1:0] modulation_out_p0;
     logic [$clog2(NUM_OPERATORS_PER_BANK)-1:0] modulation_out_op_num;
@@ -89,25 +83,25 @@ module control_operators
     logic [PIPELINE_DELAY:1] [BANK_NUM_WIDTH-1:0] bank_num_p;
     logic [PIPELINE_DELAY:1] [OP_NUM_WIDTH-1:0] op_num_p;
 
-    logic am; // amplitude modulation (tremolo)
-    logic vib;
-    logic egt; // envelope type
-    logic ksr;
-    logic [REG_MULT_WIDTH-1:0] mult;
-    logic [REG_KSL_WIDTH-1:0] ksl;
-    logic [REG_TL_WIDTH-1:0] tl;
-    logic [REG_ENV_WIDTH-1:0] ar;
-    logic [REG_ENV_WIDTH-1:0] dr;
-    logic [REG_ENV_WIDTH-1:0] sl;
-    logic [REG_ENV_WIDTH-1:0] rr;
-    logic [REG_WS_WIDTH-1:0] ws;
+    logic am;  // amplitude modulation (tremolo on/off)
+    logic vib; // vibrato on/off
+    logic egt; // envelope type (select sustain/decay)
+    logic ksr; // key scale rate
+    logic [REG_MULT_WIDTH-1:0] mult; // frequency data multiplier
+    logic [REG_KSL_WIDTH-1:0] ksl;   // key scale level
+    logic [REG_TL_WIDTH-1:0] tl;     // total level (modulation, volume setting)
+    logic [REG_ENV_WIDTH-1:0] ar;    // attack rate
+    logic [REG_ENV_WIDTH-1:0] dr;    // decay rate
+    logic [REG_ENV_WIDTH-1:0] sl;    // sustain level
+    logic [REG_ENV_WIDTH-1:0] rr;    // release rate
+    logic [REG_WS_WIDTH-1:0] ws;     // waveform select
     logic [$clog2('h16)-1:0] operator_mem_rd_address;
 
-    logic [REG_FNUM_WIDTH-1:0] fnum;
-    logic [REG_BLOCK_WIDTH-1:0] block;
-    logic kon;
-    logic [REG_FB_WIDTH-1:0] fb;
-    logic cnt;
+    logic [REG_FNUM_WIDTH-1:0] fnum;   // f-number (scale data within the octave)
+    logic [REG_BLOCK_WIDTH-1:0] block; // octave data
+    logic kon;                         // key-on (sound generation on/off)
+    logic [REG_FB_WIDTH-1:0] fb;       // feedback (modulation for slot 1 FM feedback)
+    logic cnt;                         // operator connection
     logic [$clog2('h9)-1:0] kon_block_fnum_channel_mem_rd_address;
     logic [$clog2('h9)-1:0] fb_cnt_channel_mem_rd_address;
 
@@ -337,7 +331,16 @@ module control_operators
     );
 
     always_comb begin
-        op_type_tmp = '{default: OP_NORMAL};
+        op_type = OP_NORMAL;
+        if (bank_num == 0 && ryt)
+            unique case (op_num)
+            12, 15:  op_type = OP_BASS_DRUM;
+            13:      op_type = OP_HI_HAT;
+            14:      op_type = OP_TOM_TOM;
+            16:      op_type = OP_SNARE_DRUM;
+            17:      op_type = OP_TOP_CYMBAL;
+            default: op_type = OP_NORMAL;
+            endcase
 
         unique case (op_num)
         0, 1, 2, 12:          use_feedback = 1;
@@ -368,32 +371,6 @@ module control_operators
         16:                     modulation = cnt || (ryt && bank_num == 0) ? 0 : modulation_out_p0; // aka snare drum operator in bank 0
         17:                     modulation = cnt || (ryt && bank_num == 0) ? 0 : modulation_out_p0; // aka top cymbal operator in bank 0
         endcase
-
-        /*
-         * Operator input mappings
-         *
-         * The first mappings are static whether the operator is configured
-         * in a 2 channel or a 4 channel mode. Next we start mapping connections
-         * for operators whose input varies depending on the mode.
-         */
-
-        // aka bass drum operator 1
-        op_type_tmp[0][12] = ryt ? OP_BASS_DRUM : OP_NORMAL;
-
-        // aka bass drum operator 2
-        op_type_tmp[0][15] = ryt ? OP_BASS_DRUM : OP_NORMAL;
-
-        // aka hi hat operator
-        op_type_tmp[0][13] = ryt ? OP_HI_HAT : OP_NORMAL;
-
-        // aka snare drum operator
-        op_type_tmp[0][16] = ryt ? OP_SNARE_DRUM : OP_NORMAL;
-
-        // aka tom tom operator
-        op_type_tmp[0][14] = ryt ? OP_TOM_TOM : OP_NORMAL;
-
-        // aka top cymbal operator
-        op_type_tmp[0][17] = ryt ? OP_TOP_CYMBAL : OP_NORMAL;
     end
 
     always_ff @(posedge clk)
@@ -431,39 +408,8 @@ module control_operators
      * cycle of that time slot
      */
     operator operator (
-        .clk,
         .sample_clk_en(op_sample_clk_en),
-        .is_new,
-        .bank_num,
-        .op_num,
-        .fnum,
-        .mult,
-        .block,
-        .ws,
-        .vib,
-        .dvb,
-        .kon,
-        .ar,
-        .dr,
-        .sl,
-        .rr,
-        .tl,
-        .ksr,
-        .ksl,
-        .egt,
-        .am,
-        .dam,
-        .nts,
-        .bd,
-        .sd,
-        .tom,
-        .tc,
-        .hh,
-        .use_feedback,
-        .fb,
-        .modulation,
-        .op_type(op_type_tmp[bank_num][op_num]),
-        .out_p6
+        .*
     );
 
     pipeline_sr #(
