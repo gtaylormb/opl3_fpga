@@ -74,6 +74,7 @@ RTL_SRC = \
 	modules/misc/src/mem_multi_bank.sv \
 	modules/misc/src/pipeline_sr.sv \
 	modules/misc/src/synchronizer.sv \
+	modules/misc/src/leds.sv \
 	modules/host_if/src/host_if.sv
 
 PKG_SRC = \

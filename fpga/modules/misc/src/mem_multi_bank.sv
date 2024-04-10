@@ -75,7 +75,9 @@ module mem_multi_bank #(
         .out(bankb_p)
     );
 
-    for (genvar i = 0; i < NUM_BANKS; ++i) begin
+    generate
+    genvar i;
+    for (i = 0; i < NUM_BANKS; ++i) begin: bankgen
         always_comb begin
             wea_array[i] = wea && banka == i;
             reb_array[i] = reb && bankb == i;
@@ -102,5 +104,6 @@ module mem_multi_bank #(
         always_comb dob = dob_array[bankb];
     else
         always_comb dob = dob_array[bankb_p[OUTPUT_DELAY]];
+    endgenerate
 endmodule
 `default_nettype wire

@@ -57,7 +57,7 @@ module opl3
     output logic sample_valid,
     output logic signed [DAC_OUTPUT_WIDTH-1:0] sample_l,
     output logic signed [DAC_OUTPUT_WIDTH-1:0] sample_r,
-    output logic [NUM_LEDS-1:0] led = 0,
+    output logic [NUM_LEDS-1:0] led,
     output logic irq_n
 );
     logic reset;
@@ -77,6 +77,11 @@ module opl3
         .reset
     );
 
+    host_if host_if (
+        .*
+    );
+
+    // pulse once per sample period
     clk_div #(
         .CLK_DIV_COUNT(CLK_DIV_COUNT)
     ) sample_clk_gen (
@@ -88,17 +93,14 @@ module opl3
         .*
     );
 
-    // for (genvar i = 0; i < NUM_LEDS; ++i)
-    //     always_ff @(posedge clk)
-    //         led[i] <= kon[0][i];
-
-    host_if host_if (
+    leds leds (
         .*
     );
 
     /*
      * If we don't need timers, don't instantiate to save area
      */
+    generate
     if (INSTANTIATE_TIMERS)
         timers timers (
             .*
@@ -106,5 +108,6 @@ module opl3
     else
         always_comb
             irq_n = 1;
+    endgenerate
 endmodule
 `default_nettype wire
