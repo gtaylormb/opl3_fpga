@@ -414,7 +414,8 @@ module control_operators
 
     /*
      * The sample_clk_en input for each operator slot is pulsed in the first
-     * cycle of that time slot
+     * cycle of that time slot. Operator is fully pipelined so we can issue
+     * back to back.
      */
     operator operator (
         .sample_clk_en(op_sample_clk_en),

@@ -65,13 +65,13 @@ module channels
     logic channel_valid = 0;
     logic ops_done_pulse;
     logic [REG_CONNECTION_SEL_WIDTH-1:0] connection_sel = 0;
-    logic is_new = 0;
+    logic is_new = 0; // 1 = OPL3, 0 = OPL2
     logic ryt = 0; // rhythm mode on/off
-    logic cha;
-    logic chb;
-    logic chc;
-    logic chd;
-    logic cnt;
+    logic cha; // chan a on/off
+    logic chb; // chan b on/off
+    logic chc; // chan c on/off
+    logic chd; // chan d on/off
+    logic cnt; // operator connection
     logic [REG_FB_WIDTH-1:0] fb_dummy;
 
     always_ff @(posedge clk)
@@ -176,6 +176,7 @@ module channels
 
         unique case (state)
         IDLE:
+            // once operators are calculated for this sample, we can begin accumulating the channels
             if (ops_done_pulse)
                 next_state = LOAD_2_OP_SECOND;
         LOAD_2_OP_SECOND: begin
