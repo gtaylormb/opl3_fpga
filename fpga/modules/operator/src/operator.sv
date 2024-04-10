@@ -72,9 +72,9 @@ module operator
     input wire tom,
     input wire tc,
     input wire hh,
-    input wire use_feedback,
+    input wire use_feedback_p1,
     input wire [REG_FB_WIDTH-1:0] fb,
-    input wire signed [OP_OUT_WIDTH-1:0] modulation,
+    input wire signed [OP_OUT_WIDTH-1:0] modulation_p1,
     input var operator_t op_type,
     output logic signed [OP_OUT_WIDTH-1:0] out_p6
 );
@@ -87,8 +87,8 @@ module operator
     logic key_on_pulse_p0;
     logic key_off_pulse_p0;
     logic [ENV_WIDTH-1:0] env_p3;
-    logic signed [OP_OUT_WIDTH-1:0] feedback_result_p0;
-    logic signed [OP_OUT_WIDTH+1+2**REG_FB_WIDTH-1:0] feedback_result_tmp_p0;
+    logic signed [OP_OUT_WIDTH-1:0] feedback_result_p1;
+    logic signed [OP_OUT_WIDTH+1+2**REG_FB_WIDTH-1:0] feedback_result_tmp_p1;
     logic bd_on_pulse;
     logic sd_on_pulse;
     logic tom_on_pulse;
@@ -97,9 +97,10 @@ module operator
     logic rhythm_kon_pulse;
     logic prev_kon_p0;
     logic kon_p1;
-    logic [1:0] [OP_OUT_WIDTH-1:0] feedback_p0;
+    logic [1:0] [OP_OUT_WIDTH-1:0] feedback_p1;
     logic [1:0] [OP_OUT_WIDTH-1:0] feedback_p6;
-    logic [PIPELINE_DELAY:1] [1:0] [OP_OUT_WIDTH-1:0] feedback_p;
+    logic [PIPELINE_DELAY:2] [1:0] [OP_OUT_WIDTH-1:0] feedback_p;
+    logic [REG_FB_WIDTH-1:0] fb_p1 = 0;
 
     pipeline_sr #(
         .ENDING_CYCLE(PIPELINE_DELAY)
@@ -218,7 +219,7 @@ module operator
      * input (it is always operator 1 in any channel scheme)
      */
     phase_generator phase_generator (
-        .modulation(use_feedback ? feedback_result_p0 : modulation),
+        .modulation_p1(use_feedback_p1 ? feedback_result_p1 : modulation_p1),
         .*
     );
 
@@ -230,7 +231,7 @@ module operator
     mem_multi_bank #(
         .DATA_WIDTH(OP_OUT_WIDTH*2),
         .DEPTH(NUM_OPERATORS_PER_BANK),
-        .OUTPUT_DELAY(0),
+        .OUTPUT_DELAY(1),
         .DEFAULT_VALUE(0),
         .NUM_BANKS(NUM_BANKS)
     ) feedback_mem (
@@ -242,22 +243,26 @@ module operator
         .bankb(bank_num),
         .addrb(op_num),
         .dia(feedback_p6),
-        .dob(feedback_p0)
+        .dob(feedback_p1)
     );
 
     pipeline_sr #(
         .DATA_WIDTH(OP_OUT_WIDTH*2),
+        .STARTING_CYCLE(2),
         .ENDING_CYCLE(PIPELINE_DELAY)
     ) feedback_sr (
         .clk,
-        .in(feedback_p0),
+        .in(feedback_p1),
         .out(feedback_p)
     );
 
+    always_ff @(posedge clk)
+        fb_p1 <= fb;
+
     always_comb begin
         // used signed casts because signed on packed 2D array in Verilog doesn't apply individually to inner array, only the outer array
-        feedback_result_tmp_p0 = fb == 0 ? 0 : (signed'(feedback_p0[0]) + signed'(feedback_p0[1])) <<< fb;
-        feedback_result_p0 = feedback_result_tmp_p0 >>> 9;
+        feedback_result_tmp_p1 = fb_p1 == 0 ? 0 : (signed'(feedback_p1[0]) + signed'(feedback_p1[1])) <<< fb_p1;
+        feedback_result_p1 = feedback_result_tmp_p1 >>> 9;
     end
 endmodule
 `default_nettype wire
