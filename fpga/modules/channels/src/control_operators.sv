@@ -127,7 +127,7 @@ module control_operators
             operator_mem_rd_address = op_num;
         else if (op_num < 12)
             operator_mem_rd_address = op_num + 2;
-        else if (op_num < 18)
+        else
             operator_mem_rd_address = op_num + 4;
 
     logic [$clog2('h16)-1:0] am_vib_egt_ksr_mult_mem_wr_address = opl3_reg_wr.address - 'h20;
