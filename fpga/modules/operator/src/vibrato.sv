@@ -51,7 +51,7 @@ module vibrato
     input wire [OP_NUM_WIDTH-1:0] op_num,
     input wire [REG_FNUM_WIDTH-1:0] fnum,
     input wire dvb,
-    output logic [REG_FNUM_WIDTH-1:0] vib_val_p2 = 0
+    output logic signed [REG_FNUM_WIDTH-1:0] vib_val_p2 = 0
 );
     localparam VIBRATO_INDEX_WIDTH = 13;
 

@@ -93,7 +93,7 @@ module phase_generator
     logic [PIPELINE_DELAY:1] [BANK_NUM_WIDTH-1:0] bank_num_p;
     logic [PIPELINE_DELAY:1] [OP_NUM_WIDTH-1:0] op_num_p;
     logic [PIPELINE_DELAY:1] [OP_OUT_WIDTH-1:0] modulation_p;
-    operator_t [PIPELINE_DELAY:1] op_type_p;
+    logic [PIPELINE_DELAY:1] [$bits(operator_t)-1:0] op_type_p;
 
 
     pipeline_sr #(

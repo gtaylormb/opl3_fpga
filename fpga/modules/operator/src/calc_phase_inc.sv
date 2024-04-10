@@ -54,7 +54,7 @@ module calc_phase_inc
     input wire [REG_BLOCK_WIDTH-1:0] block,
     input wire vib,
     input wire dvb,
-    output logic signed [PHASE_ACC_WIDTH-1:0] phase_inc_p2 = 0
+    output logic [PHASE_ACC_WIDTH-1:0] phase_inc_p2 = 0
 );
     localparam PIPELINE_DELAY = 2;
 
