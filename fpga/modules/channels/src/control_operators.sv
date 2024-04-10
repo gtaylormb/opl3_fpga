@@ -130,7 +130,7 @@ module control_operators
         else
             operator_mem_rd_address = op_num + 4;
 
-    logic [$clog2('h16)-1:0] am_vib_egt_ksr_mult_mem_wr_address = opl3_reg_wr.address - 'h20;
+    wire [$clog2('h16)-1:0] am_vib_egt_ksr_mult_mem_wr_address = opl3_reg_wr.address - 'h20;
 
     mem_multi_bank #(
         .DATA_WIDTH(REG_FILE_DATA_WIDTH),
@@ -150,7 +150,7 @@ module control_operators
         .dob({am, vib, egt, ksr, mult})
     );
 
-    logic [$clog2('h16)-1:0] ksl_tl_mem_wr_address = opl3_reg_wr.address - 'h40;
+    wire [$clog2('h16)-1:0] ksl_tl_mem_wr_address = opl3_reg_wr.address - 'h40;
 
     mem_multi_bank #(
         .DATA_WIDTH(REG_FILE_DATA_WIDTH),
@@ -170,7 +170,7 @@ module control_operators
         .dob({ksl, tl})
     );
 
-    logic [$clog2('h16)-1:0] ar_dr_mem_wr_address = opl3_reg_wr.address - 'h60;
+    wire [$clog2('h16)-1:0] ar_dr_mem_wr_address = opl3_reg_wr.address - 'h60;
 
     mem_multi_bank #(
         .DATA_WIDTH(REG_FILE_DATA_WIDTH),
@@ -190,7 +190,7 @@ module control_operators
         .dob({ar, dr})
     );
 
-    logic [$clog2('h16)-1:0] sl_rr_mem_wr_address = opl3_reg_wr.address - 'h80;
+    wire [$clog2('h16)-1:0] sl_rr_mem_wr_address = opl3_reg_wr.address - 'h80;
 
     mem_multi_bank #(
         .DATA_WIDTH(REG_FILE_DATA_WIDTH),
@@ -210,7 +210,7 @@ module control_operators
         .dob({sl, rr})
     );
 
-    logic [$clog2('h16)-1:0] ws_mem_wr_address = opl3_reg_wr.address - 'hE0;
+    wire [$clog2('h16)-1:0] ws_mem_wr_address = opl3_reg_wr.address - 'hE0;
 
     mem_multi_bank #(
         .DATA_WIDTH(REG_WS_WIDTH),
@@ -285,7 +285,7 @@ module control_operators
         end
         endcase
 
-    logic [$clog2('h9)-1:0] fnum_low_mem_wr_address = opl3_reg_wr.address - 'hA0;
+    wire [$clog2('h9)-1:0] fnum_low_mem_wr_address = opl3_reg_wr.address - 'hA0;
 
     mem_multi_bank #(
         .DATA_WIDTH(REG_FILE_DATA_WIDTH),
@@ -305,7 +305,7 @@ module control_operators
         .dob(fnum[7:0])
     );
 
-    logic [$clog2('h9)-1:0] kon_block_fnum_high_mem_wr_address = opl3_reg_wr.address - 'hB0;
+    wire [$clog2('h9)-1:0] kon_block_fnum_high_mem_wr_address = opl3_reg_wr.address - 'hB0;
     localparam kon_block_fnum_high_mem_width = $bits(kon) + $bits(block) + $bits(fnum[9:8]);
 
     mem_multi_bank #(
@@ -326,7 +326,7 @@ module control_operators
         .dob({kon, block, fnum[9:8]})
     );
 
-    logic [$clog2('h9)-1:0] fb_cnt_mem_wr_address = opl3_reg_wr.address - 'hC0;
+    wire [$clog2('h9)-1:0] fb_cnt_mem_wr_address = opl3_reg_wr.address - 'hC0;
     localparam fb_cnt_mem_width = $bits(fb) + $bits(cnt);
 
     mem_multi_bank #(

@@ -66,11 +66,11 @@ module channels
     logic ops_done_pulse;
     logic [REG_CONNECTION_SEL_WIDTH-1:0] connection_sel = 0;
     logic is_new = 0;
+    logic ryt = 0; // rhythm mode on/off
     logic cha;
     logic chb;
     logic chc;
     logic chd;
-    logic ryt = 0; // rhythm mode on/off
     logic cnt;
     logic [REG_FB_WIDTH-1:0] fb_dummy;
 
@@ -86,7 +86,7 @@ module channels
                 ryt <= opl3_reg_wr.data[5];
         end
 
-    logic [$clog2('h9)-1:0] ch_abcd_cnt_mem_wr_address = opl3_reg_wr.address - 'hC0;
+    wire [$clog2('h9)-1:0] ch_abcd_cnt_mem_wr_address = opl3_reg_wr.address - 'hC0;
 
     mem_multi_bank #(
         .DATA_WIDTH(REG_FILE_DATA_WIDTH),
@@ -106,10 +106,6 @@ module channels
         .dob({chd, chc, chb, cha, fb_dummy, cnt})
     );
 
-    /*
-     * One operator is instantiated; it replicates the necessary registers for
-     * all operator slots (phase accumulation, envelope state and value, etc).
-     */
     control_operators control_operators (
         .*
     );
@@ -189,6 +185,7 @@ module channels
         end
         LOAD_2_OP_FIRST_AND_ACCUMULATE: begin
             signals.ch_abcd_cnt_mem_channel_num = self.channel_num;
+            signals.op_mem_op_num = self.op_num;
             signals.channel_2_op = cnt ? operator_mem_out + self.operator_out_second : self.operator_out_second;
             if (ryt && self.bank_num == 0)
                 unique case (self.channel_num)
@@ -231,7 +228,7 @@ module channels
             end
 
             if (self.channel_num == NUM_CHANNELS_PER_BANK - 1) begin
-                if (self.bank_num == NUM_BANKS - 1) begin
+                if (self.bank_num == 1) begin
                     next_state = LOAD_4_OP_THIRD;
                     next_self.op_num = 0;
                     next_self.channel_num = 0;
@@ -277,13 +274,13 @@ module channels
             endcase
 
             if (self.bank_num == 0) begin
-                if (!is_new || (cha && connection_sel[self.channel_num]))
+                if (cha && connection_sel[self.channel_num])
                     next_self.channel_a_acc_pre_clamp = self.channel_a_acc_pre_clamp + signals.channel_4_op;
-                if (!is_new || (chb && connection_sel[self.channel_num]))
+                if (chb && connection_sel[self.channel_num])
                     next_self.channel_b_acc_pre_clamp = self.channel_b_acc_pre_clamp + signals.channel_4_op;
-                if (!is_new || (chc && connection_sel[self.channel_num]))
+                if (chc && connection_sel[self.channel_num])
                     next_self.channel_c_acc_pre_clamp = self.channel_c_acc_pre_clamp + signals.channel_4_op;
-                if (!is_new || (chd && connection_sel[self.channel_num]))
+                if (chd && connection_sel[self.channel_num])
                     next_self.channel_d_acc_pre_clamp = self.channel_d_acc_pre_clamp + signals.channel_4_op;
             end
             else begin
