@@ -367,7 +367,7 @@ module control_operators
         14:                   use_feedback_p1 <= !(bank_num == 0 && ryt); // aka tom tom operator in bank 0
         endcase
 
-    always_comb
+    always_comb begin
         op_type = OP_NORMAL;
         if (bank_num == 0 && ryt)
             unique case (op_num)
@@ -378,6 +378,7 @@ module control_operators
             17:      op_type = OP_TOP_CYMBAL;
             default: op_type = OP_NORMAL;
             endcase
+    end
 
     always_ff @(posedge clk) begin
         cnt_p1 <= cnt;

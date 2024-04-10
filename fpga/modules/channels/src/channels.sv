@@ -113,13 +113,13 @@ module channels
     mem_multi_bank #(
         .DATA_WIDTH(OP_OUT_WIDTH),
         .DEPTH(NUM_OPERATORS_PER_BANK),
-        .OUTPUT_DELAY(0),
+        .OUTPUT_DELAY(1),
         .DEFAULT_VALUE(0),
         .NUM_BANKS(NUM_BANKS)
     ) operator_out_mem (
         .clk,
         .wea(operator_out.valid),
-        .reb('1),
+        .reb(signals.op_mem_rd),
         .banka(operator_out.bank_num),
         .addra(operator_out.op_num),
         .bankb(self.bank_num),
@@ -130,9 +130,11 @@ module channels
 
     enum {
         IDLE,
-        LOAD_2_OP_SECOND,
+        LOAD_2_OP_SECOND_0,
+        LOAD_2_OP_SECOND_1,
         LOAD_2_OP_FIRST_AND_ACCUMULATE,
-        LOAD_4_OP_THIRD,
+        LOAD_4_OP_THIRD_0,
+        LOAD_4_OP_THIRD_1,
         LOAD_4_OP_SECOND,
         LOAD_4_OP_FIRST_AND_ACCUMULATE,
         DONE
@@ -153,6 +155,7 @@ module channels
 
     struct packed {
         logic [$clog2(NUM_OPERATORS_PER_BANK)-1:0] op_mem_op_num;
+        logic op_mem_rd;
         logic [$clog2(NUM_CHANNELS_PER_BANK)-1:0] ch_abcd_cnt_mem_channel_num;
         logic signed [CHAN_2_OP_WIDTH-1:0] channel_2_op;
         logic signed [CHAN_4_OP_WIDTH-1:0] channel_4_op;
@@ -178,15 +181,20 @@ module channels
         IDLE:
             // once operators are calculated for this sample, we can begin accumulating the channels
             if (ops_done_pulse)
-                next_state = LOAD_2_OP_SECOND;
-        LOAD_2_OP_SECOND: begin
-            next_state = LOAD_2_OP_FIRST_AND_ACCUMULATE;
+                next_state = LOAD_2_OP_SECOND_0;
+        LOAD_2_OP_SECOND_0: begin
+            next_state = LOAD_2_OP_SECOND_1;
             signals.op_mem_op_num = self.op_num + 3;
+            signals.op_mem_rd = 1;
+        end
+        LOAD_2_OP_SECOND_1: begin
+            next_state = LOAD_2_OP_FIRST_AND_ACCUMULATE;
             next_self.operator_out_second = operator_mem_out;
+            signals.op_mem_op_num = self.op_num;
+            signals.op_mem_rd = 1;
         end
         LOAD_2_OP_FIRST_AND_ACCUMULATE: begin
             signals.ch_abcd_cnt_mem_channel_num = self.channel_num;
-            signals.op_mem_op_num = self.op_num;
             signals.channel_2_op = cnt ? operator_mem_out + self.operator_out_second : self.operator_out_second;
             if (ryt && self.bank_num == 0)
                 unique case (self.channel_num)
@@ -230,20 +238,20 @@ module channels
 
             if (self.channel_num == NUM_CHANNELS_PER_BANK - 1) begin
                 if (self.bank_num == 1) begin
-                    next_state = LOAD_4_OP_THIRD;
+                    next_state = LOAD_4_OP_THIRD_0;
                     next_self.op_num = 0;
                     next_self.channel_num = 0;
                     next_self.bank_num = 0;
                 end
                 else begin
-                    next_state = LOAD_2_OP_SECOND;
+                    next_state = LOAD_2_OP_SECOND_0;
                     next_self.op_num = 0;
                     next_self.bank_num = 1;
                     next_self.channel_num = 0;
                 end
             end
             else begin
-                next_state = LOAD_2_OP_SECOND;
+                next_state = LOAD_2_OP_SECOND_0;
                 unique case (self.channel_num)
                 2:       next_self.op_num = 6;
                 5:       next_self.op_num = 12;
@@ -252,21 +260,29 @@ module channels
                 next_self.channel_num = self.channel_num + 1;
             end
         end
-        LOAD_4_OP_THIRD: begin
-            next_state = LOAD_4_OP_SECOND;
+        LOAD_4_OP_THIRD_0: begin
+            // op_mem has a 1 cycle read delay so need an extra cycle at beginning of calculating channel op
+            next_state = LOAD_4_OP_THIRD_1;
             signals.op_mem_op_num = self.channel_num + 9;
-            next_self.operator_out_third = operator_mem_out;
+            signals.op_mem_rd = 1;
         end
-        LOAD_4_OP_SECOND: begin
-            next_state = LOAD_4_OP_FIRST_AND_ACCUMULATE;
+        LOAD_4_OP_THIRD_1: begin
+            next_state = LOAD_4_OP_SECOND;
             signals.op_mem_op_num = self.channel_num + 6;
-            next_self.operator_out_second = operator_mem_out;
+            signals.op_mem_rd = 1;
+            next_self.operator_out_third = operator_mem_out;
             signals.ch_abcd_cnt_mem_channel_num = self.channel_num + 3;
             next_self.cnt_second = cnt;
         end
-        LOAD_4_OP_FIRST_AND_ACCUMULATE: begin
+        LOAD_4_OP_SECOND: begin
+            next_state = LOAD_4_OP_FIRST_AND_ACCUMULATE;
             signals.ch_abcd_cnt_mem_channel_num = self.channel_num;
             signals.op_mem_op_num = {cnt, self.cnt_second} == 'b01 ? self.channel_num + 3 : self.channel_num;
+            signals.op_mem_rd = 1;
+            next_self.operator_out_second = operator_mem_out;
+        end
+        LOAD_4_OP_FIRST_AND_ACCUMULATE: begin
+            signals.ch_abcd_cnt_mem_channel_num = self.channel_num;
             unique case ({cnt, self.cnt_second})
             'b00: signals.channel_4_op = self.operator_out_third;
             'b01: signals.channel_4_op = operator_mem_out + self.operator_out_third;
@@ -299,13 +315,13 @@ module channels
                 if (self.bank_num == NUM_BANKS - 1)
                     next_state = DONE;
                 else begin
-                    next_state = LOAD_4_OP_THIRD;
+                    next_state = LOAD_4_OP_THIRD_0;
                     next_self.channel_num = 0;
                     next_self.bank_num = 1;
                 end
             end
             else begin
-                next_state = LOAD_4_OP_THIRD;
+                next_state = LOAD_4_OP_THIRD_0;
                 next_self.channel_num = self.channel_num + 1;
             end
         end
