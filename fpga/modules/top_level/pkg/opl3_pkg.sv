@@ -56,7 +56,7 @@ package opl3_pkg;
     localparam INSTANTIATE_SAMPLE_SYNC_TO_CPU_CLK = 0;
 
     localparam DESIRED_SAMPLE_FREQ = 49.7159e3;
-    localparam int CLK_DIV_COUNT = $ceil(CLK_FREQ/DESIRED_SAMPLE_FREQ);
+    localparam int CLK_DIV_COUNT = $ceil(CLK_FREQ/DESIRED_SAMPLE_FREQ); // unsupported by Quartus 17, set manually
     localparam ACTUAL_SAMPLE_FREQ = CLK_FREQ/CLK_DIV_COUNT;
 
     localparam NUM_REG_PER_BANK = 'hF6;

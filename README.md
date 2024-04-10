@@ -1,11 +1,11 @@
 opl3_fpga
 =========
 ## News
-2024-4-4
-* I changed up the top level interface/bus protocol to better match the real chip and make it easier to integrate into other projects. The register map is now internal instead of an external AXI version. Clock domain
-crossing logic is included to go between CPU and OPL3. This along with significant internal logic reduction work has massively cut down the area. LUT utilization was reduced by 50%, registers by 58%.
-The design also now requires Vivado/Vitis 2023.2; the integration is a lot cleaner and there's way less files in the repo now. I have some ideas to get the area down further. There's also some bug fixes regarding
-rhythm and timers/irq are now properly implemented (but still optional).
+2024-4-10
+* Massive refactoring. I changed up the top level interface/bus protocol to better match the real chip and make it easier to integrate into other projects. The register map is now internal instead of an external AXI version. Clock domain
+crossing logic is included to go between CPU and OPL3. This along with significant internal logic reduction work has massively cut down the area. LUT utilization was reduced by 73%, registers by 88%.
+The Zybo design also now requires Vivado/Vitis 2023.2 (though the SystemVerilog syntax has been dumbed down to support Quartus 17 for easier integration with other certain projects);
+the integration is a lot cleaner and there's way less files in the repo now. There's also some bug fixes regarding rhythm and timers/irq are now properly implemented (but still optional).
 
 2019-11-7
 * The OPL2 subset of OPL3_FPGA was converted to Verilog by Magnus Karlsson, and then ported to the Panologic thin client (a Spartan-3E based board) by Skip Hansen. The project can be found here: https://github.com/skiphansen/panog1_opl3
@@ -93,16 +93,16 @@ Close up of the attack phase:
     +----------------------------+------+-------+------------+-----------+-------+
     |          Site Type         | Used | Fixed | Prohibited | Available | Util% |
     +----------------------------+------+-------+------------+-----------+-------+
-    | Slice LUTs                 | 3051 |     0 |          0 |     17600 | 17.34 |
-    |   LUT as Logic             | 2882 |     0 |          0 |     17600 | 16.38 |
-    |   LUT as Memory            |  169 |     0 |          0 |      6000 |  2.82 |
-    |     LUT as Distributed RAM |  124 |     0 |            |           |       |
-    |     LUT as Shift Register  |   45 |     0 |            |           |       |
-    | Slice Registers            | 4315 |     0 |          0 |     35200 | 12.26 |
-    |   Register as Flip Flop    | 4315 |     0 |          0 |     35200 | 12.26 |
+    | Slice LUTs                 | 1635 |     0 |          0 |     17600 |  9.29 |
+    |   LUT as Logic             | 1348 |     0 |          0 |     17600 |  7.66 |
+    |   LUT as Memory            |  287 |     0 |          0 |      6000 |  4.78 |
+    |     LUT as Distributed RAM |  240 |     0 |            |           |       |
+    |     LUT as Shift Register  |   47 |     0 |            |           |       |
+    | Slice Registers            | 1192 |     0 |          0 |     35200 |  3.39 |
+    |   Register as Flip Flop    | 1192 |     0 |          0 |     35200 |  3.39 |
     |   Register as Latch        |    0 |     0 |          0 |     35200 |  0.00 |
-    | F7 Muxes                   |  359 |     0 |          0 |      8800 |  4.08 |
-    | F8 Muxes                   |   63 |     0 |          0 |      4400 |  1.43 |
+    | F7 Muxes                   |    6 |     0 |          0 |      8800 |  0.07 |
+    | F8 Muxes                   |    2 |     0 |          0 |      4400 |  0.05 |
     +----------------------------+------+-------+------------+-----------+-------+
 
     +-------------------+------+-------+------------+-----------+-------+
