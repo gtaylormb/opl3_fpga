@@ -174,6 +174,7 @@ module channels
         end
 
     always_comb begin
+        next_state = state;
         next_self = self;
         signals = 0;
 
