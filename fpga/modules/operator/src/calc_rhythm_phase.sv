@@ -64,7 +64,7 @@ module calc_rhythm_phase
     logic [PHASE_ACC_WIDTH-1:0] noise_bit_p2;
     logic [RAND_NUM_WIDTH-1:0] rand_num = 1;
     logic [PIPELINE_DELAY:1] sample_clk_en_p;
-    operator_t [PIPELINE_DELAY:1] op_type_p;
+    logic [PIPELINE_DELAY:1] [$bits(operator_t)-1:0] op_type_p;
 
     pipeline_sr #(
         .ENDING_CYCLE(PIPELINE_DELAY)

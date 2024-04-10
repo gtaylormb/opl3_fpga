@@ -69,6 +69,7 @@ module channel_adder
         sample_opl3_r_p1 <= (channel_b + channel_d) <<< DAC_LEFT_SHIFT;
     end
 
+    generate
     if (INSTANTIATE_SAMPLE_SYNC_TO_CPU_CLK) begin
         logic sample_valid_cpu_p0;
         logic sample_valid_cpu_p1 = 0;
@@ -100,5 +101,6 @@ module channel_adder
             sample_l = sample_opl3_l_p1;
             sample_r = sample_opl3_r_p1;
         end
+    endgenerate
 endmodule
 `default_nettype wire

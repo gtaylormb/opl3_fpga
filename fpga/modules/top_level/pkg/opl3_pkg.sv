@@ -56,7 +56,7 @@ package opl3_pkg;
     localparam INSTANTIATE_SAMPLE_SYNC_TO_CPU_CLK = 0;
 
     localparam DESIRED_SAMPLE_FREQ = 49.7159e3;
-    localparam int CLK_DIV_COUNT = $ceil(CLK_FREQ/DESIRED_SAMPLE_FREQ);
+    localparam int CLK_DIV_COUNT = $ceil(CLK_FREQ/DESIRED_SAMPLE_FREQ); // unsupported by Quartus 17, set manually
     localparam ACTUAL_SAMPLE_FREQ = CLK_FREQ/CLK_DIV_COUNT;
 
     localparam NUM_REG_PER_BANK = 'hF6;
@@ -112,5 +112,12 @@ package opl3_pkg;
         logic [REG_FILE_DATA_WIDTH-1:0] address;
         logic [REG_FILE_DATA_WIDTH-1:0] data;
     } opl3_reg_wr_t;
+
+    typedef struct packed {
+        logic valid;
+        logic bank_num;
+        logic [$clog2(NUM_OPERATORS_PER_BANK)-1:0] op_num;
+        logic signed [OP_OUT_WIDTH-1:0] op_out;
+    } operator_out_t;
 
 endpackage

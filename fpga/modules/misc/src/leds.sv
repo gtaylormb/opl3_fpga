@@ -1,14 +1,13 @@
 /*******************************************************************************
 #   +html+<pre>
 #
-#   FILENAME: vibrato.sv
-#   AUTHOR: Greg Taylor     CREATION DATE: 13 Oct 2014
+#   FILENAME: leds.sv
+#   AUTHOR: Greg Taylor     CREATION DATE: 1 April 2024
 #
 #   DESCRIPTION:
-#   Prepare the phase increment for the NCO (calc multiplier and vibrato)
 #
 #   CHANGE HISTORY:
-#   13 Oct 2014    Greg Taylor
+#   1 April 2024    Greg Taylor
 #       Initial version
 #
 #   Copyright (C) 2014 Greg Taylor <gtaylor@sonic.net>
@@ -42,44 +41,20 @@
 `timescale 1ns / 1ps
 `default_nettype none
 
-module vibrato
+module leds
     import opl3_pkg::*;
 (
     input wire clk,
-    input wire sample_clk_en,
-    input wire [BANK_NUM_WIDTH-1:0] bank_num,
-    input wire [OP_NUM_WIDTH-1:0] op_num,
-    input wire [REG_FNUM_WIDTH-1:0] fnum,
-    input wire dvb,
-    output logic signed [REG_FNUM_WIDTH-1:0] vib_val_p2 = 0
+    input var opl3_reg_wr_t opl3_reg_wr,
+    output logic [NUM_LEDS-1:0] led = 0
 );
-    localparam VIBRATO_INDEX_WIDTH = 13;
-
-    logic [VIBRATO_INDEX_WIDTH-1:0] vibrato_index_p1 = 0;
-    logic [REG_FNUM_WIDTH-1:0] delta0_p1;
-    logic [REG_FNUM_WIDTH-1:0] delta1_p1;
-    logic [REG_FNUM_WIDTH-1:0] delta2_p1;
-    logic fnum_p1 = 0;
-    logic dvb_p1 = 0;
-
-    always_ff @(posedge clk) begin
-        fnum_p1 <= fnum;
-        dvb_p1 <= dvb;
+    generate
+    genvar i;
+    for (i = 0; i < NUM_LEDS; ++i) begin: led_gen
+        always_ff @(posedge clk)
+            if (opl3_reg_wr.valid && opl3_reg_wr.bank_num == 0 && opl3_reg_wr.address == 'hB0 + i)
+                led[i] <= opl3_reg_wr.data[5];
     end
-
-    /*
-     * Low-Frequency Oscillator (LFO)
-     * 6.07Hz (Sample Freq/2**13)
-     */
-    always_ff @(posedge clk)
-        if (sample_clk_en)
-            vibrato_index_p1 <= vibrato_index_p1 + 1;
-
-    always_comb delta0_p1 = fnum_p1 >> 7;
-    always_comb delta1_p1 = ((vibrato_index_p1 >> 10) & 3) == 3 ? delta0_p1 >> 1 : delta0_p1;
-    always_comb delta2_p1 = !dvb_p1 ? delta1_p1 >> 1 : delta1_p1;
-
-    always_ff @(posedge clk)
-        vib_val_p2 <= ((vibrato_index_p1 >> 10) & 4) != 0 ? ~delta2_p1 : delta2_p1;
+    endgenerate
 endmodule
 `default_nettype wire

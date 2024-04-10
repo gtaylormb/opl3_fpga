@@ -75,13 +75,15 @@ module mem_simple_dual_port #(
         dob_p2 <= dob_p1;
     end
 
+    generate
     if (OUTPUT_DELAY == 0)
         always_comb dob = dob_p0;
     else if (OUTPUT_DELAY == 1)
         always_comb dob = dob_p1;
     else if (OUTPUT_DELAY == 2)
         always_comb dob = dob_p2;
-    else
-        $fatal("OUTPUT_DELAY must be 0, 1, or 2");
+    // else
+    //     $fatal("OUTPUT_DELAY must be 0, 1, or 2"); unsupported by Quartus 17
+    endgenerate
 endmodule
 `default_nettype wire
