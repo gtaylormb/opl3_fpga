@@ -52,7 +52,7 @@ module control_operators
     input wire [REG_CONNECTION_SEL_WIDTH-1:0] connection_sel,
     input wire is_new,
     input wire ryt,
-    output logic signed [OP_OUT_WIDTH-1:0] operator_out [NUM_BANKS][NUM_OPERATORS_PER_BANK] = '{default: 0},
+    output operator_out_t operator_out,
     output logic ops_done_pulse = 0
 );
     localparam PIPELINE_DELAY = 6;
@@ -471,13 +471,11 @@ module control_operators
         .dob(modulation_out_p0)
     );
 
-    for (genvar i = 0; i < NUM_BANKS; i++)
-        for (genvar j = 0; j < NUM_OPERATORS_PER_BANK; j++)
-            /*
-             * Capture output from operator in the last cycle of the time slot
-             */
-            always_ff @(posedge clk)
-                if (i == bank_num_p[6] && j == op_num_p[6] && op_sample_clk_en_p[6])
-                    operator_out[i][j] <= out_p6;
+    always_comb begin
+        operator_out.valid = op_sample_clk_en_p[6];
+        operator_out.bank_num = bank_num_p[6];
+        operator_out.op_num = op_num_p[6];
+        operator_out.op_out = out_p6;
+    end
 endmodule
 `default_nettype wire
