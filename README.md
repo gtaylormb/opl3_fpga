@@ -93,25 +93,25 @@ Close up of the attack phase:
     +----------------------------+------+-------+------------+-----------+-------+
     |          Site Type         | Used | Fixed | Prohibited | Available | Util% |
     +----------------------------+------+-------+------------+-----------+-------+
-    | Slice LUTs                 | 1635 |     0 |          0 |     17600 |  9.29 |
-    |   LUT as Logic             | 1348 |     0 |          0 |     17600 |  7.66 |
-    |   LUT as Memory            |  287 |     0 |          0 |      6000 |  4.78 |
-    |     LUT as Distributed RAM |  240 |     0 |            |           |       |
+    | Slice LUTs                 | 1641 |     0 |          0 |     17600 |  9.32 |
+    |   LUT as Logic             | 1390 |     0 |          0 |     17600 |  7.90 |
+    |   LUT as Memory            |  251 |     0 |          0 |      6000 |  4.18 |
+    |     LUT as Distributed RAM |  204 |     0 |            |           |       |
     |     LUT as Shift Register  |   47 |     0 |            |           |       |
-    | Slice Registers            | 1192 |     0 |          0 |     35200 |  3.39 |
-    |   Register as Flip Flop    | 1192 |     0 |          0 |     35200 |  3.39 |
+    | Slice Registers            | 1241 |     0 |          0 |     35200 |  3.53 |
+    |   Register as Flip Flop    | 1241 |     0 |          0 |     35200 |  3.53 |
     |   Register as Latch        |    0 |     0 |          0 |     35200 |  0.00 |
-    | F7 Muxes                   |    6 |     0 |          0 |      8800 |  0.07 |
+    | F7 Muxes                   |    5 |     0 |          0 |      8800 |  0.06 |
     | F8 Muxes                   |    2 |     0 |          0 |      4400 |  0.05 |
     +----------------------------+------+-------+------------+-----------+-------+
 
     +-------------------+------+-------+------------+-----------+-------+
     |     Site Type     | Used | Fixed | Prohibited | Available | Util% |
     +-------------------+------+-------+------------+-----------+-------+
-    | Block RAM Tile    |    2 |     0 |          0 |        60 |  3.33 |
+    | Block RAM Tile    |    3 |     0 |          0 |        60 |  5.00 |
     |   RAMB36/FIFO*    |    0 |     0 |          0 |        60 |  0.00 |
-    |   RAMB18          |    4 |     0 |          0 |       120 |  3.33 |
-    |     RAMB18E1 only |    4 |       |            |           |       |
+    |   RAMB18          |    6 |     0 |          0 |       120 |  5.00 |
+    |     RAMB18E1 only |    6 |       |            |           |       |
     +-------------------+------+-------+------------+-----------+-------+
 
 ## Serial command line interface
