@@ -46,39 +46,8 @@ module channels
 (
     input wire clk,
     input wire clk_host,
+    input var opl3_reg_wr_t opl3_reg_wr,
     input wire sample_clk_en,
-    input wire [REG_CONNECTION_SEL_WIDTH-1:0] connection_sel,
-    input wire is_new,
-    input wire nts,                     // keyboard split selection
-    input wire [REG_FNUM_WIDTH-1:0] fnum [2][9],
-    input wire [REG_MULT_WIDTH-1:0] mult [2][18],
-    input wire [REG_BLOCK_WIDTH-1:0] block [2][9],
-    input wire [REG_WS_WIDTH-1:0] ws [2][18],
-    input wire vib [2][18],
-    input wire dvb,
-    input wire kon [2][9],
-    input wire [REG_ENV_WIDTH-1:0] ar [2][18], // attack rate
-    input wire [REG_ENV_WIDTH-1:0] dr [2][18], // decay rate
-    input wire [REG_ENV_WIDTH-1:0] sl [2][18], // sustain level
-    input wire [REG_ENV_WIDTH-1:0] rr [2][18], // release rate
-    input wire [REG_TL_WIDTH-1:0] tl [2][18],  // total level
-    input wire ksr [2][18],                    // key scale rate
-    input wire [REG_KSL_WIDTH-1:0] ksl [2][18], // key scale level
-    input wire egt [2][18],                     // envelope type
-    input wire am [2][18],                      // amplitude modulation (tremolo)
-    input wire dam,                             // depth of tremolo
-    input wire ryt,
-    input wire bd,
-    input wire sd,
-    input wire tom,
-    input wire tc,
-    input wire hh,
-    input wire cha [2][9],
-    input wire chb [2][9],
-    input wire chc [2][9],
-    input wire chd [2][9],
-    input wire [REG_FB_WIDTH-1:0] fb [2][9],
-    input wire cnt [2][9],
     output logic sample_valid,
     output logic signed [DAC_OUTPUT_WIDTH-1:0] sample_l,
     output logic signed [DAC_OUTPUT_WIDTH-1:0] sample_r
@@ -109,6 +78,36 @@ module channels
     logic signed [SAMPLE_WIDTH-1:0] channel_d = 0;
     logic channel_valid = 0;
     logic ops_done_pulse;
+    logic [REG_CONNECTION_SEL_WIDTH-1:0] connection_sel = 0;
+    logic is_new = 0;
+    logic cha [2][9] = '{default: 0};
+    logic chb [2][9] = '{default: 0};
+    logic chc [2][9] = '{default: 0};
+    logic chd [2][9] = '{default: 0};
+    logic cnt [2][9] = '{default: 0};
+    logic ryt = 0; // rhythm mode on/off
+
+    always_ff @(posedge clk)
+        if (opl3_reg_wr.valid) begin
+            if (opl3_reg_wr.bank_num == 1 && opl3_reg_wr.address == 4)
+                connection_sel <= opl3_reg_wr.data[REG_CONNECTION_SEL_WIDTH-1:0];
+
+            if (opl3_reg_wr.bank_num == 1 && opl3_reg_wr.address == 5)
+                is_new <= opl3_reg_wr.data[0];
+
+            if (opl3_reg_wr.bank_num == 0 && opl3_reg_wr.address == 'hBD)
+                ryt <= opl3_reg_wr.data[5];
+        end
+
+    always_ff @(posedge clk)
+        if (opl3_reg_wr.valid && opl3_reg_wr.address >= 'hC0 && opl3_reg_wr.address <= 'hC8) begin
+            chd[opl3_reg_wr.bank_num][opl3_reg_wr.address - 'hC0] = opl3_reg_wr.data[7];
+            chc[opl3_reg_wr.bank_num][opl3_reg_wr.address - 'hC0] = opl3_reg_wr.data[6];
+            chb[opl3_reg_wr.bank_num][opl3_reg_wr.address - 'hC0] = opl3_reg_wr.data[5];
+            cha[opl3_reg_wr.bank_num][opl3_reg_wr.address - 'hC0] = opl3_reg_wr.data[4];
+
+            cnt[opl3_reg_wr.bank_num][opl3_reg_wr.address - 'hC0] = opl3_reg_wr.data[0];
+        end
 
     enum {
         IDLE,

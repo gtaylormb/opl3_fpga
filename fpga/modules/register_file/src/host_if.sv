@@ -54,8 +54,8 @@ module host_if
     input wire [1:0] address,
     input wire [REG_FILE_DATA_WIDTH-1:0] din,
     output logic [REG_FILE_DATA_WIDTH-1:0] dout,
-    output logic [REG_FILE_DATA_WIDTH-1:0] opl3_reg [NUM_BANKS][NUM_REG_PER_BANK] = '{default: 0},
     output logic ack_host_wr,
+    output opl3_reg_wr_t opl3_reg_wr = 0,
     input wire [REG_FILE_DATA_WIDTH-1:0] status
 );
     logic cs_p1 = 0;
@@ -75,8 +75,6 @@ module host_if
     logic wr_opl3 = 0;
     logic [1:0] address_opl3 = 0;
     logic [REG_FILE_DATA_WIDTH-1:0] din_opl3 = 0;
-    logic internal_bank = 0;
-    logic [REG_FILE_DATA_WIDTH-1:0] internal_address = 0;
     logic ack_transaction;
 
     /*
@@ -133,24 +131,24 @@ module host_if
         wr_opl3 <= wr_latched;
         address_opl3 <= address_latched;
         din_opl3 <= din_latched;
+        opl3_reg_wr.valid <= 0;
 
         if (cs_opl3 && !cs_opl3_p1)
             unique case ({rd_opl3, wr_opl3, address_opl3[0]})
             'b010: begin // address write mode
-                internal_bank <= address_opl3[1];
-                internal_address <= din_opl3;
+                opl3_reg_wr.bank_num <= address_opl3[1];
+                opl3_reg_wr.address <= din_opl3;
             end
-            'b011:       // data write mode
-                opl3_reg[internal_bank][internal_address] <= din_opl3;
+            'b011: begin      // data write mode
+                opl3_reg_wr.data <= din_opl3;
+                opl3_reg_wr.valid <= 1;
+            end
             'b100:;      // status read mode
             default:;
             endcase
 
-        if (reset) begin
-            internal_bank <= 0;
-            internal_address <= 0;
-            opl3_reg <= '{default: 0};
-        end
+        if (reset)
+            opl3_reg_wr <= 0;
     end
 
     // bits do not need to be coherant, can use synchronizers

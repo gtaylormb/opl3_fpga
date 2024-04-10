@@ -48,44 +48,15 @@ module control_operators
 (
     input wire clk,
     input wire sample_clk_en,
+    input var opl3_reg_wr_t opl3_reg_wr,
     input wire [REG_CONNECTION_SEL_WIDTH-1:0] connection_sel,
     input wire is_new,
-    input wire nts,                     // keyboard split selection
-    input wire [REG_FNUM_WIDTH-1:0] fnum [NUM_BANKS][NUM_CHANNELS_PER_BANK],
-    input wire [REG_MULT_WIDTH-1:0] mult [NUM_BANKS][NUM_OPERATORS_PER_BANK],
-    input wire [REG_BLOCK_WIDTH-1:0] block [NUM_BANKS][NUM_CHANNELS_PER_BANK],
-    input wire [REG_WS_WIDTH-1:0] ws [NUM_BANKS][NUM_OPERATORS_PER_BANK],
-    input wire vib [NUM_BANKS][NUM_OPERATORS_PER_BANK],
-    input wire dvb,
-    input wire kon [NUM_BANKS][NUM_CHANNELS_PER_BANK],
-    input wire [REG_ENV_WIDTH-1:0] ar [NUM_BANKS][NUM_OPERATORS_PER_BANK], // attack rate
-    input wire [REG_ENV_WIDTH-1:0] dr [NUM_BANKS][NUM_OPERATORS_PER_BANK], // decay rate
-    input wire [REG_ENV_WIDTH-1:0] sl [NUM_BANKS][NUM_OPERATORS_PER_BANK], // sustain level
-    input wire [REG_ENV_WIDTH-1:0] rr [NUM_BANKS][NUM_OPERATORS_PER_BANK], // release rate
-    input wire [REG_TL_WIDTH-1:0] tl [NUM_BANKS][NUM_OPERATORS_PER_BANK],  // total level
-    input wire ksr [NUM_BANKS][NUM_OPERATORS_PER_BANK],                    // key scale rate
-    input wire [REG_KSL_WIDTH-1:0] ksl [NUM_BANKS][NUM_OPERATORS_PER_BANK], // key scale level
-    input wire egt [NUM_BANKS][NUM_OPERATORS_PER_BANK],                     // envelope type
-    input wire am [NUM_BANKS][NUM_OPERATORS_PER_BANK],                      // amplitude modulation (tremolo)
-    input wire dam,                             // depth of tremolo
     input wire ryt,
-    input wire bd,
-    input wire sd,
-    input wire tom,
-    input wire tc,
-    input wire hh,
-    input wire [REG_FB_WIDTH-1:0] fb [NUM_BANKS][NUM_CHANNELS_PER_BANK],
-    input wire cnt [NUM_BANKS][NUM_CHANNELS_PER_BANK],
     output logic signed [OP_OUT_WIDTH-1:0] operator_out [NUM_BANKS][NUM_OPERATORS_PER_BANK] = '{default: 0},
     output logic ops_done_pulse = 0
 );
-    /*
-     * 256/36 operators gives us ~7.1 cycles per operator before next
-     * sample_clk_en
-     */
     localparam PIPELINE_DELAY = 6;
     localparam NUM_OPERATOR_UPDATE_STATES = NUM_BANKS*NUM_OPERATORS_PER_BANK + 1; // 36 operators + idle state
-    logic [$clog2(PIPELINE_DELAY)-1:0] delay_counter = 0;
 
     logic [$clog2(NUM_OPERATOR_UPDATE_STATES)-1:0] state = 0;
     logic [$clog2(NUM_OPERATOR_UPDATE_STATES)-1:0] next_state;
@@ -93,13 +64,9 @@ module control_operators
     logic [$clog2(NUM_BANKS)-1:0] bank_num;
     logic [$clog2(NUM_OPERATORS_PER_BANK)-1:0] op_num;
 
-    logic [REG_FNUM_WIDTH-1:0] fnum_tmp [NUM_BANKS][NUM_OPERATORS_PER_BANK];
-    logic [REG_BLOCK_WIDTH-1:0] block_tmp [NUM_BANKS][NUM_OPERATORS_PER_BANK];
-    logic kon_tmp [NUM_BANKS][NUM_OPERATORS_PER_BANK];
-    logic [REG_FB_WIDTH-1:0] fb_tmp [NUM_BANKS][NUM_OPERATORS_PER_BANK];
-    logic use_feedback [NUM_BANKS][NUM_OPERATORS_PER_BANK];
-    logic signed [OP_OUT_WIDTH-1:0] modulation [NUM_BANKS][NUM_OPERATORS_PER_BANK];
-    operator_t op_type_tmp [NUM_BANKS][NUM_OPERATORS_PER_BANK];
+    logic use_feedback;
+    logic signed [OP_OUT_WIDTH-1:0] modulation;
+    operator_t op_type;
     logic signed [OP_OUT_WIDTH-1:0] out_p6;
     logic signed [OP_OUT_WIDTH-1:0] modulation_out_p0;
     logic [$clog2(NUM_OPERATORS_PER_BANK)-1:0] modulation_out_op_num;
@@ -108,376 +75,319 @@ module control_operators
     logic [PIPELINE_DELAY:1] [BANK_NUM_WIDTH-1:0] bank_num_p;
     logic [PIPELINE_DELAY:1] [OP_NUM_WIDTH-1:0] op_num_p;
 
+    logic am;  // amplitude modulation (tremolo on/off)
+    logic vib; // vibrato on/off
+    logic egt; // envelope type (select sustain/decay)
+    logic ksr; // key scale rate
+    logic [REG_MULT_WIDTH-1:0] mult; // frequency data multiplier
+    logic [REG_KSL_WIDTH-1:0] ksl;   // key scale level
+    logic [REG_TL_WIDTH-1:0] tl;     // total level (modulation, volume setting)
+    logic [REG_ENV_WIDTH-1:0] ar;    // attack rate
+    logic [REG_ENV_WIDTH-1:0] dr;    // decay rate
+    logic [REG_ENV_WIDTH-1:0] sl;    // sustain level
+    logic [REG_ENV_WIDTH-1:0] rr;    // release rate
+    logic [REG_WS_WIDTH-1:0] ws;     // waveform select
+    logic [$clog2('h16)-1:0] operator_mem_rd_address;
+
+    logic [REG_FNUM_WIDTH-1:0] fnum;   // f-number (scale data within the octave)
+    logic [REG_BLOCK_WIDTH-1:0] block; // octave data
+    logic kon;                         // key-on (sound generation on/off)
+    logic [REG_FB_WIDTH-1:0] fb;       // feedback (modulation for slot 1 FM feedback)
+    logic cnt;                         // operator connection
+    logic [$clog2('h9)-1:0] kon_block_fnum_channel_mem_rd_address;
+    logic [$clog2('h9)-1:0] fb_cnt_channel_mem_rd_address;
+
+    logic nts = 0; // keyboard split selection
+    logic dvb = 0; // vibrato depth
+    logic dam = 0; // depth of tremolo
+    logic bd = 0;  // bass drum key-on
+    logic sd = 0;  // snare drum key-on
+    logic tom = 0; // tom-tom key-on
+    logic tc = 0;  // top-cymbal key-on
+    logic hh = 0;  // hi-hat key-on
+
+    always_ff @(posedge clk)
+        if (opl3_reg_wr.valid) begin
+            if (opl3_reg_wr.bank_num == 0 && opl3_reg_wr.address == 8)
+                nts <= opl3_reg_wr.data[6];
+
+            if (opl3_reg_wr.bank_num == 0 && opl3_reg_wr.address == 'hBD) begin
+                dam <= opl3_reg_wr.data[7];
+                dvb <= opl3_reg_wr.data[6];
+                bd  <= opl3_reg_wr.data[4];
+                sd  <= opl3_reg_wr.data[3];
+                tom <= opl3_reg_wr.data[2];
+                tc  <= opl3_reg_wr.data[1];
+                hh  <= opl3_reg_wr.data[0];
+            end
+        end
+
+    always_comb
+        if (op_num < 6)
+            operator_mem_rd_address = op_num;
+        else if (op_num < 12)
+            operator_mem_rd_address = op_num + 2;
+        else
+            operator_mem_rd_address = op_num + 4;
+
+    logic [$clog2('h16)-1:0] am_vib_egt_ksr_mult_mem_wr_address = opl3_reg_wr.address - 'h20;
+
+    mem_multi_bank #(
+        .DATA_WIDTH(REG_FILE_DATA_WIDTH),
+        .DEPTH('h16),
+        .OUTPUT_DELAY(0),
+        .DEFAULT_VALUE(0),
+        .NUM_BANKS(NUM_BANKS)
+    ) am_vib_egt_ksr_mult_mem (
+        .clk,
+        .wea(opl3_reg_wr.valid && opl3_reg_wr.address >= 'h20 && opl3_reg_wr.address <= 'h35),
+        .reb(op_sample_clk_en),
+        .banka(opl3_reg_wr.bank_num),
+        .addra(am_vib_egt_ksr_mult_mem_wr_address),
+        .bankb(bank_num),
+        .addrb(operator_mem_rd_address),
+        .dia(opl3_reg_wr.data),
+        .dob({am, vib, egt, ksr, mult})
+    );
+
+    logic [$clog2('h16)-1:0] ksl_tl_mem_wr_address = opl3_reg_wr.address - 'h40;
+
+    mem_multi_bank #(
+        .DATA_WIDTH(REG_FILE_DATA_WIDTH),
+        .DEPTH('h16),
+        .OUTPUT_DELAY(0),
+        .DEFAULT_VALUE(0),
+        .NUM_BANKS(NUM_BANKS)
+    ) ksl_tl_mem (
+        .clk,
+        .wea(opl3_reg_wr.valid && opl3_reg_wr.address >= 'h40 && opl3_reg_wr.address <= 'h55),
+        .reb(op_sample_clk_en),
+        .banka(opl3_reg_wr.bank_num),
+        .addra(ksl_tl_mem_wr_address),
+        .bankb(bank_num),
+        .addrb(operator_mem_rd_address),
+        .dia(opl3_reg_wr.data),
+        .dob({ksl, tl})
+    );
+
+    logic [$clog2('h16)-1:0] ar_dr_mem_wr_address = opl3_reg_wr.address - 'h60;
+
+    mem_multi_bank #(
+        .DATA_WIDTH(REG_FILE_DATA_WIDTH),
+        .DEPTH('h16),
+        .OUTPUT_DELAY(0),
+        .DEFAULT_VALUE(0),
+        .NUM_BANKS(NUM_BANKS)
+    ) ar_dr_mem (
+        .clk,
+        .wea(opl3_reg_wr.valid && opl3_reg_wr.address >= 'h60 && opl3_reg_wr.address <= 'h75),
+        .reb(op_sample_clk_en),
+        .banka(opl3_reg_wr.bank_num),
+        .addra(ar_dr_mem_wr_address),
+        .bankb(bank_num),
+        .addrb(operator_mem_rd_address),
+        .dia(opl3_reg_wr.data),
+        .dob({ar, dr})
+    );
+
+    logic [$clog2('h16)-1:0] sl_rr_mem_wr_address = opl3_reg_wr.address - 'h80;
+
+    mem_multi_bank #(
+        .DATA_WIDTH(REG_FILE_DATA_WIDTH),
+        .DEPTH('h16),
+        .OUTPUT_DELAY(0),
+        .DEFAULT_VALUE(0),
+        .NUM_BANKS(NUM_BANKS)
+    ) sl_rr_mem (
+        .clk,
+        .wea(opl3_reg_wr.valid && opl3_reg_wr.address >= 'h80 && opl3_reg_wr.address <= 'h95),
+        .reb(op_sample_clk_en),
+        .banka(opl3_reg_wr.bank_num),
+        .addra(sl_rr_mem_wr_address),
+        .bankb(bank_num),
+        .addrb(operator_mem_rd_address),
+        .dia(opl3_reg_wr.data),
+        .dob({sl, rr})
+    );
+
+    logic [$clog2('h16)-1:0] ws_mem_wr_address = opl3_reg_wr.address - 'hE0;
+
+    mem_multi_bank #(
+        .DATA_WIDTH(REG_WS_WIDTH),
+        .DEPTH('h16),
+        .OUTPUT_DELAY(0),
+        .DEFAULT_VALUE(0),
+        .NUM_BANKS(NUM_BANKS)
+    ) ws_mem (
+        .clk,
+        .wea(opl3_reg_wr.valid && opl3_reg_wr.address >= 'hE0 && opl3_reg_wr.address <= 'hF5),
+        .reb(op_sample_clk_en),
+        .banka(opl3_reg_wr.bank_num),
+        .addra(ws_mem_wr_address),
+        .bankb(bank_num),
+        .addrb(operator_mem_rd_address),
+        .dia(opl3_reg_wr.data[REG_WS_WIDTH-1:0]),
+        .dob(ws)
+    );
+
+    always_comb
+        unique case (op_num)
+        0, 3: begin
+            kon_block_fnum_channel_mem_rd_address = 0;
+            fb_cnt_channel_mem_rd_address = 0;
+        end
+        1, 4: begin
+            kon_block_fnum_channel_mem_rd_address = 1;
+            fb_cnt_channel_mem_rd_address = 1;
+        end
+        2, 5: begin
+            kon_block_fnum_channel_mem_rd_address = 2;
+            fb_cnt_channel_mem_rd_address = 2;
+        end
+        6, 9:
+            if (bank_num == 0) begin
+                kon_block_fnum_channel_mem_rd_address = connection_sel[0] ? 0 : 3;
+                fb_cnt_channel_mem_rd_address = 3;
+            end
+            else begin
+                kon_block_fnum_channel_mem_rd_address = connection_sel[3] ? 0 : 3;
+                fb_cnt_channel_mem_rd_address = 3;
+            end
+        7, 10:
+            if (bank_num == 0) begin
+                kon_block_fnum_channel_mem_rd_address = connection_sel[1] ? 1 : 4;
+                fb_cnt_channel_mem_rd_address = 4;
+            end
+            else begin
+                kon_block_fnum_channel_mem_rd_address = connection_sel[4] ? 1 : 4;
+                fb_cnt_channel_mem_rd_address = 4;
+            end
+        8, 11:
+            if (bank_num == 0) begin
+                kon_block_fnum_channel_mem_rd_address = connection_sel[2] ? 2 : 5;
+                fb_cnt_channel_mem_rd_address = 5;
+            end
+            else begin
+                kon_block_fnum_channel_mem_rd_address = connection_sel[5] ? 2 : 5;
+                fb_cnt_channel_mem_rd_address = 5;
+            end
+        12, 15: begin
+            kon_block_fnum_channel_mem_rd_address = 6;
+            fb_cnt_channel_mem_rd_address = 6;
+        end
+        13, 16: begin
+            kon_block_fnum_channel_mem_rd_address = 7;
+            fb_cnt_channel_mem_rd_address = 7;
+        end
+        14, 17: begin
+            kon_block_fnum_channel_mem_rd_address = 8;
+            fb_cnt_channel_mem_rd_address = 8;
+        end
+        endcase
+
+    logic [$clog2('h9)-1:0] fnum_low_mem_wr_address = opl3_reg_wr.address - 'hA0;
+
+    mem_multi_bank #(
+        .DATA_WIDTH(REG_FILE_DATA_WIDTH),
+        .DEPTH('h9),
+        .OUTPUT_DELAY(0),
+        .DEFAULT_VALUE(0),
+        .NUM_BANKS(NUM_BANKS)
+    ) fnum_low_mem (
+        .clk,
+        .wea(opl3_reg_wr.valid && opl3_reg_wr.address >= 'hA0 && opl3_reg_wr.address <= 'hA8),
+        .reb(op_sample_clk_en),
+        .banka(opl3_reg_wr.bank_num),
+        .addra(fnum_low_mem_wr_address),
+        .bankb(bank_num),
+        .addrb(kon_block_fnum_channel_mem_rd_address),
+        .dia(opl3_reg_wr.data),
+        .dob(fnum[7:0])
+    );
+
+    logic [$clog2('h9)-1:0] kon_block_fnum_high_mem_wr_address = opl3_reg_wr.address - 'hB0;
+    localparam kon_block_fnum_high_mem_width = $bits(kon) + $bits(block) + $bits(fnum[9:8]);
+
+    mem_multi_bank #(
+        .DATA_WIDTH(kon_block_fnum_high_mem_width),
+        .DEPTH('h9),
+        .OUTPUT_DELAY(0),
+        .DEFAULT_VALUE(0),
+        .NUM_BANKS(NUM_BANKS)
+    ) kon_block_fnum_high_mem (
+        .clk,
+        .wea(opl3_reg_wr.valid && opl3_reg_wr.address >= 'hB0 && opl3_reg_wr.address <= 'hB8),
+        .reb(op_sample_clk_en),
+        .banka(opl3_reg_wr.bank_num),
+        .addra(kon_block_fnum_high_mem_wr_address),
+        .bankb(bank_num),
+        .addrb(kon_block_fnum_channel_mem_rd_address),
+        .dia(opl3_reg_wr.data[kon_block_fnum_high_mem_width-1:0]),
+        .dob({kon, block, fnum[9:8]})
+    );
+
+    logic [$clog2('h9)-1:0] fb_cnt_mem_wr_address = opl3_reg_wr.address - 'hC0;
+    localparam fb_cnt_mem_width = $bits(fb) + $bits(cnt);
+
+    mem_multi_bank #(
+        .DATA_WIDTH(fb_cnt_mem_width),
+        .DEPTH('h9),
+        .OUTPUT_DELAY(0),
+        .DEFAULT_VALUE(0),
+        .NUM_BANKS(NUM_BANKS)
+    ) fb_cnt_mem (
+        .clk,
+        .wea(opl3_reg_wr.valid && opl3_reg_wr.address >= 'hC0 && opl3_reg_wr.address <= 'hC8),
+        .reb(op_sample_clk_en),
+        .banka(opl3_reg_wr.bank_num),
+        .addra(fb_cnt_mem_wr_address),
+        .bankb(bank_num),
+        .addrb(fb_cnt_channel_mem_rd_address),
+        .dia(opl3_reg_wr.data[fb_cnt_mem_width-1:0]),
+        .dob({fb, cnt})
+    );
+
     always_comb begin
-        op_type_tmp = '{default: OP_NORMAL};
+        op_type = OP_NORMAL;
+        if (bank_num == 0 && ryt)
+            unique case (op_num)
+            12, 15:  op_type = OP_BASS_DRUM;
+            13:      op_type = OP_HI_HAT;
+            14:      op_type = OP_TOM_TOM;
+            16:      op_type = OP_SNARE_DRUM;
+            17:      op_type = OP_TOP_CYMBAL;
+            default: op_type = OP_NORMAL;
+            endcase
 
-        /*
-         * Operator input mappings
-         *
-         * The first mappings are static whether the operator is configured
-         * in a 2 channel or a 4 channel mode. Next we start mapping connections
-         * for operators whose input varies depending on the mode.
-         */
-        fnum_tmp[0][0] = fnum[0][0];
-        block_tmp[0][0] = block[0][0];
-        kon_tmp[0][0] = kon[0][0];
-        fb_tmp[0][0] = fb[0][0];
-        use_feedback[0][0] = 1;
-        modulation[0][0] = 0;
+        unique case (op_num)
+        0, 1, 2, 12:          use_feedback = 1;
+        3, 4, 5, 9, 10, 11,
+        15, 16, 17:           use_feedback = 0;
+        6: if (bank_num == 0) use_feedback = !connection_sel[0];
+           else               use_feedback = !connection_sel[3];
+        7: if (bank_num == 0) use_feedback = !connection_sel[1];
+           else               use_feedback = !connection_sel[4];
+        8: if (bank_num == 0) use_feedback = !connection_sel[2];
+           else               use_feedback = !connection_sel[5];
+        13:                   use_feedback = !(bank_num == 0 && ryt); // aka hi hat operator in bank 0
+        14:                   use_feedback = !(bank_num == 0 && ryt); // aka tom tom operator in bank 0
+        endcase
 
-        fnum_tmp[0][3] = fnum[0][0];
-        block_tmp[0][3] = block[0][0];
-        kon_tmp[0][3] = kon[0][0];
-        fb_tmp[0][3] = 0;
-        use_feedback[0][3] = 0;
-        modulation[0][3] = cnt[0][0] ? 0 : modulation_out_p0;
-
-        fnum_tmp[0][1] = fnum[0][1];
-        block_tmp[0][1] = block[0][1];
-        kon_tmp[0][1] = kon[0][1];
-        fb_tmp[0][1] = fb[0][1];
-        use_feedback[0][1] = 1;
-        modulation[0][1] = 0;
-
-        fnum_tmp[0][4] = fnum[0][1];
-        block_tmp[0][4] = block[0][1];
-        kon_tmp[0][4] = kon[0][1];
-        fb_tmp[0][4] = 0;
-        use_feedback[0][4] = 0;
-        modulation[0][4] = cnt[0][1] ? 0 : modulation_out_p0;
-
-        fnum_tmp[0][2] = fnum[0][2];
-        block_tmp[0][2] = block[0][2];
-        kon_tmp[0][2] = kon[0][2];
-        fb_tmp[0][2] = fb[0][2];
-        use_feedback[0][2] = 1;
-        modulation[0][2] = 0;
-
-        fnum_tmp[0][5] = fnum[0][2];
-        block_tmp[0][5] = block[0][2];
-        kon_tmp[0][5] = kon[0][2];
-        fb_tmp[0][5] = 0;
-        use_feedback[0][5] = 0;
-        modulation[0][5] = cnt[0][2] ? 0 : modulation_out_p0;
-
-        fnum_tmp[1][0] = fnum[1][0];
-        block_tmp[1][0] = block[1][0];
-        kon_tmp[1][0] = kon[1][0];
-        fb_tmp[1][0] = fb[1][0];
-        use_feedback[1][0] = 1;
-        modulation[1][0] = 0;
-
-        fnum_tmp[1][3] = fnum[1][0];
-        block_tmp[1][3] = block[1][0];
-        kon_tmp[1][3] = kon[1][0];
-        fb_tmp[1][3] = 0;
-        use_feedback[1][3] = 0;
-        modulation[1][3] = cnt[1][0] ? 0 : modulation_out_p0;
-
-        fnum_tmp[1][1] = fnum[1][1];
-        block_tmp[1][1] = block[1][1];
-        kon_tmp[1][1] = kon[1][1];
-        fb_tmp[1][1] = fb[1][1];
-        use_feedback[1][1] = 1;
-        modulation[1][1] = 0;
-
-        fnum_tmp[1][4] = fnum[1][1];
-        block_tmp[1][4] = block[1][1];
-        kon_tmp[1][4] = kon[1][1];
-        fb_tmp[1][4] = 0;
-        use_feedback[1][4] = 0;
-        modulation[1][4] = cnt[1][1] ? 0 : modulation_out_p0;
-
-        fnum_tmp[1][2] = fnum[1][2];
-        block_tmp[1][2] = block[1][2];
-        kon_tmp[1][2] = kon[1][2];
-        fb_tmp[1][2] = fb[1][2];
-        use_feedback[1][2] = 1;
-        modulation[1][2] = 0;
-
-        fnum_tmp[1][5] = fnum[1][2];
-        block_tmp[1][5] = block[1][2];
-        kon_tmp[1][5] = kon[1][2];
-        fb_tmp[1][5] = 0;
-        use_feedback[1][5] = 0;
-        modulation[1][5] = cnt[1][2] ? 0 : modulation_out_p0;
-
-        // aka bass drum operator 1
-        fnum_tmp[0][12] = fnum[0][6];
-        block_tmp[0][12] = block[0][6];
-        kon_tmp[0][12] = kon[0][6];
-        fb_tmp[0][12] = fb[0][6];
-        op_type_tmp[0][12] = ryt ? OP_BASS_DRUM : OP_NORMAL;
-        use_feedback[0][12] = 1;
-        modulation[0][12] = 0;
-
-        // aka bass drum operator 2
-        fnum_tmp[0][15] = fnum[0][6];
-        block_tmp[0][15] = block[0][6];
-        kon_tmp[0][15] = kon[0][6];
-        fb_tmp[0][15] = 0;
-        op_type_tmp[0][15] = ryt ? OP_BASS_DRUM : OP_NORMAL;
-        use_feedback[0][15] = 0;
-        modulation[0][15] = cnt[0][6] ? 0 : modulation_out_p0;
-
-        // aka hi hat operator
-        fnum_tmp[0][13] = fnum[0][7];
-        block_tmp[0][13] = block[0][7];
-        kon_tmp[0][13] = kon[0][7];
-        fb_tmp[0][13] = ryt ? 0 : fb[0][7];
-        op_type_tmp[0][13] = ryt ? OP_HI_HAT : OP_NORMAL;
-        use_feedback[0][13] = ryt ? 0 : 1;
-        modulation[0][13] = 0;
-
-        // aka snare drum operator
-        fnum_tmp[0][16] = fnum[0][7];
-        block_tmp[0][16] = block[0][7];
-        kon_tmp[0][16] = kon[0][7];
-        fb_tmp[0][16] = 0;
-        op_type_tmp[0][16] = ryt ? OP_SNARE_DRUM : OP_NORMAL;
-        use_feedback[0][16] = 0;
-        modulation[0][16] = cnt[0][7] || ryt ? 0 : modulation_out_p0;
-
-        // aka tom tom operator
-        fnum_tmp[0][14] = fnum[0][8];
-        block_tmp[0][14] = block[0][8];
-        kon_tmp[0][14] = kon[0][8];
-        fb_tmp[0][14] = ryt ? 0 : fb[0][8];
-        op_type_tmp[0][14] = ryt ? OP_TOM_TOM : OP_NORMAL;
-        use_feedback[0][14] = ryt ? 0 : 1;
-        modulation[0][14] = 0;
-
-        // aka top cymbal operator
-        fnum_tmp[0][17] = fnum[0][8];
-        block_tmp[0][17] = block[0][8];
-        kon_tmp[0][17] = kon[0][8];
-        fb_tmp[0][17] = 0;
-        op_type_tmp[0][17] = ryt ? OP_TOP_CYMBAL : OP_NORMAL;
-        use_feedback[0][17] = 0;
-        modulation[0][17] = cnt[0][8] || ryt ? 0 : modulation_out_p0;
-
-        fnum_tmp[1][12] = fnum[1][6];
-        block_tmp[1][12] = block[1][6];
-        kon_tmp[1][12] = kon[1][6];
-        fb_tmp[1][12] = fb[1][6];
-        use_feedback[1][12] = 1;
-        modulation[1][12] = 0;
-
-        fnum_tmp[1][15] = fnum[1][6];
-        block_tmp[1][15] = block[1][6];
-        kon_tmp[1][15] = kon[1][6];
-        fb_tmp[1][15] = 0;
-        use_feedback[1][15] = 0;
-        modulation[1][15] = cnt[1][6] ? 0 : modulation_out_p0;
-
-        fnum_tmp[1][13] = fnum[1][7];
-        block_tmp[1][13] = block[1][7];
-        kon_tmp[1][13] = kon[1][7];
-        fb_tmp[1][13] = fb[1][7];
-        use_feedback[1][13] = 1;
-        modulation[1][13] = 0;
-
-        fnum_tmp[1][16] = fnum[1][7];
-        block_tmp[1][16] = block[1][7];
-        kon_tmp[1][16] = kon[1][7];
-        fb_tmp[1][16] = 0;
-        use_feedback[1][16] = 0;
-        modulation[1][16] = cnt[1][7] ? 0 : modulation_out_p0;
-
-        fnum_tmp[1][14] = fnum[1][8];
-        block_tmp[1][14] = block[1][8];
-        kon_tmp[1][14] = kon[1][8];
-        fb_tmp[1][14] = fb[1][8];
-        use_feedback[1][14] = 1;
-        modulation[1][14] = 0;
-
-        fnum_tmp[1][17] = fnum[1][8];
-        block_tmp[1][17] = block[1][8];
-        kon_tmp[1][17] = kon[1][8];
-        fb_tmp[1][17] = 0;
-        use_feedback[1][17] = 0;
-        modulation[1][17] = cnt[1][8] ? 0 : modulation_out_p0;
-
-        if (connection_sel[0]) begin
-            fnum_tmp[0][6] = fnum[0][0];
-            block_tmp[0][6] = block[0][0];
-            kon_tmp[0][6] = kon[0][0];
-            fb_tmp[0][6] = 0;
-            use_feedback[0][6] = 0;
-            modulation[0][6] = !cnt[0][0] && cnt[0][3] ? 0 : modulation_out_p0;
-
-            fnum_tmp[0][9] = fnum[0][0];
-            block_tmp[0][9] = block[0][0];
-            kon_tmp[0][9] = kon[0][0];
-            fb_tmp[0][9] = 0;
-            use_feedback[0][9] = 0;
-            modulation[0][9] = cnt[0][0] && cnt[0][3] ? 0 : modulation_out_p0;
-        end
-        else begin
-            fnum_tmp[0][6] = fnum[0][3];
-            block_tmp[0][6] = block[0][3];
-            kon_tmp[0][6] = kon[0][3];
-            fb_tmp[0][6] = fb[0][3];
-            use_feedback[0][6] = 1;
-            modulation[0][6] = 0;
-
-            fnum_tmp[0][9] = fnum[0][3];
-            block_tmp[0][9] = block[0][3];
-            kon_tmp[0][9] = kon[0][3];
-            fb_tmp[0][9] = 0;
-            use_feedback[0][9] = 0;
-            modulation[0][9] = cnt[0][3] ? 0 : modulation_out_p0;
-        end
-        if (connection_sel[1]) begin
-            fnum_tmp[0][7] = fnum[0][1];
-            block_tmp[0][7] = block[0][1];
-            kon_tmp[0][7] = kon[0][1];
-            fb_tmp[0][7] = 0;
-            use_feedback[0][7] = 0;
-            modulation[0][7] = !cnt[0][1] && cnt[0][4] ? 0 : modulation_out_p0;
-
-            fnum_tmp[0][10] = fnum[0][1];
-            block_tmp[0][10] = block[0][1];
-            kon_tmp[0][10] = kon[0][1];
-            fb_tmp[0][10] = 0;
-            use_feedback[0][10] = 0;
-            modulation[0][10] = cnt[0][1] && cnt[0][4] ? 0 : modulation_out_p0;
-        end
-        else begin
-            fnum_tmp[0][7] = fnum[0][4];
-            block_tmp[0][7] = block[0][4];
-            kon_tmp[0][7] = kon[0][4];
-            fb_tmp[0][7] = fb[0][4];
-            use_feedback[0][7] = 1;
-            modulation[0][7] = 0;
-
-            fnum_tmp[0][10] = fnum[0][4];
-            block_tmp[0][10] = block[0][4];
-            kon_tmp[0][10] = kon[0][4];
-            fb_tmp[0][10] = 0;
-            use_feedback[0][10] = 0;
-            modulation[0][10] = cnt[0][4] ? 0 : modulation_out_p0;
-        end
-        if (connection_sel[2]) begin
-            fnum_tmp[0][8] = fnum[0][2];
-            block_tmp[0][8] = block[0][2];
-            kon_tmp[0][8] = kon[0][2];
-            fb_tmp[0][8] = 0;
-            use_feedback[0][8] = 0;
-            modulation[0][8] = !cnt[0][2] && cnt[0][5] ? 0 : modulation_out_p0;
-
-            fnum_tmp[0][11] = fnum[0][2];
-            block_tmp[0][11] = block[0][2];
-            kon_tmp[0][11] = kon[0][2];
-            fb_tmp[0][11] = 0;
-            use_feedback[0][11] = 0;
-            modulation[0][11] = cnt[0][2] && cnt[0][5] ? 0 : modulation_out_p0;
-        end
-        else begin
-            fnum_tmp[0][8] = fnum[0][5];
-            block_tmp[0][8] = block[0][5];
-            kon_tmp[0][8] = kon[0][5];
-            fb_tmp[0][8] = fb[0][5];
-            use_feedback[0][8] = 1;
-            modulation[0][8] = 0;
-
-            fnum_tmp[0][11] = fnum[0][5];
-            block_tmp[0][11] = block[0][5];
-            kon_tmp[0][11] = kon[0][5];
-            fb_tmp[0][11] = 0;
-            use_feedback[0][11] = 0;
-            modulation[0][11] = cnt[0][5] ? 0 : modulation_out_p0;
-        end
-        if (connection_sel[3]) begin
-            fnum_tmp[1][6] = fnum[1][0];
-            block_tmp[1][6] = block[1][0];
-            kon_tmp[1][6] = kon[1][0];
-            fb_tmp[1][6] = 0;
-            use_feedback[1][6] = 0;
-            modulation[1][6] = !cnt[1][0] && cnt[1][3] ? 0 : modulation_out_p0;
-
-            fnum_tmp[1][9] = fnum[1][0];
-            block_tmp[1][9] = block[1][0];
-            kon_tmp[1][9] = kon[1][0];
-            fb_tmp[1][9] = 0;
-            use_feedback[1][9] = 0;
-            modulation[1][9] = cnt[1][0] && cnt[1][3] ? 0 : modulation_out_p0;
-        end
-        else begin
-            fnum_tmp[1][6] = fnum[1][3];
-            block_tmp[1][6] = block[1][3];
-            kon_tmp[1][6] = kon[1][3];
-            fb_tmp[1][6] = fb[1][3];
-            use_feedback[1][6] = 1;
-            modulation[1][6] = 0;
-
-            fnum_tmp[1][9] = fnum[1][3];
-            block_tmp[1][9] = block[1][3];
-            kon_tmp[1][9] = kon[1][3];
-            fb_tmp[1][9] = 0;
-            use_feedback[1][9] = 0;
-            modulation[1][9] = cnt[1][3] ? 0 : modulation_out_p0;
-        end
-        if (connection_sel[4]) begin
-            fnum_tmp[1][7] = fnum[1][1];
-            block_tmp[1][7] = block[1][1];
-            kon_tmp[1][7] = kon[1][1];
-            fb_tmp[1][7] = 0;
-            use_feedback[1][7] = 0;
-            modulation[1][7] = !cnt[1][1] && cnt[1][4] ? 0 : modulation_out_p0;
-
-            fnum_tmp[1][10] = fnum[1][1];
-            block_tmp[1][10] = block[1][1];
-            kon_tmp[1][10] = kon[1][1];
-            fb_tmp[1][10] = 0;
-            use_feedback[1][10] = 0;
-            modulation[1][10] = cnt[1][1] && cnt[1][4] ? 0 : modulation_out_p0;
-        end
-        else begin
-            fnum_tmp[1][7] = fnum[1][4];
-            block_tmp[1][7] = block[1][4];
-            kon_tmp[1][7] = kon[1][4];
-            fb_tmp[1][7] = fb[1][4];
-            use_feedback[1][7] = 1;
-            modulation[1][7] = 0;
-
-            fnum_tmp[1][10] = fnum[1][4];
-            block_tmp[1][10] = block[1][4];
-            kon_tmp[1][10] = kon[1][4];
-            fb_tmp[1][10] = 0;
-            use_feedback[1][10] = 0;
-            modulation[1][10] = cnt[1][4] ? 0 : modulation_out_p0;
-        end
-        if (connection_sel[5]) begin
-            fnum_tmp[1][8] = fnum[1][2];
-            block_tmp[1][8] = block[1][2];
-            kon_tmp[1][8] = kon[1][2];
-            fb_tmp[1][8] = 0;
-            use_feedback[1][8] = 0;
-            modulation[1][8] = !cnt[1][2] && cnt[1][5] ? 0 : modulation_out_p0;
-
-            fnum_tmp[1][11] = fnum[1][2];
-            block_tmp[1][11] = block[1][2];
-            kon_tmp[1][11] = kon[1][2];
-            fb_tmp[1][11] = 0;
-            use_feedback[1][11] = 0;
-            modulation[1][11] = cnt[1][2] && cnt[1][5] ? 0 : modulation_out_p0;
-        end
-        else begin
-            fnum_tmp[1][8] = fnum[1][5];
-            block_tmp[1][8] = block[1][5];
-            kon_tmp[1][8] = kon[1][5];
-            fb_tmp[1][8] = fb[1][5];
-            use_feedback[1][8] = 1;
-            modulation[1][8] = 0;
-
-            fnum_tmp[1][11] = fnum[1][5];
-            block_tmp[1][11] = block[1][5];
-            kon_tmp[1][11] = kon[1][5];
-            fb_tmp[1][11] = 0;
-            use_feedback[1][11] = 0;
-            modulation[1][11] = cnt[1][5] ? 0 : modulation_out_p0;
-        end
+        unique case (op_num)
+        0, 1, 2, 12, 13, 14:    modulation = 0;
+        3, 4, 5, 9, 10, 11, 15: modulation = cnt ? 0 : modulation_out_p0;
+        6: if ((bank_num == 0 && connection_sel[0]) || (bank_num == 1 && connection_sel[3]))
+                                modulation = cnt ? 0 : modulation_out_p0;
+           else                 modulation = 0;
+        7: if ((bank_num == 0 && connection_sel[1]) || (bank_num == 1 && connection_sel[4]))
+                                modulation = cnt ? 0 : modulation_out_p0;
+           else                 modulation = 0;
+        8: if ((bank_num == 0 && connection_sel[2]) || (bank_num == 1 && connection_sel[5]))
+                                modulation = cnt ? 0 : modulation_out_p0;
+           else                 modulation = 0;
+        16:                     modulation = cnt || (ryt && bank_num == 0) ? 0 : modulation_out_p0; // aka snare drum operator in bank 0
+        17:                     modulation = cnt || (ryt && bank_num == 0) ? 0 : modulation_out_p0; // aka top cymbal operator in bank 0
+        endcase
     end
 
     always_ff @(posedge clk)
@@ -490,14 +400,6 @@ module control_operators
             next_state = 0;
         else
             next_state = state + 1;
-
-    always_ff @(posedge clk)
-        if (next_state != state)
-            delay_counter <= 0;
-        else if (delay_counter == PIPELINE_DELAY )
-            delay_counter <= 0;
-        else
-            delay_counter <= delay_counter + 1;
 
     always_comb bank_num = state > NUM_OPERATORS_PER_BANK;
     always_comb
@@ -515,39 +417,8 @@ module control_operators
      * cycle of that time slot
      */
     operator operator (
-        .clk,
         .sample_clk_en(op_sample_clk_en),
-        .is_new,
-        .bank_num,
-        .op_num,
-        .fnum(fnum_tmp[bank_num][op_num]),
-        .mult(mult[bank_num][op_num]),
-        .block(block_tmp[bank_num][op_num]),
-        .ws(ws[bank_num][op_num]),
-        .vib(vib[bank_num][op_num]),
-        .dvb,
-        .kon(kon_tmp[bank_num][op_num]),
-        .ar(ar[bank_num][op_num]),
-        .dr(dr[bank_num][op_num]),
-        .sl(sl[bank_num][op_num]),
-        .rr(rr[bank_num][op_num]),
-        .tl(tl[bank_num][op_num]),
-        .ksr(ksr[bank_num][op_num]),
-        .ksl(ksl[bank_num][op_num]),
-        .egt(egt[bank_num][op_num]),
-        .am(am[bank_num][op_num]),
-        .dam,
-        .nts,
-        .bd,
-        .sd,
-        .tom,
-        .tc,
-        .hh,
-        .use_feedback(use_feedback[bank_num][op_num]),
-        .fb(fb_tmp[bank_num][op_num]),
-        .modulation(modulation[bank_num][op_num]),
-        .op_type(op_type_tmp[bank_num][op_num]),
-        .out_p6
+        .*
     );
 
     pipeline_sr #(

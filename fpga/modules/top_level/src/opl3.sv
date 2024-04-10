@@ -63,53 +63,11 @@ module opl3
     logic reset;
     logic sample_clk_en;
 
-    logic [REG_FILE_DATA_WIDTH-1:0] opl3_reg [NUM_BANKS][NUM_REG_PER_BANK];
-    logic [REG_TIMER_WIDTH-1:0] timer1;
-    logic [REG_TIMER_WIDTH-1:0] timer2;
-    logic irq_rst;
-    logic mt1;
-    logic mt2;
-    logic st1;
-    logic st2;
-    logic [REG_CONNECTION_SEL_WIDTH-1:0] connection_sel;
-    logic is_new;
-    logic nts;                     // keyboard split selection
-    logic [REG_FNUM_WIDTH-1:0] fnum [NUM_BANKS][NUM_CHANNELS_PER_BANK];
-    logic [REG_MULT_WIDTH-1:0] mult [NUM_BANKS][NUM_OPERATORS_PER_BANK];
-    logic [REG_BLOCK_WIDTH-1:0] block [NUM_BANKS][NUM_CHANNELS_PER_BANK];
-    logic [REG_WS_WIDTH-1:0] ws [NUM_BANKS][NUM_OPERATORS_PER_BANK];
-    logic vib [NUM_BANKS][NUM_OPERATORS_PER_BANK];
-    logic dvb;
-    logic kon [NUM_BANKS][NUM_CHANNELS_PER_BANK];
-    logic [REG_ENV_WIDTH-1:0] ar [NUM_BANKS][NUM_OPERATORS_PER_BANK]; // attack rate
-    logic [REG_ENV_WIDTH-1:0] dr [NUM_BANKS][NUM_OPERATORS_PER_BANK]; // decay rate
-    logic [REG_ENV_WIDTH-1:0] sl [NUM_BANKS][NUM_OPERATORS_PER_BANK]; // sustain level
-    logic [REG_ENV_WIDTH-1:0] rr [NUM_BANKS][NUM_OPERATORS_PER_BANK]; // release rate
-    logic [REG_TL_WIDTH-1:0] tl [NUM_BANKS][NUM_OPERATORS_PER_BANK];  // total level
-    logic ksr [NUM_BANKS][NUM_OPERATORS_PER_BANK];                    // key scale rate
-    logic [REG_KSL_WIDTH-1:0] ksl [NUM_BANKS][NUM_OPERATORS_PER_BANK]; // key scale level
-    logic egt [NUM_BANKS][NUM_OPERATORS_PER_BANK];                     // envelope type
-    logic am [NUM_BANKS][NUM_OPERATORS_PER_BANK];                      // amplitude modulation (tremolo)
-    logic dam;                             // depth of tremolo
-    logic ryt;
-    logic bd;
-    logic sd;
-    logic tom;
-    logic tc;
-    logic hh;
-    logic cha [NUM_BANKS][NUM_CHANNELS_PER_BANK];
-    logic chb [NUM_BANKS][NUM_CHANNELS_PER_BANK];
-    logic chc [NUM_BANKS][NUM_CHANNELS_PER_BANK];
-    logic chd [NUM_BANKS][NUM_CHANNELS_PER_BANK];
-    logic [REG_FB_WIDTH-1:0] fb [NUM_BANKS][NUM_CHANNELS_PER_BANK];
-    logic cnt [NUM_BANKS][NUM_CHANNELS_PER_BANK];
+    opl3_reg_wr_t opl3_reg_wr;
     logic signed [SAMPLE_WIDTH-1:0] channel_a;
     logic signed [SAMPLE_WIDTH-1:0] channel_b;
     logic signed [SAMPLE_WIDTH-1:0] channel_c;
     logic signed [SAMPLE_WIDTH-1:0] channel_d;
-    logic ft1;
-    logic ft2;
-    logic irq;
     logic [REG_FILE_DATA_WIDTH-1:0] status;
     logic channel_valid;
 
@@ -130,15 +88,11 @@ module opl3
         .*
     );
 
-    for (genvar i = 0; i < NUM_LEDS; ++i)
-        always_ff @(posedge clk)
-            led[i] <= kon[0][i];
+    // for (genvar i = 0; i < NUM_LEDS; ++i)
+    //     always_ff @(posedge clk)
+    //         led[i] <= kon[0][i];
 
     host_if host_if (
-        .*
-    );
-
-    register_file register_file (
         .*
     );
 
@@ -150,11 +104,7 @@ module opl3
             .*
         );
     else
-        always_comb begin
-            ft1 = 0;
-            ft2 = 0;
-            irq = 0;
+        always_comb
             irq_n = 1;
-        end
 endmodule
 `default_nettype wire
