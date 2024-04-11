@@ -64,12 +64,7 @@ module opl3
     logic sample_clk_en;
 
     opl3_reg_wr_t opl3_reg_wr;
-    logic signed [SAMPLE_WIDTH-1:0] channel_a;
-    logic signed [SAMPLE_WIDTH-1:0] channel_b;
-    logic signed [SAMPLE_WIDTH-1:0] channel_c;
-    logic signed [SAMPLE_WIDTH-1:0] channel_d;
     logic [REG_FILE_DATA_WIDTH-1:0] status;
-    logic channel_valid;
 
     reset_sync reset_sync (
         .clk,

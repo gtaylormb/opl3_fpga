@@ -51,7 +51,7 @@ package opl3_pkg;
      */
     localparam CLK_FREQ = 12.727e6;
     localparam DAC_OUTPUT_WIDTH = 24;
-    localparam INSTANTIATE_TIMERS = 0; // set to 1 to use timers, 0 to save area
+    localparam INSTANTIATE_TIMERS = 1; // set to 1 to use timers, 0 to save area
     localparam NUM_LEDS = 4; // connected to kon bank 0 starting at 0
     localparam INSTANTIATE_SAMPLE_SYNC_TO_CPU_CLK = 0;
 

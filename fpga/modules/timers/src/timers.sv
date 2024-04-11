@@ -110,10 +110,10 @@ module timers
     );
 
     always_ff @(posedge clk) begin
-        if (timer1_overflow_pulse && mt1)
+        if (timer1_overflow_pulse && !mt1)
             ft1 <= 1;
 
-        if (timer2_overflow_pulse && mt2)
+        if (timer2_overflow_pulse && !mt2)
             ft2 <= 1;
 
         if (reset || irq_rst) begin

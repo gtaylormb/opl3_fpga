@@ -95,6 +95,21 @@ module opl3_tb
             output din;
         endclocking
 
+        task opl3_read (
+            output [REG_FILE_DATA_WIDTH-1:0] value
+        );
+            bit [1:0] opl3_address;
+
+            cb.address <= 'b00;
+            cb.cs_n <= 0;
+            cb.rd_n <= 0;
+            ##20; // need time for opl3 cs to assert internally due to slow clock speed and synchronizer delay
+            value <= cb.dout;
+            cb.cs_n <= 1;
+            cb.rd_n <= 1;
+            ##20; // need time for opl3 cs to deassert internally due to slow clock speed and synchronizer delay
+        endtask
+
         task opl3_write (
             input [REG_FILE_DATA_WIDTH-1:0] register,
             input [REG_FILE_DATA_WIDTH-1:0] data_in,
@@ -104,9 +119,9 @@ module opl3_tb
             bit [REG_FILE_DATA_WIDTH-1:0] data;
 
             // write OPL3 address
-            address = bank ? 'b10 : 'b00;
+            opl3_address = bank ? 'b10 : 'b00;
             data = register;
-            cb.address <= address;
+            cb.address <= opl3_address;
             cb.din <= data;
             cb.cs_n <= 0;
             cb.wr_n <= 0;
@@ -114,12 +129,15 @@ module opl3_tb
                 ##1;
             cb.cs_n <= 1;
             cb.wr_n <= 1;
-            ##15; // need time for opl3 cs to deassert internally due to slow clock speed and synchronizer delay
+            cb.din <= 0;
+            ##20; // need time for opl3 cs to deassert internally due to slow clock speed and synchronizer delay
+            for (int i = 0; i < 6; ++i)
+                opl3_read(data);
 
             // write OPL3 data
-            address = 'b01;
+            opl3_address = 'b01;
             data = data_in;
-            cb.address <= address;
+            cb.address <= opl3_address;
             cb.din <= data;
             cb.cs_n <= 0;
             cb.wr_n <= 0;
@@ -127,21 +145,39 @@ module opl3_tb
                 ##1;
             cb.cs_n <= 1;
             cb.wr_n <= 1;
-            ##15;
+            cb.din <= 0;
+            ##20;
+            for (int i = 0; i < 36; ++i)
+                opl3_read(data);
+
+            $display("Wrote 0x%0x to register 0x%0x, bank %0x", data_in, register, bank);
+        endtask
+
+        task detect_opl3();
+            bit [REG_FILE_DATA_WIDTH-1:0] stat1, stat2, dummy;
+
+            opl3_write('h04, 'h60, 'b0);
+            opl3_write('h04, 'h80, 'b0);
+            opl3_read(stat1);
+            opl3_write('h02, 'hff, 'b0);
+            opl3_write('h04, 'h21, 'b0);
+            for (int i = 0; i < 200; ++i)
+                opl3_read(dummy);
+            opl3_read(stat2);
+            opl3_write('h04, 'h60, 'b0);
+            opl3_write('h04, 'h80, 'b0);
+            if ((stat1 & 'he0) == 0 && (stat2 & 'he0) == 'hc0)
+                $display("OPL3 detected!");
+            else
+                $error("OPL3 not detected...");
         endtask
 
         initial begin
             cb.ic_n <= 0;
             ##100;
             cb.ic_n <= 1;
-            ##10;
-            opl3_write('h2, 245, 0); // set timer1 reg
-            opl3_write('h4, 8'b01000001, 0); // start and unmask timer1
-            #805000; // wait
-            assert(!irq_n);
-            opl3_write('h4, 8'b11000000, 0); // rst irq, stop timer1
-            opl3_write('h4, 8'b01000001, 0); // start and unmask timer1
-            #10000;
+            ##100;
+            detect_opl3();
         end
     endprogram
 endmodule
