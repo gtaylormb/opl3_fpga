@@ -53,7 +53,7 @@ module phase_generator
     input wire [REG_WS_WIDTH-1:0] ws,
     input wire [ENV_WIDTH-1:0] env_p3,
     input wire key_on_pulse_p0,
-    input wire [OP_OUT_WIDTH-1:0] modulation,
+    input wire [OP_OUT_WIDTH-1:0] modulation_p1,
     input var operator_t op_type,
     output logic signed [OP_OUT_WIDTH-1:0] out_p6 = 0
 );
@@ -92,7 +92,7 @@ module phase_generator
     logic [ENV_WIDTH-1:0] env_p4 = 0;
     logic [PIPELINE_DELAY:1] [BANK_NUM_WIDTH-1:0] bank_num_p;
     logic [PIPELINE_DELAY:1] [OP_NUM_WIDTH-1:0] op_num_p;
-    logic [PIPELINE_DELAY:1] [OP_OUT_WIDTH-1:0] modulation_p;
+    logic [OP_OUT_WIDTH-1:0] modulation_p2 = 0;
     logic [PIPELINE_DELAY:1] [$bits(operator_t)-1:0] op_type_p;
 
 
@@ -182,14 +182,8 @@ module phase_generator
         .*
     );
 
-    pipeline_sr #(
-        .DATA_WIDTH(OP_OUT_WIDTH),
-        .ENDING_CYCLE(PIPELINE_DELAY)
-    ) modulation_sr (
-        .clk,
-        .in(modulation),
-        .out(modulation_p)
-    );
+    always_ff @(posedge clk)
+        modulation_p2 <= modulation_p1;
 
     /*
      * Phase Accumulator. Modulation and rhythm get added to the final phase but not
@@ -204,11 +198,11 @@ module phase_generator
             else if (ws_post_opl_p[2] == 4 || ws_post_opl_p[2] == 5) begin
                 // double the frequency
                 phase_acc_p3 <= phase_acc_p2 + (phase_inc_p2 << 1);
-                final_phase_p3 <= rhythm_phase_p2 + (phase_inc_p2 << 1) + (modulation_p[2] << 10);
+                final_phase_p3 <= rhythm_phase_p2 + (phase_inc_p2 << 1) + (modulation_p2 << 10);
             end
             else begin
                 phase_acc_p3 <= phase_acc_p2 + phase_inc_p2;
-                final_phase_p3 <= rhythm_phase_p2 + phase_inc_p2 + (modulation_p[2] << 10);
+                final_phase_p3 <= rhythm_phase_p2 + phase_inc_p2 + (modulation_p2 << 10);
             end
 
     mem_multi_bank #(

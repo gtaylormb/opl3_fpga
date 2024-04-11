@@ -62,18 +62,22 @@ module control_operators
     logic [$clog2(NUM_OPERATOR_UPDATE_STATES)-1:0] next_state;
 
     logic [$clog2(NUM_BANKS)-1:0] bank_num;
+    logic [$clog2(NUM_BANKS)-1:0] bank_num_p1 = 0;
     logic [$clog2(NUM_OPERATORS_PER_BANK)-1:0] op_num;
+    logic [$clog2(NUM_OPERATORS_PER_BANK)-1:0] op_num_p1 = 0;
 
-    logic use_feedback;
-    logic signed [OP_OUT_WIDTH-1:0] modulation;
+    logic use_feedback_p1 = 0;
+    logic signed [OP_OUT_WIDTH-1:0] modulation_p1 = 0;
     operator_t op_type;
     logic signed [OP_OUT_WIDTH-1:0] out_p6;
-    logic signed [OP_OUT_WIDTH-1:0] modulation_out_p0;
+    logic signed [OP_OUT_WIDTH-1:0] modulation_out_p1;
     logic [$clog2(NUM_OPERATORS_PER_BANK)-1:0] modulation_out_op_num;
     logic op_sample_clk_en;
     logic [PIPELINE_DELAY:1] op_sample_clk_en_p;
     logic [PIPELINE_DELAY:1] [BANK_NUM_WIDTH-1:0] bank_num_p;
     logic [PIPELINE_DELAY:1] [OP_NUM_WIDTH-1:0] op_num_p;
+    logic [REG_CONNECTION_SEL_WIDTH-1:0] connection_sel_p1 = 0;
+    logic ryt_p1 = 0;
 
     logic am;  // amplitude modulation (tremolo on/off)
     logic vib; // vibrato on/off
@@ -94,6 +98,7 @@ module control_operators
     logic kon;                         // key-on (sound generation on/off)
     logic [REG_FB_WIDTH-1:0] fb;       // feedback (modulation for slot 1 FM feedback)
     logic cnt;                         // operator connection
+    logic cnt_p1 = 0;
     logic [$clog2('h9)-1:0] kon_block_fnum_channel_mem_rd_address;
     logic [$clog2('h9)-1:0] fb_cnt_channel_mem_rd_address;
 
@@ -347,6 +352,21 @@ module control_operators
         .dob({fb, cnt})
     );
 
+    always_ff @(posedge clk)
+        unique case (op_num)
+        0, 1, 2, 12:          use_feedback_p1 <= 1;
+        3, 4, 5, 9, 10, 11,
+        15, 16, 17:           use_feedback_p1 <= 0;
+        6: if (bank_num == 0) use_feedback_p1 <= !connection_sel[0];
+           else               use_feedback_p1 <= !connection_sel[3];
+        7: if (bank_num == 0) use_feedback_p1 <= !connection_sel[1];
+           else               use_feedback_p1 <= !connection_sel[4];
+        8: if (bank_num == 0) use_feedback_p1 <= !connection_sel[2];
+           else               use_feedback_p1 <= !connection_sel[5];
+        13:                   use_feedback_p1 <= !(bank_num == 0 && ryt); // aka hi hat operator in bank 0
+        14:                   use_feedback_p1 <= !(bank_num == 0 && ryt); // aka tom tom operator in bank 0
+        endcase
+
     always_comb begin
         op_type = OP_NORMAL;
         if (bank_num == 0 && ryt)
@@ -358,37 +378,32 @@ module control_operators
             17:      op_type = OP_TOP_CYMBAL;
             default: op_type = OP_NORMAL;
             endcase
-
-        unique case (op_num)
-        0, 1, 2, 12:          use_feedback = 1;
-        3, 4, 5, 9, 10, 11,
-        15, 16, 17:           use_feedback = 0;
-        6: if (bank_num == 0) use_feedback = !connection_sel[0];
-           else               use_feedback = !connection_sel[3];
-        7: if (bank_num == 0) use_feedback = !connection_sel[1];
-           else               use_feedback = !connection_sel[4];
-        8: if (bank_num == 0) use_feedback = !connection_sel[2];
-           else               use_feedback = !connection_sel[5];
-        13:                   use_feedback = !(bank_num == 0 && ryt); // aka hi hat operator in bank 0
-        14:                   use_feedback = !(bank_num == 0 && ryt); // aka tom tom operator in bank 0
-        endcase
-
-        unique case (op_num)
-        0, 1, 2, 12, 13, 14:    modulation = 0;
-        3, 4, 5, 9, 10, 11, 15: modulation = cnt ? 0 : modulation_out_p0;
-        6: if ((bank_num == 0 && connection_sel[0]) || (bank_num == 1 && connection_sel[3]))
-                                modulation = cnt ? 0 : modulation_out_p0;
-           else                 modulation = 0;
-        7: if ((bank_num == 0 && connection_sel[1]) || (bank_num == 1 && connection_sel[4]))
-                                modulation = cnt ? 0 : modulation_out_p0;
-           else                 modulation = 0;
-        8: if ((bank_num == 0 && connection_sel[2]) || (bank_num == 1 && connection_sel[5]))
-                                modulation = cnt ? 0 : modulation_out_p0;
-           else                 modulation = 0;
-        16:                     modulation = cnt || (ryt && bank_num == 0) ? 0 : modulation_out_p0; // aka snare drum operator in bank 0
-        17:                     modulation = cnt || (ryt && bank_num == 0) ? 0 : modulation_out_p0; // aka top cymbal operator in bank 0
-        endcase
     end
+
+    always_ff @(posedge clk) begin
+        cnt_p1 <= cnt;
+        bank_num_p1 <= bank_num;
+        connection_sel_p1 <= connection_sel;
+        ryt_p1 <= ryt;
+        op_num_p1 <= op_num;
+    end
+
+    always_comb
+        unique case (op_num_p1)
+        0, 1, 2, 12, 13, 14:    modulation_p1 = 0;
+        3, 4, 5, 9, 10, 11, 15: modulation_p1 = cnt_p1 ? 0 : modulation_out_p1;
+        6: if ((bank_num_p1 == 0 && connection_sel_p1[0]) || (bank_num_p1 == 1 && connection_sel_p1[3]))
+                                modulation_p1 = cnt ? 0 : modulation_out_p1;
+           else                 modulation_p1 = 0;
+        7: if ((bank_num_p1 == 0 && connection_sel_p1[1]) || (bank_num_p1 == 1 && connection_sel_p1[4]))
+                                modulation_p1 = cnt_p1 ? 0 : modulation_out_p1;
+           else                 modulation_p1 = 0;
+        8: if ((bank_num_p1 == 0 && connection_sel_p1[2]) || (bank_num_p1 == 1 && connection_sel_p1[5]))
+                                modulation_p1 = cnt_p1 ? 0 : modulation_out_p1;
+           else                 modulation_p1 = 0;
+        16:                     modulation_p1 = cnt_p1 || (ryt_p1 && bank_num_p1 == 0) ? 0 : modulation_out_p1; // aka snare drum operator in bank 0
+        17:                     modulation_p1 = cnt_p1 || (ryt_p1 && bank_num_p1 == 0) ? 0 : modulation_out_p1; // aka top cymbal operator in bank 0
+        endcase
 
     always_ff @(posedge clk)
         state <= next_state;
@@ -457,7 +472,7 @@ module control_operators
     mem_multi_bank #(
         .DATA_WIDTH(OP_OUT_WIDTH),
         .DEPTH(NUM_OPERATORS_PER_BANK),
-        .OUTPUT_DELAY(0),
+        .OUTPUT_DELAY(1),
         .DEFAULT_VALUE(0),
         .NUM_BANKS(NUM_BANKS)
     ) sample_out_mem (
@@ -469,7 +484,7 @@ module control_operators
         .bankb(bank_num),
         .addrb(modulation_out_op_num),
         .dia(out_p6),
-        .dob(modulation_out_p0)
+        .dob(modulation_out_p1)
     );
 
     always_comb begin

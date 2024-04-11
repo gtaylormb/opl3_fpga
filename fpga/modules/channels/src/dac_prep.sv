@@ -1,7 +1,7 @@
 /*******************************************************************************
 #   +html+<pre>
 #
-#   FILENAME: channel_adder.sv
+#   FILENAME: dac_prep.sv
 #   AUTHOR: Greg Taylor     CREATION DATE: 5 April 2024
 #
 #   DESCRIPTION: Add channels and optionally sync to host clk domain
@@ -41,16 +41,14 @@
 `timescale 1ns / 1ps
 `default_nettype none
 
-module channel_adder
+module dac_prep
     import opl3_pkg::*;
 (
     input wire clk,
     input wire clk_host,
     input wire channel_valid,
-    input wire signed [SAMPLE_WIDTH-1:0] channel_a,
-    input wire signed [SAMPLE_WIDTH-1:0] channel_b,
-    input wire signed [SAMPLE_WIDTH-1:0] channel_c,
-    input wire signed [SAMPLE_WIDTH-1:0] channel_d,
+    input wire signed [SAMPLE_WIDTH-1:0] channel_l,
+    input wire signed [SAMPLE_WIDTH-1:0] channel_r,
     output logic sample_valid,
     output logic signed [DAC_OUTPUT_WIDTH-1:0] sample_l,
     output logic signed [DAC_OUTPUT_WIDTH-1:0] sample_r
@@ -59,14 +57,10 @@ module channel_adder
     logic signed [DAC_OUTPUT_WIDTH-1:0] sample_opl3_l_p1 = 0;
     logic signed [DAC_OUTPUT_WIDTH-1:0] sample_opl3_r_p1 = 0;
 
-    /*
-     * The 4 16-bit output channels are normally combined in the analog domain
-     * after the YAC512 DAC outputs. Here we'll just add digitally.
-     */
     always_ff @(posedge clk) begin
         sample_valid_opl3_p1 <= channel_valid;
-        sample_opl3_l_p1 <= (channel_a + channel_c) <<< DAC_LEFT_SHIFT;
-        sample_opl3_r_p1 <= (channel_b + channel_d) <<< DAC_LEFT_SHIFT;
+        sample_opl3_l_p1 <= channel_l <<< DAC_LEFT_SHIFT;
+        sample_opl3_r_p1 <= channel_r <<< DAC_LEFT_SHIFT;
     end
 
     generate
