@@ -56,22 +56,23 @@ module control_operators
     output logic ops_done_pulse = 0
 );
     localparam PIPELINE_DELAY = 6;
+    localparam MODULATION_DELAY = 1; // output of operator 0 must be ready by cycle 2 of operator 3 so it can modulate it
     localparam NUM_OPERATOR_UPDATE_STATES = NUM_BANKS*NUM_OPERATORS_PER_BANK + 1; // 36 operators + idle state
+    logic [$clog2(MODULATION_DELAY)-1:0] delay_counter = 0;
 
     logic [$clog2(NUM_OPERATOR_UPDATE_STATES)-1:0] state = 0;
     logic [$clog2(NUM_OPERATOR_UPDATE_STATES)-1:0] next_state;
 
-    logic [$clog2(NUM_BANKS)-1:0] bank_num;
-    logic [$clog2(NUM_BANKS)-1:0] bank_num_p1 = 0;
-    logic [$clog2(NUM_OPERATORS_PER_BANK)-1:0] op_num;
-    logic [$clog2(NUM_OPERATORS_PER_BANK)-1:0] op_num_p1 = 0;
+    logic [BANK_NUM_WIDTH-1:0] bank_num;
+    logic [BANK_NUM_WIDTH-1:0] bank_num_p1 = 0;
+    logic [OP_NUM_WIDTH-1:0] op_num;
+    logic [OP_NUM_WIDTH-1:0] op_num_p1 = 0;
 
     logic use_feedback_p1 = 0;
     logic signed [OP_OUT_WIDTH-1:0] modulation_p1 = 0;
     operator_t op_type;
     logic signed [OP_OUT_WIDTH-1:0] out_p6;
     logic signed [OP_OUT_WIDTH-1:0] modulation_out_p1;
-    logic [$clog2(NUM_OPERATORS_PER_BANK)-1:0] modulation_out_op_num;
     logic op_sample_clk_en;
     logic [PIPELINE_DELAY:1] op_sample_clk_en_p;
     logic [PIPELINE_DELAY:1] [BANK_NUM_WIDTH-1:0] bank_num_p;
@@ -411,10 +412,22 @@ module control_operators
     always_comb
         if (state == 0)
             next_state = sample_clk_en;
-        else if (state == NUM_OPERATOR_UPDATE_STATES - 1)
-            next_state = 0;
+        else if (delay_counter == MODULATION_DELAY) begin
+            if (state == NUM_OPERATOR_UPDATE_STATES - 1)
+                next_state = 0;
+            else
+                next_state = state + 1;
+        end
         else
-            next_state = state + 1;
+            next_state = state;
+
+    always_ff @(posedge clk)
+        if (next_state != state)
+            delay_counter <= 0;
+        else if (delay_counter == MODULATION_DELAY)
+            delay_counter <= 0;
+        else
+            delay_counter <= delay_counter + 1;
 
     always_comb bank_num = state > NUM_OPERATORS_PER_BANK;
     always_comb
@@ -425,7 +438,7 @@ module control_operators
         else
             op_num = state - 1;
 
-    always_comb op_sample_clk_en = state != 0;
+    always_comb op_sample_clk_en = state != 0 && delay_counter == 0;
 
     /*
      * The sample_clk_en input for each operator slot is pulsed in the first
@@ -463,29 +476,18 @@ module control_operators
         .out(op_num_p)
     );
 
-    // load the output from 3 operators ago but don't read out of range
-    always_comb modulation_out_op_num = op_num >= 3 ? op_num - 3 : 0;
-
     always_ff @(posedge clk)
         ops_done_pulse <= op_sample_clk_en_p[6] && !op_sample_clk_en_p[5];
 
-    mem_multi_bank #(
-        .DATA_WIDTH(OP_OUT_WIDTH),
-        .DEPTH(NUM_OPERATORS_PER_BANK),
-        .OUTPUT_DELAY(1),
-        .DEFAULT_VALUE(0),
-        .NUM_BANKS(NUM_BANKS)
-    ) sample_out_mem (
-        .clk,
-        .wea(op_sample_clk_en_p[6]),
-        .reb(op_sample_clk_en),
-        .banka(bank_num_p[6]),
-        .addra(op_num_p[6]),
-        .bankb(bank_num),
-        .addrb(modulation_out_op_num),
-        .dia(out_p6),
-        .dob(modulation_out_p1)
-    );
+    // This has to perfectly line up with the output of operator 0 and the input of operator 3, etc.
+    // It's a function of the PIPELINE_DELAY of the operator, the MODULATION_DELAY parameter, and
+    // modulation is required on cycle 1 of the operator.
+    always_ff @(posedge clk)
+        modulation_out_p1 <= out_p6;
+
+    ERROR_operators_not_aligned_for_modulation:
+    assert property (@(posedge clk)
+        op_sample_clk_en && op_num == 3 |-> operator_out.valid && operator_out.op_num == 0);
 
     always_comb begin
         operator_out.valid = op_sample_clk_en_p[6];
