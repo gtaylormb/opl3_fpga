@@ -73,6 +73,7 @@ module control_operators
     operator_t op_type;
     logic signed [OP_OUT_WIDTH-1:0] out_p6;
     logic signed [OP_OUT_WIDTH-1:0] modulation_out_p1;
+
     logic op_sample_clk_en;
     logic [PIPELINE_DELAY:1] op_sample_clk_en_p;
     logic [PIPELINE_DELAY:1] [BANK_NUM_WIDTH-1:0] bank_num_p;
