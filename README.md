@@ -3,7 +3,7 @@ opl3_fpga
 ## News
 2024-4-10
 * Massive refactoring. I changed up the top level interface/bus protocol to better match the real chip and make it easier to integrate into other projects. The register map is now internal instead of an external AXI version. Clock domain
-crossing logic is included to go between CPU and OPL3. This along with significant internal logic reduction work has massively cut down the area. LUT utilization was reduced by 77%, registers by 89%.
+crossing logic is included to go between CPU and OPL3. This along with significant internal logic reduction work has massively cut down the area. LUT utilization was reduced by 78%, registers by 89%.
 The Zybo design also now requires Vivado/Vitis 2023.2 (though the SystemVerilog syntax has been slightly dumbed down to support Quartus 17 for easier integration with other certain projects). 2023.2 is a lot more version control friendly and the repo is a lot cleaner now. There's also some bug fixes regarding rhythm and timers/irq are now properly implemented (but still optional).
 
 2019-11-7
@@ -52,7 +52,7 @@ As far as software, so far I've ported over <a href="http://software.kvee.cz/imf
 
 In doing the project, I was very impressed with what the original chip designers were able to accomplish. They used some very clever techniques to squeeze maximum functionality out of very limited resources--particularly using the combination of an exponential lookup table and a log-sine lookup table to <a href="https://github.com/gtaylormb/opl3_fpga/blob/master/docs/opl3math/opl3math.pdf">apply gain to the sine wave without the use of multipliers</a>, and the clever use of time sharing the operator resources among 36 slots.
 
-Tools used are Modelsim, Vivado 2016.1, Octave (for sample analysis), and SVEditor (for SystemVerilog file editing).
+Tools used were Modelsim, Vivado 2016.1, Octave (for sample analysis), and SVEditor (for SystemVerilog file editing).
 
 ## Digital waveform images
 These were produced by writing the actual binary output values of the operator logic in simulation to a file and plotting them using Octave.
@@ -92,15 +92,15 @@ Close up of the attack phase:
     +----------------------------+------+-------+------------+-----------+-------+
     |          Site Type         | Used | Fixed | Prohibited | Available | Util% |
     +----------------------------+------+-------+------------+-----------+-------+
-    | Slice LUTs                 | 1388 |     0 |          0 |     17600 |  7.89 |
-    |   LUT as Logic             | 1153 |     0 |          0 |     17600 |  6.55 |
-    |   LUT as Memory            |  235 |     0 |          0 |      6000 |  3.92 |
+    | Slice LUTs                 | 1341 |     0 |          0 |     17600 |  7.62 |
+    |   LUT as Logic             | 1107 |     0 |          0 |     17600 |  6.29 |
+    |   LUT as Memory            |  234 |     0 |          0 |      6000 |  3.90 |
     |     LUT as Distributed RAM |  188 |     0 |            |           |       |
-    |     LUT as Shift Register  |   47 |     0 |            |           |       |
-    | Slice Registers            | 1134 |     0 |          0 |     35200 |  3.22 |
-    |   Register as Flip Flop    | 1134 |     0 |          0 |     35200 |  3.22 |
+    |     LUT as Shift Register  |   46 |     0 |            |           |       |
+    | Slice Registers            | 1112 |     0 |          0 |     35200 |  3.16 |
+    |   Register as Flip Flop    | 1112 |     0 |          0 |     35200 |  3.16 |
     |   Register as Latch        |    0 |     0 |          0 |     35200 |  0.00 |
-    | F7 Muxes                   |    8 |     0 |          0 |      8800 |  0.09 |
+    | F7 Muxes                   |    7 |     0 |          0 |      8800 |  0.08 |
     | F8 Muxes                   |    1 |     0 |          0 |      4400 |  0.02 |
     +----------------------------+------+-------+------------+-----------+-------+
 

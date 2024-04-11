@@ -54,7 +54,9 @@ module channels
 );
     localparam CHAN_2_OP_WIDTH = OP_OUT_WIDTH + 1;
     localparam CHAN_4_OP_WIDTH = OP_OUT_WIDTH + 2;
-    localparam CHANNEL_ACCUMULATOR_WIDTH = CHAN_4_OP_WIDTH + 8*2;
+
+    // + 1 because we combine 2 channels together for left and right
+    localparam CHANNEL_ACCUMULATOR_WIDTH = OP_OUT_WIDTH + $clog2(NUM_OPERATORS_PER_BANK*NUM_BANKS) + 1;
 
     operator_out_t operator_out;
     logic signed [OP_OUT_WIDTH-1:0] operator_mem_out;
