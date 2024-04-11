@@ -72,15 +72,7 @@ package opl3_pkg;
     localparam REG_KSL_WIDTH = 2;
     localparam REG_FB_WIDTH = 3;
 
-    /*
-     * SAMPLE_WIDTH is the width of channels a, b, c, and d. With the real OPL3,
-     * the channels are combined into right and left in the analog domain. Here
-     * we add them together digitally. Use a max of 16 as this matches the
-     * YAK512. Channel accumulators are clamped to avoid overflow. Reduce
-     * SAMPLE_WIDTH depending on final output to avoid overflow on the add, and
-     * left shift if necessary.
-     */
-    localparam SAMPLE_WIDTH = DAC_OUTPUT_WIDTH > 16 ? 16 : DAC_OUTPUT_WIDTH - 1;
+    localparam SAMPLE_WIDTH = 16;
     localparam DAC_LEFT_SHIFT = signed'(DAC_OUTPUT_WIDTH - SAMPLE_WIDTH - 2) < 0 ? 0 : DAC_OUTPUT_WIDTH - SAMPLE_WIDTH - 2;
     localparam ENV_WIDTH = 9;
     localparam OP_OUT_WIDTH = 13;
