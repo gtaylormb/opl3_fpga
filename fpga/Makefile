@@ -50,7 +50,7 @@ BOARD = zybo
 
 RTL_SRC = \
 	modules/top_level/src/opl3.sv \
-	modules/channels/src/channel_adder.sv \
+	modules/channels/src/dac_prep.sv \
 	modules/channels/src/channels.sv \
 	modules/channels/src/control_operators.sv \
 	modules/clks/src/clk_div.sv \
