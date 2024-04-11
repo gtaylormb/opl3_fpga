@@ -156,11 +156,11 @@ module opl3_tb
         task detect_opl3();
             bit [REG_FILE_DATA_WIDTH-1:0] stat1, stat2, dummy;
 
-            opl3_write('h04, 'h60, 'b0);
-            opl3_write('h04, 'h80, 'b0);
+            opl3_write('h04, 'h60, 'b0); // mask timers 1 and 2
+            opl3_write('h04, 'h80, 'b0); // rst_irq, unmask timers
             opl3_read(stat1);
-            opl3_write('h02, 'hff, 'b0);
-            opl3_write('h04, 'h21, 'b0);
+            opl3_write('h02, 'hff, 'b0); // set timer 1 to max value
+            opl3_write('h04, 'h21, 'b0); // mask timer 2, start timer 1
             for (int i = 0; i < 200; ++i)
                 opl3_read(dummy);
             opl3_read(stat2);
