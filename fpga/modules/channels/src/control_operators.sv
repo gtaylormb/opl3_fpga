@@ -477,9 +477,6 @@ module control_operators
         .out(op_num_p)
     );
 
-    always_ff @(posedge clk)
-        ops_done_pulse <= op_sample_clk_en_p[6] && !op_sample_clk_en_p[5];
-
     // This has to perfectly line up with the output of operator 0 and the input of operator 3, etc.
     // It's a function of the PIPELINE_DELAY of the operator, the MODULATION_DELAY parameter, and
     // modulation is required on cycle 1 of the operator.
@@ -496,5 +493,8 @@ module control_operators
         operator_out.op_num = op_num_p[6];
         operator_out.op_out = out_p6;
     end
+
+    always_ff @(posedge clk)
+        ops_done_pulse <= operator_out.valid && operator_out.bank_num == 1 && operator_out.op_num == 17;
 endmodule
 `default_nettype wire
