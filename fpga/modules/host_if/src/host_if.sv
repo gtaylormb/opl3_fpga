@@ -54,98 +54,48 @@ module host_if
     input wire [1:0] address,
     input wire [REG_FILE_DATA_WIDTH-1:0] din,
     output logic [REG_FILE_DATA_WIDTH-1:0] dout,
-    output logic ack_host_wr,
     output opl3_reg_wr_t opl3_reg_wr = 0,
     input wire [REG_FILE_DATA_WIDTH-1:0] status
 );
-    logic cs_p1 = 0;
-    logic cs_p2 = 0;
-    logic rd_p1 = 0;
+    logic opl3_fifo_empty;
+    logic [1:0] opl3_address;
+    logic [REG_FILE_DATA_WIDTH-1:0] opl3_data;
+
+    logic wr;
     logic wr_p1 = 0;
-    logic [1:0] address_p1 = 0;
-    logic [REG_FILE_DATA_WIDTH-1:0] din_p1;
-    logic cs_latched = 0;
-    logic rd_latched = 0;
-    logic wr_latched = 0;
-    logic [1:0] address_latched = 0;
-    logic [REG_FILE_DATA_WIDTH-1:0] din_latched = 0;
-    logic cs_opl3;
-    logic cs_opl3_p1 = 0;
-    logic rd_opl3 = 0;
-    logic wr_opl3 = 0;
-    logic [1:0] address_opl3 = 0;
-    logic [REG_FILE_DATA_WIDTH-1:0] din_opl3 = 0;
-    logic ack_transaction;
 
-    /*
-     * Handshake signals across clock domains using cs signal
-     */
-    always_ff @(posedge clk_host) begin
-        cs_p1 <= !cs_n;
-        cs_p2 <= cs_p1;
-        rd_p1 <= !rd_n;
-        wr_p1 <= !wr_n;
-        address_p1 <= address;
-        din_p1 <= din;
+    always_comb wr = !cs_n && !wr_n;
 
-        if (cs_p1 && !cs_p2 && !cs_latched) begin
-            cs_latched <= 1;
-            rd_latched <= rd_p1;
-            wr_latched <= wr_p1;
-            address_latched <= address_p1;
-            din_latched <= din_p1;
-        end
+    always_ff @(posedge clk_host)
+        wr_p1 <= wr;
 
-        if (ack_transaction) begin
-            cs_latched <= 0;
-            rd_latched <= 0;
-            wr_latched <= 0;
-        end
-
-        if (!ic_n) begin
-            cs_latched <= 0;
-            rd_latched <= 0;
-            wr_latched <= 0;
-            address_latched <= 0;
-            din_latched <= 0;
-        end
-    end
-
-    synchronizer cs_sync (
-        .clk,
-        .in(cs_latched),
-        .out(cs_opl3)
-    );
-
-    synchronizer ack_sync (
-        .clk(clk_host),
-        .in(cs_opl3),
-        .out(ack_transaction)
-    );
-
-    always_comb ack_host_wr = ack_transaction && wr_latched;
+    afifo #(
+        .WIDTH(2 + REG_FILE_DATA_WIDTH) // address + data
+    ) afifo (
+		.i_wclk(clk_host),
+		.i_wr_reset_n(ic_n),
+		.i_wr(wr && !wr_p1), // edge detect if write is held for more than 1 cycle
+		.i_wr_data({address, din}),
+		.o_wr_full(),
+		.i_rclk(clk),
+		.i_rd_reset_n(!reset),
+		.i_rd(!opl3_fifo_empty),
+		.o_rd_data({opl3_address, opl3_data}),
+		.o_rd_empty(opl3_fifo_empty)
+	);
 
     always_ff @(posedge clk) begin
-        cs_opl3_p1 <= cs_opl3;
-        rd_opl3 <= rd_latched;
-        wr_opl3 <= wr_latched;
-        address_opl3 <= address_latched;
-        din_opl3 <= din_latched;
         opl3_reg_wr.valid <= 0;
 
-        if (cs_opl3 && !cs_opl3_p1)
-            unique case ({rd_opl3, wr_opl3, address_opl3[0]})
-            'b010: begin // address write mode
-                opl3_reg_wr.bank_num <= address_opl3[1];
-                opl3_reg_wr.address <= din_opl3;
+        if (!opl3_fifo_empty)
+            if (!opl3_address[0]) begin // address write mode
+                opl3_reg_wr.bank_num <= opl3_address[1];
+                opl3_reg_wr.address <= opl3_data;
             end
-            'b011: begin      // data write mode
-                opl3_reg_wr.data <= din_opl3;
+            else begin                  // data write mode
+                opl3_reg_wr.data <= opl3_data;
                 opl3_reg_wr.valid <= 1;
             end
-            'b100:;      // status read mode
-            default:;
-            endcase
 
         if (reset)
             opl3_reg_wr <= 0;

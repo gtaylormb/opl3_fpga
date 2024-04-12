@@ -69,6 +69,7 @@ RTL_SRC = \
 	modules/operator/src/opl3_exp_lut.sv \
 	modules/timers/src/timers.sv \
 	modules/timers/src/timer.sv \
+	modules/misc/src/afifo.v \
 	modules/misc/src/edge_detector.sv \
 	modules/misc/src/mem_simple_dual_port.sv \
 	modules/misc/src/mem_multi_bank.sv \

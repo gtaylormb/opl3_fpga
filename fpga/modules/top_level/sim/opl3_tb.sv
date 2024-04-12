@@ -60,7 +60,6 @@ module opl3_tb
     bit [1:0] address = 0;
     bit [REG_FILE_DATA_WIDTH-1:0] din = 0;
     logic [REG_FILE_DATA_WIDTH-1:0] dout;
-    logic ack_host_wr; // host needs to hold writes for clock domain crossing
     logic sample_valid;
     logic signed [DAC_OUTPUT_WIDTH-1:0] sample_l;
     logic signed [DAC_OUTPUT_WIDTH-1:0] sample_r;
@@ -86,7 +85,6 @@ module opl3_tb
             default input #1step;
             default output #GATE_DELAY;
             input dout;
-            input ack_host_wr; // host needs to hold writes for clock domain crossing
             output ic_n; // clk_host reset
             output cs_n;
             output rd_n;
@@ -103,11 +101,11 @@ module opl3_tb
             cb.address <= 'b00;
             cb.cs_n <= 0;
             cb.rd_n <= 0;
-            ##20; // need time for opl3 cs to assert internally due to slow clock speed and synchronizer delay
+            ##1;
             value <= cb.dout;
             cb.cs_n <= 1;
             cb.rd_n <= 1;
-            ##20; // need time for opl3 cs to deassert internally due to slow clock speed and synchronizer delay
+            ##1;
         endtask
 
         task opl3_write (
@@ -125,12 +123,11 @@ module opl3_tb
             cb.din <= data;
             cb.cs_n <= 0;
             cb.wr_n <= 0;
-            while (!cb.ack_host_wr)
-                ##1;
+            ##1;
             cb.cs_n <= 1;
             cb.wr_n <= 1;
             cb.din <= 0;
-            ##20; // need time for opl3 cs to deassert internally due to slow clock speed and synchronizer delay
+            ##1;
             for (int i = 0; i < 6; ++i)
                 opl3_read(data);
 
@@ -141,12 +138,11 @@ module opl3_tb
             cb.din <= data;
             cb.cs_n <= 0;
             cb.wr_n <= 0;
-            while (!cb.ack_host_wr)
-                ##1;
+            ##1;
             cb.cs_n <= 1;
             cb.wr_n <= 1;
             cb.din <= 0;
-            ##20;
+            ##1;
             for (int i = 0; i < 36; ++i)
                 opl3_read(data);
 
