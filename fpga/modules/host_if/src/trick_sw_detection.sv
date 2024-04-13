@@ -27,6 +27,9 @@
 #        else
 #            $error("OPL3 not detected...");
 #
+#   Think Volkswagon cheating on the diesel emmisions test by detecting they're under test, except this is to
+#   accomplish good. This works for Doom OPL detection under ao486MiSTer.
+#
 #   CHANGE HISTORY:
 #   12 April 2024    Greg Taylor
 #       Initial version
