@@ -53,7 +53,6 @@ module opl3
     input wire [1:0] address,
     input wire [REG_FILE_DATA_WIDTH-1:0] din,
     output logic [REG_FILE_DATA_WIDTH-1:0] dout,
-    output logic ack_host_wr, // host needs to hold writes for clock domain crossing
     output logic sample_valid,
     output logic signed [DAC_OUTPUT_WIDTH-1:0] sample_l,
     output logic signed [DAC_OUTPUT_WIDTH-1:0] sample_r,
@@ -62,14 +61,9 @@ module opl3
 );
     logic reset;
     logic sample_clk_en;
-
     opl3_reg_wr_t opl3_reg_wr;
-    logic signed [SAMPLE_WIDTH-1:0] channel_a;
-    logic signed [SAMPLE_WIDTH-1:0] channel_b;
-    logic signed [SAMPLE_WIDTH-1:0] channel_c;
-    logic signed [SAMPLE_WIDTH-1:0] channel_d;
     logic [REG_FILE_DATA_WIDTH-1:0] status;
-    logic channel_valid;
+    logic force_timer_overflow;
 
     reset_sync reset_sync (
         .clk,

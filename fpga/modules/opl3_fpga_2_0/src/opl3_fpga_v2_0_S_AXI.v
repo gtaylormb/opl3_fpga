@@ -85,8 +85,7 @@
 		output reg wr_n,
 		output reg [1:0] address,
 		output reg [7:0] din,
-		input wire [7:0] dout,
-		input wire ack_host_wr
+		input wire [7:0] dout
 	);
 
 	// AXI4LITE signals
@@ -136,7 +135,7 @@
 		axi_awready <= 0;
 
 		if (slv_reg_wren)
-			axi_awready <= ack_host_wr;
+			axi_awready <= 1;
 		else if (slv_reg_rden)
 			axi_awready <= 1;
 	end
@@ -147,7 +146,7 @@
 	// de-asserted when reset is low.
 
 	always @(posedge S_AXI_ACLK)
-		axi_wready = ack_host_wr;
+		axi_wready <= slv_reg_wren;
 
 	// Implement memory mapped register select and write logic generation
 	// The write data is accepted and written to memory mapped registers when

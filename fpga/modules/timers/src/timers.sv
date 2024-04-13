@@ -48,7 +48,8 @@ module timers
     input wire reset,
     input var opl3_reg_wr_t opl3_reg_wr,
     output logic irq_n = 0,
-    output logic [REG_FILE_DATA_WIDTH-1:0] status
+    output logic [REG_FILE_DATA_WIDTH-1:0] status,
+    input wire force_timer_overflow // comes from trick_sw_detection logic
 );
     logic [REG_TIMER_WIDTH-1:0] timer1 = 0;
     logic [REG_TIMER_WIDTH-1:0] timer2 = 0;
@@ -110,10 +111,10 @@ module timers
     );
 
     always_ff @(posedge clk) begin
-        if (timer1_overflow_pulse && mt1)
+        if ((timer1_overflow_pulse || force_timer_overflow) && !mt1)
             ft1 <= 1;
 
-        if (timer2_overflow_pulse && mt2)
+        if (timer2_overflow_pulse && !mt2)
             ft2 <= 1;
 
         if (reset || irq_rst) begin

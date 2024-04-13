@@ -46,7 +46,7 @@ module opl3_tb
 ();
     localparam HOST_CLK_FREQ = 100e6;
     localparam HOST_CLK_HALF_PERIOD = 1/real'(HOST_CLK_FREQ)*1000e6/2;
-    localparam OPL3_CLK_FREQ = 12.727e6;
+    localparam OPL3_CLK_FREQ = CLK_FREQ;
     localparam OPL3_CLK_HALF_PERIOD = 1/real'(OPL3_CLK_FREQ)*1000e6/2;
 
     localparam GATE_DELAY = 1; // in ns
@@ -60,7 +60,6 @@ module opl3_tb
     bit [1:0] address = 0;
     bit [REG_FILE_DATA_WIDTH-1:0] din = 0;
     logic [REG_FILE_DATA_WIDTH-1:0] dout;
-    logic ack_host_wr; // host needs to hold writes for clock domain crossing
     logic sample_valid;
     logic signed [DAC_OUTPUT_WIDTH-1:0] sample_l;
     logic signed [DAC_OUTPUT_WIDTH-1:0] sample_r;
@@ -86,7 +85,6 @@ module opl3_tb
             default input #1step;
             default output #GATE_DELAY;
             input dout;
-            input ack_host_wr; // host needs to hold writes for clock domain crossing
             output ic_n; // clk_host reset
             output cs_n;
             output rd_n;
@@ -94,6 +92,21 @@ module opl3_tb
             output address;
             output din;
         endclocking
+
+        task opl3_read (
+            output [REG_FILE_DATA_WIDTH-1:0] value
+        );
+            bit [1:0] opl3_address;
+
+            cb.address <= 'b00;
+            cb.cs_n <= 0;
+            cb.rd_n <= 0;
+            ##1;
+            value <= cb.dout;
+            cb.cs_n <= 1;
+            cb.rd_n <= 1;
+            ##1;
+        endtask
 
         task opl3_write (
             input [REG_FILE_DATA_WIDTH-1:0] register,
@@ -104,44 +117,74 @@ module opl3_tb
             bit [REG_FILE_DATA_WIDTH-1:0] data;
 
             // write OPL3 address
-            address = bank ? 'b10 : 'b00;
+            opl3_address = bank ? 'b10 : 'b00;
             data = register;
-            cb.address <= address;
+            cb.address <= opl3_address;
             cb.din <= data;
             cb.cs_n <= 0;
             cb.wr_n <= 0;
-            while (!cb.ack_host_wr)
-                ##1;
+            ##1;
             cb.cs_n <= 1;
             cb.wr_n <= 1;
-            ##15; // need time for opl3 cs to deassert internally due to slow clock speed and synchronizer delay
+            cb.din <= 0;
+            ##1;
+            for (int i = 0; i < 6; ++i)
+                opl3_read(data);
 
             // write OPL3 data
-            address = 'b01;
+            opl3_address = 'b01;
             data = data_in;
-            cb.address <= address;
+            cb.address <= opl3_address;
             cb.din <= data;
             cb.cs_n <= 0;
             cb.wr_n <= 0;
-            while (!cb.ack_host_wr)
-                ##1;
+            ##1;
             cb.cs_n <= 1;
             cb.wr_n <= 1;
-            ##15;
+            cb.din <= 0;
+            ##1;
+            for (int i = 0; i < 36; ++i)
+                opl3_read(data);
+
+            $display("Wrote 0x%0x to register 0x%0x, bank %0x", data_in, register, bank);
+        endtask
+
+        task detect_opl3();
+            bit [REG_FILE_DATA_WIDTH-1:0] stat1, stat2, dummy;
+
+            opl3_write('h04, 'h60, 'b0); // mask timers 1 and 2
+            opl3_write('h04, 'h80, 'b0); // rst_irq, unmask timers
+            opl3_read(stat1);
+            opl3_write('h02, 'hff, 'b0); // set timer 1 to max value
+            opl3_write('h04, 'h21, 'b0); // mask timer 2, start timer 1
+            for (int i = 0; i < 4000; ++i)
+                opl3_read(dummy);
+            opl3_read(stat2);
+            opl3_write('h04, 'h60, 'b0);
+            opl3_write('h04, 'h80, 'b0);
+            if ((stat1 & 'he0) == 0 && (stat2 & 'he0) == 'hc0)
+                $display("OPL3 detected!");
+            else
+                $error("OPL3 not detected...");
+        endtask
+
+        task reset_opl3();
+            for (int i = 'h20; i < 'hff; ++i) begin
+                if ((i & 'he0) == 'h80)
+                    opl3_write(i, 'h0f, 0);
+                else
+                    opl3_write(i, 'h00, 0);
+            end
         endtask
 
         initial begin
             cb.ic_n <= 0;
             ##100;
             cb.ic_n <= 1;
-            ##10;
-            opl3_write('h2, 245, 0); // set timer1 reg
-            opl3_write('h4, 8'b01000001, 0); // start and unmask timer1
-            #805000; // wait
-            assert(!irq_n);
-            opl3_write('h4, 8'b11000000, 0); // rst irq, stop timer1
-            opl3_write('h4, 8'b01000001, 0); // start and unmask timer1
-            #10000;
+            ##100;
+            detect_opl3();
+            reset_opl3();
+            detect_opl3();
         end
     endprogram
 endmodule
