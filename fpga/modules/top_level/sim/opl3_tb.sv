@@ -46,7 +46,7 @@ module opl3_tb
 ();
     localparam HOST_CLK_FREQ = 100e6;
     localparam HOST_CLK_HALF_PERIOD = 1/real'(HOST_CLK_FREQ)*1000e6/2;
-    localparam OPL3_CLK_FREQ = 12.727e6;
+    localparam OPL3_CLK_FREQ = CLK_FREQ;
     localparam OPL3_CLK_HALF_PERIOD = 1/real'(OPL3_CLK_FREQ)*1000e6/2;
 
     localparam GATE_DELAY = 1; // in ns
@@ -157,7 +157,7 @@ module opl3_tb
             opl3_read(stat1);
             opl3_write('h02, 'hff, 'b0); // set timer 1 to max value
             opl3_write('h04, 'h21, 'b0); // mask timer 2, start timer 1
-            for (int i = 0; i < 200; ++i)
+            for (int i = 0; i < 4000; ++i)
                 opl3_read(dummy);
             opl3_read(stat2);
             opl3_write('h04, 'h60, 'b0);
@@ -168,11 +168,22 @@ module opl3_tb
                 $error("OPL3 not detected...");
         endtask
 
+        task reset_opl3();
+            for (int i = 'h20; i < 'hff; ++i) begin
+                if ((i & 'he0) == 'h80)
+                    opl3_write(i, 'h0f, 0);
+                else
+                    opl3_write(i, 'h00, 0);
+            end
+        endtask
+
         initial begin
             cb.ic_n <= 0;
             ##100;
             cb.ic_n <= 1;
             ##100;
+            detect_opl3();
+            reset_opl3();
             detect_opl3();
         end
     endprogram

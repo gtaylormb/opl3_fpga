@@ -61,9 +61,9 @@ module opl3
 );
     logic reset;
     logic sample_clk_en;
-
     opl3_reg_wr_t opl3_reg_wr;
     logic [REG_FILE_DATA_WIDTH-1:0] status;
+    logic force_timer_overflow;
 
     reset_sync reset_sync (
         .clk,

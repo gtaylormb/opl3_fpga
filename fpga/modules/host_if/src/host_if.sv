@@ -55,7 +55,8 @@ module host_if
     input wire [REG_FILE_DATA_WIDTH-1:0] din,
     output logic [REG_FILE_DATA_WIDTH-1:0] dout,
     output opl3_reg_wr_t opl3_reg_wr = 0,
-    input wire [REG_FILE_DATA_WIDTH-1:0] status
+    input wire [REG_FILE_DATA_WIDTH-1:0] status,
+    output logic force_timer_overflow
 );
     logic opl3_fifo_empty;
     logic [1:0] opl3_address;
@@ -109,5 +110,15 @@ module host_if
         .in(status),
         .out(dout)
     );
+
+    generate
+    if (INSTANTIATE_TIMERS)
+        trick_sw_detection trick_sw_detection (
+            .*
+        );
+    else
+        always_comb force_timer_overflow = 0;
+    endgenerate
+
 endmodule
 `default_nettype wire

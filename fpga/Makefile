@@ -76,7 +76,8 @@ RTL_SRC = \
 	modules/misc/src/pipeline_sr.sv \
 	modules/misc/src/synchronizer.sv \
 	modules/misc/src/leds.sv \
-	modules/host_if/src/host_if.sv
+	modules/host_if/src/host_if.sv \
+	modules/host_if/src/trick_sw_detection.sv
 
 PKG_SRC = \
 	modules/top_level/pkg/opl3_pkg.sv

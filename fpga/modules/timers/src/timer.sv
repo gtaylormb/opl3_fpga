@@ -49,7 +49,7 @@ module timer
     input wire clk,
     input wire [REG_TIMER_WIDTH-1:0] timer_reg,
     input wire start_timer,
-    output logic timer_overflow_pulse
+    output logic timer_overflow_pulse = 0
 );
     localparam int TICK_TIMER_COUNT_VALUE = CLK_FREQ*TIMER_TICK_INTERVAL;
 
@@ -57,6 +57,7 @@ module timer
     logic tick_pulse = 0;
     logic [REG_TIMER_WIDTH-1:0] timer = 0;
     logic start_timer_set_pulse;
+    logic [REG_TIMER_WIDTH-1:0] timer_p1 = 0;
 
     /*
      * Detect when start_timer is initially set, use it to reset the timer value
@@ -64,7 +65,7 @@ module timer
      */
     edge_detector #(
         .EDGE_LEVEL(1),
-        .CLK_DLY(1)
+        .CLK_DLY(0)
     ) start_timer_edge_detect (
         .clk(clk),
         .clk_en(1'b1),
@@ -75,11 +76,12 @@ module timer
     always_comb tick_pulse = tick_counter == TICK_TIMER_COUNT_VALUE - 1;
 
     always_ff @(posedge clk)
-        if (start_timer)
-            if (tick_pulse)
+        if (start_timer) begin
+            if (tick_pulse || start_timer_set_pulse)
                 tick_counter <= 0;
             else
                 tick_counter <= tick_counter + 1;
+        end
 
     /*
      * Timer gets set to timer_reg upon overflow
@@ -87,20 +89,15 @@ module timer
     always_ff @(posedge clk)
         if (start_timer_set_pulse)
             timer <= timer_reg;
-        else if (tick_pulse)
+        else if (tick_pulse) begin
             if (timer == 2**REG_TIMER_WIDTH - 1)
                 timer <= timer_reg;
             else
                 timer <= timer + 1;
+        end
 
-    edge_detector #(
-        .EDGE_LEVEL(1),
-        .CLK_DLY(1)
-    ) time_overflow_edge_detect (
-        .clk(clk),
-        .clk_en(1'b1),
-        .in(timer == 2**REG_TIMER_WIDTH - 1),
-        .edge_detected(timer_overflow_pulse)
-    );
+    always_ff @(posedge clk)
+        timer_overflow_pulse <= (timer == 2**REG_TIMER_WIDTH - 1) && tick_pulse;
+
 endmodule
 `default_nettype wire
