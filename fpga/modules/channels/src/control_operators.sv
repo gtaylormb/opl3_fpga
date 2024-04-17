@@ -395,7 +395,7 @@ module control_operators
         0, 1, 2, 12, 13, 14:    modulation_p1 = 0;
         3, 4, 5, 9, 10, 11, 15: modulation_p1 = cnt_p1 ? 0 : modulation_out_p1;
         6: if ((bank_num_p1 == 0 && connection_sel_p1[0]) || (bank_num_p1 == 1 && connection_sel_p1[3]))
-                                modulation_p1 = cnt ? 0 : modulation_out_p1;
+                                modulation_p1 = cnt_p1 ? 0 : modulation_out_p1;
            else                 modulation_p1 = 0;
         7: if ((bank_num_p1 == 0 && connection_sel_p1[1]) || (bank_num_p1 == 1 && connection_sel_p1[4]))
                                 modulation_p1 = cnt_p1 ? 0 : modulation_out_p1;
