@@ -98,9 +98,8 @@ module control_operators
     logic [REG_FNUM_WIDTH-1:0] fnum;   // f-number (scale data within the octave)
     logic [REG_BLOCK_WIDTH-1:0] block; // octave data
     logic kon;                         // key-on (sound generation on/off)
-    logic [REG_FB_WIDTH-1:0] fb;       // feedback (modulation for slot 1 FM feedback)
-    logic cnt;                         // operator connection
-    logic cnt_p1 = 0;
+    logic [REG_FB_WIDTH-1:0] fb_p1;       // feedback (modulation for slot 1 FM feedback)
+    logic cnt_p1;                         // operator connection
     logic [$clog2('h9)-1:0] kon_block_fnum_channel_mem_rd_address;
     logic [$clog2('h9)-1:0] fb_cnt_channel_mem_rd_address;
 
@@ -334,12 +333,12 @@ module control_operators
     );
 
     wire [$clog2('h9)-1:0] fb_cnt_mem_wr_address = opl3_reg_wr.address - 'hC0;
-    localparam fb_cnt_mem_width = $bits(fb) + $bits(cnt);
+    localparam fb_cnt_mem_width = $bits(fb_p1) + $bits(cnt_p1);
 
     mem_multi_bank #(
         .DATA_WIDTH(fb_cnt_mem_width),
         .DEPTH('h9),
-        .OUTPUT_DELAY(0),
+        .OUTPUT_DELAY(1),
         .DEFAULT_VALUE(0),
         .NUM_BANKS(NUM_BANKS)
     ) fb_cnt_mem (
@@ -351,7 +350,7 @@ module control_operators
         .bankb(bank_num),
         .addrb(fb_cnt_channel_mem_rd_address),
         .dia(opl3_reg_wr.data[fb_cnt_mem_width-1:0]),
-        .dob({fb, cnt})
+        .dob({fb_p1, cnt_p1})
     );
 
     always_ff @(posedge clk)
@@ -383,7 +382,6 @@ module control_operators
     end
 
     always_ff @(posedge clk) begin
-        cnt_p1 <= cnt;
         bank_num_p1 <= bank_num;
         connection_sel_p1 <= connection_sel;
         ryt_p1 <= ryt;
