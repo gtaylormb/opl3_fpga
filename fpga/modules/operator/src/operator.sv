@@ -73,7 +73,7 @@ module operator
     input wire tc,
     input wire hh,
     input wire use_feedback_p1,
-    input wire [REG_FB_WIDTH-1:0] fb,
+    input wire [REG_FB_WIDTH-1:0] fb_p1,
     input wire signed [OP_OUT_WIDTH-1:0] modulation_p1,
     input var operator_t op_type,
     output logic signed [OP_OUT_WIDTH-1:0] out_p6
@@ -100,7 +100,6 @@ module operator
     logic [1:0] [OP_OUT_WIDTH-1:0] feedback_p1;
     logic [1:0] [OP_OUT_WIDTH-1:0] feedback_p6;
     logic [PIPELINE_DELAY:2] [1:0] [OP_OUT_WIDTH-1:0] feedback_p;
-    logic [REG_FB_WIDTH-1:0] fb_p1 = 0;
 
     pipeline_sr #(
         .ENDING_CYCLE(PIPELINE_DELAY)
@@ -255,9 +254,6 @@ module operator
         .in(feedback_p1),
         .out(feedback_p)
     );
-
-    always_ff @(posedge clk)
-        fb_p1 <= fb;
 
     always_comb begin
         // used signed casts because signed on packed 2D array in Verilog doesn't apply individually to inner array, only the outer array
