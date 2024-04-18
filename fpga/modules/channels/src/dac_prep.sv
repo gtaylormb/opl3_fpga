@@ -45,7 +45,7 @@ module dac_prep
     import opl3_pkg::*;
 (
     input wire clk,
-    input wire clk_host,
+    input wire clk_dac,
     input wire channel_valid,
     input wire signed [SAMPLE_WIDTH-1:0] channel_l,
     input wire signed [SAMPLE_WIDTH-1:0] channel_r,
@@ -64,13 +64,21 @@ module dac_prep
     end
 
     generate
-    if (INSTANTIATE_SAMPLE_SYNC_TO_CPU_CLK) begin
+    if (INSTANTIATE_SAMPLE_SYNC_TO_DAC_CLK) begin
+        logic [2:0] sample_valid_opl3_pulse_extend;
+        logic sample_valid_opl3_extended_pulse = 0;
         logic sample_valid_cpu_p0;
         logic sample_valid_cpu_p1 = 0;
 
+        always_ff @(posedge clk) begin
+            sample_valid_opl3_pulse_extend <= sample_valid_opl3_pulse_extend << 1;
+            sample_valid_opl3_pulse_extend[0] <= sample_valid_opl3_p1;
+            sample_valid_opl3_extended_pulse <= sample_valid_opl3_pulse_extend != 0;
+        end
+
         synchronizer channel_valid_sync (
-            .clk(clk_host),
-            .in(sample_valid_opl3_p1),
+            .clk(clk_dac),
+            .in(sample_valid_opl3_extended_pulse),
             .out(sample_valid_cpu_p0)
         );
 
@@ -78,7 +86,7 @@ module dac_prep
         * OPL3 channels are latched and held on channel_valid for a full sample period, so we only need to
         * synchronize the channel_valid bit and use to latch samples into cpu clock domain
         */
-        always_ff @(posedge clk_host) begin
+        always_ff @(posedge clk_dac) begin
             sample_valid_cpu_p1 <= sample_valid_cpu_p0;
 
             if (sample_valid_cpu_p0) begin

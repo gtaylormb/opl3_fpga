@@ -61,21 +61,17 @@ module host_if
     logic opl3_fifo_empty;
     logic [1:0] opl3_address;
     logic [REG_FILE_DATA_WIDTH-1:0] opl3_data;
-
     logic wr;
-    logic wr_p1 = 0;
 
     always_comb wr = !cs_n && !wr_n;
 
-    always_ff @(posedge clk_host)
-        wr_p1 <= wr;
-
     afifo #(
+        .LGFIFO(6), // use at least 6 to get inferred into BRAM. Increase in ALMs at lower depths
         .WIDTH(2 + REG_FILE_DATA_WIDTH) // address + data
     ) afifo (
 		.i_wclk(clk_host),
 		.i_wr_reset_n(ic_n),
-		.i_wr(wr && !wr_p1), // edge detect if write is held for more than 1 cycle
+		.i_wr(wr), // edge detect if write is held for more than 1 cycle
 		.i_wr_data({address, din}),
 		.o_wr_full(),
 		.i_rclk(clk),
