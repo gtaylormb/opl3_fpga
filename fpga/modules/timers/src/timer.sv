@@ -57,7 +57,6 @@ module timer
     logic tick_pulse = 0;
     logic [REG_TIMER_WIDTH-1:0] timer = 0;
     logic start_timer_set_pulse;
-    logic [REG_TIMER_WIDTH-1:0] timer_p1 = 0;
 
     /*
      * Detect when start_timer is initially set, use it to reset the timer value

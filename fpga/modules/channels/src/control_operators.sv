@@ -99,9 +99,11 @@ module control_operators
     logic [REG_BLOCK_WIDTH-1:0] block; // octave data
     logic kon;                         // key-on (sound generation on/off)
     logic [REG_FB_WIDTH-1:0] fb_p1;       // feedback (modulation for slot 1 FM feedback)
-    logic cnt_p1;                         // operator connection
+    logic cnt0_p1;                         // operator connection
+    logic cnt1_p1;                         // operator connection
     logic [$clog2('h9)-1:0] kon_block_fnum_channel_mem_rd_address;
-    logic [$clog2('h9)-1:0] fb_cnt_channel_mem_rd_address;
+    logic [$clog2('h9)-1:0] fb_cnt0_channel_mem_rd_address;
+    logic [$clog2('h9)-1:0] cnt1_channel_mem_rd_address;
 
     logic nts = 0; // keyboard split selection
     logic dvb = 0; // vibrato depth
@@ -236,60 +238,70 @@ module control_operators
         .dob(ws)
     );
 
-    always_comb
+    always_comb begin
+        cnt1_channel_mem_rd_address = 0;
+
         unique case (op_num)
         0, 3: begin
             kon_block_fnum_channel_mem_rd_address = 0;
-            fb_cnt_channel_mem_rd_address = 0;
+            fb_cnt0_channel_mem_rd_address = 0;
         end
         1, 4: begin
             kon_block_fnum_channel_mem_rd_address = 1;
-            fb_cnt_channel_mem_rd_address = 1;
+            fb_cnt0_channel_mem_rd_address = 1;
         end
         2, 5: begin
             kon_block_fnum_channel_mem_rd_address = 2;
-            fb_cnt_channel_mem_rd_address = 2;
+            fb_cnt0_channel_mem_rd_address = 2;
         end
-        6, 9:
+        6, 9: begin
+            cnt1_channel_mem_rd_address = 3;
             if (bank_num == 0) begin
                 kon_block_fnum_channel_mem_rd_address = connection_sel[0] ? 0 : 3;
-                fb_cnt_channel_mem_rd_address = 3;
+                fb_cnt0_channel_mem_rd_address = connection_sel[0] ? 0 : 3;
             end
             else begin
                 kon_block_fnum_channel_mem_rd_address = connection_sel[3] ? 0 : 3;
-                fb_cnt_channel_mem_rd_address = 3;
+                fb_cnt0_channel_mem_rd_address = connection_sel[3] ? 0 : 3;
             end
-        7, 10:
+        end
+        7, 10: begin
+            cnt1_channel_mem_rd_address = 4;
             if (bank_num == 0) begin
                 kon_block_fnum_channel_mem_rd_address = connection_sel[1] ? 1 : 4;
-                fb_cnt_channel_mem_rd_address = 4;
+                fb_cnt0_channel_mem_rd_address = connection_sel[1] ? 1 : 4;
             end
             else begin
                 kon_block_fnum_channel_mem_rd_address = connection_sel[4] ? 1 : 4;
-                fb_cnt_channel_mem_rd_address = 4;
+                fb_cnt0_channel_mem_rd_address = connection_sel[4] ? 1 : 4;
+                cnt1_channel_mem_rd_address = 4;
             end
-        8, 11:
+        end
+        8, 11: begin
+            cnt1_channel_mem_rd_address = 5;
             if (bank_num == 0) begin
                 kon_block_fnum_channel_mem_rd_address = connection_sel[2] ? 2 : 5;
-                fb_cnt_channel_mem_rd_address = 5;
+                fb_cnt0_channel_mem_rd_address = connection_sel[2] ? 2 : 5;
             end
             else begin
                 kon_block_fnum_channel_mem_rd_address = connection_sel[5] ? 2 : 5;
-                fb_cnt_channel_mem_rd_address = 5;
+                fb_cnt0_channel_mem_rd_address = connection_sel[2] ? 2 : 5;
             end
+        end
         12, 15: begin
             kon_block_fnum_channel_mem_rd_address = 6;
-            fb_cnt_channel_mem_rd_address = 6;
+            fb_cnt0_channel_mem_rd_address = 6;
         end
         13, 16: begin
             kon_block_fnum_channel_mem_rd_address = 7;
-            fb_cnt_channel_mem_rd_address = 7;
+            fb_cnt0_channel_mem_rd_address = 7;
         end
         14, 17: begin
             kon_block_fnum_channel_mem_rd_address = 8;
-            fb_cnt_channel_mem_rd_address = 8;
+            fb_cnt0_channel_mem_rd_address = 8;
         end
         endcase
+    end
 
     wire [$clog2('h9)-1:0] fnum_low_mem_wr_address = opl3_reg_wr.address - 'hA0;
 
@@ -333,7 +345,7 @@ module control_operators
     );
 
     wire [$clog2('h9)-1:0] fb_cnt_mem_wr_address = opl3_reg_wr.address - 'hC0;
-    localparam fb_cnt_mem_width = $bits(fb_p1) + $bits(cnt_p1);
+    localparam fb_cnt_mem_width = $bits(fb_p1) + $bits(cnt0_p1);
 
     mem_multi_bank #(
         .DATA_WIDTH(fb_cnt_mem_width),
@@ -341,16 +353,36 @@ module control_operators
         .OUTPUT_DELAY(1),
         .DEFAULT_VALUE(0),
         .NUM_BANKS(NUM_BANKS)
-    ) fb_cnt_mem (
+    ) fb_cnt0_mem (
         .clk,
         .wea(opl3_reg_wr.valid && opl3_reg_wr.address >= 'hC0 && opl3_reg_wr.address <= 'hC8),
         .reb(op_sample_clk_en),
         .banka(opl3_reg_wr.bank_num),
         .addra(fb_cnt_mem_wr_address),
         .bankb(bank_num),
-        .addrb(fb_cnt_channel_mem_rd_address),
+        .addrb(fb_cnt0_channel_mem_rd_address),
         .dia(opl3_reg_wr.data[fb_cnt_mem_width-1:0]),
-        .dob({fb_p1, cnt_p1})
+        .dob({fb_p1, cnt0_p1})
+    );
+
+    // used for 4 op connections, need both cnt0 and cnt1 simultaneously
+    localparam cnt_mem_width = $bits(cnt1_p1);
+    mem_multi_bank #(
+        .DATA_WIDTH(cnt_mem_width),
+        .DEPTH('h9),
+        .OUTPUT_DELAY(1),
+        .DEFAULT_VALUE(0),
+        .NUM_BANKS(NUM_BANKS)
+    ) fb_cnt1_mem (
+        .clk,
+        .wea(opl3_reg_wr.valid && opl3_reg_wr.address >= 'hC0 && opl3_reg_wr.address <= 'hC8),
+        .reb(op_sample_clk_en),
+        .banka(opl3_reg_wr.bank_num),
+        .addra(fb_cnt_mem_wr_address),
+        .bankb(bank_num),
+        .addrb(cnt1_channel_mem_rd_address),
+        .dia(opl3_reg_wr.data[cnt_mem_width-1:0]),
+        .dob(cnt1_p1)
     );
 
     always_ff @(posedge clk)
@@ -390,19 +422,52 @@ module control_operators
 
     always_comb
         unique case (op_num_p1)
-        0, 1, 2, 12, 13, 14:    modulation_p1 = 0;
-        3, 4, 5, 9, 10, 11, 15: modulation_p1 = cnt_p1 ? 0 : modulation_out_p1;
-        6: if ((bank_num_p1 == 0 && connection_sel_p1[0]) || (bank_num_p1 == 1 && connection_sel_p1[3]))
-                                modulation_p1 = cnt_p1 ? 0 : modulation_out_p1;
-           else                 modulation_p1 = 0;
-        7: if ((bank_num_p1 == 0 && connection_sel_p1[1]) || (bank_num_p1 == 1 && connection_sel_p1[4]))
-                                modulation_p1 = cnt_p1 ? 0 : modulation_out_p1;
-           else                 modulation_p1 = 0;
-        8: if ((bank_num_p1 == 0 && connection_sel_p1[2]) || (bank_num_p1 == 1 && connection_sel_p1[5]))
-                                modulation_p1 = cnt_p1 ? 0 : modulation_out_p1;
-           else                 modulation_p1 = 0;
-        16:                     modulation_p1 = cnt_p1 || (ryt_p1 && bank_num_p1 == 0) ? 0 : modulation_out_p1; // aka snare drum operator in bank 0
-        17:                     modulation_p1 = cnt_p1 || (ryt_p1 && bank_num_p1 == 0) ? 0 : modulation_out_p1; // aka top cymbal operator in bank 0
+        0, 1, 2, 12, 13, 14:      modulation_p1 = 0;
+        3, 4, 5, 15:              modulation_p1 = cnt0_p1 ? 0 : modulation_out_p1;
+        6:
+            if ((bank_num_p1 == 0 && connection_sel_p1[0]) || (bank_num_p1 == 1 && connection_sel_p1[3]))
+                unique case ({cnt0_p1, cnt1_p1}) // 4 op mode
+                'b00, 'b10, 'b11: modulation_p1 = modulation_out_p1;
+                'b01:             modulation_p1 = 0;
+                endcase
+            else                  modulation_p1 = 0;
+        7:
+            if ((bank_num_p1 == 0 && connection_sel_p1[1]) || (bank_num_p1 == 1 && connection_sel_p1[4]))
+                unique case ({cnt0_p1, cnt1_p1}) // 4 op mode
+                'b00, 'b10, 'b11: modulation_p1 = modulation_out_p1;
+                'b01:             modulation_p1 = 0;
+                endcase
+            else                  modulation_p1 = 0;
+        8:
+            if ((bank_num_p1 == 0 && connection_sel_p1[2]) || (bank_num_p1 == 1 && connection_sel_p1[5]))
+                unique case ({cnt0_p1, cnt1_p1}) // 4 op mode
+                'b00, 'b10, 'b11: modulation_p1 = modulation_out_p1;
+                'b01:             modulation_p1 = 0;
+                endcase
+            else                  modulation_p1 = 0;
+        9:
+            if ((bank_num_p1 == 0 && connection_sel_p1[0]) || (bank_num_p1 == 1 && connection_sel_p1[3]))
+                unique case ({cnt0_p1, cnt1_p1}) // 4 op mode
+                'b00, 'b01, 'b10: modulation_p1 = modulation_out_p1;
+                'b11:             modulation_p1 = 0;
+                endcase
+            else                  modulation_p1 = cnt0_p1 ? 0 : modulation_out_p1;
+        10:
+            if ((bank_num_p1 == 0 && connection_sel_p1[1]) || (bank_num_p1 == 1 && connection_sel_p1[4]))
+                unique case ({cnt0_p1, cnt1_p1}) // 4 op mode
+                'b00, 'b01, 'b10: modulation_p1 = modulation_out_p1;
+                'b11:             modulation_p1 = 0;
+                endcase
+            else                  modulation_p1 = cnt0_p1 ? 0 : modulation_out_p1;
+        11:
+            if ((bank_num_p1 == 0 && connection_sel_p1[2]) || (bank_num_p1 == 1 && connection_sel_p1[5]))
+                unique case ({cnt0_p1, cnt1_p1}) // 4 op mode
+                'b00, 'b01, 'b10: modulation_p1 = modulation_out_p1;
+                'b11:             modulation_p1 = 0;
+                endcase
+            else                  modulation_p1 = cnt0_p1 ? 0 : modulation_out_p1;
+        16:                       modulation_p1 = cnt0_p1 || (ryt_p1 && bank_num_p1 == 0) ? 0 : modulation_out_p1; // aka snare drum operator in bank 0
+        17:                       modulation_p1 = cnt0_p1 || (ryt_p1 && bank_num_p1 == 0) ? 0 : modulation_out_p1; // aka top cymbal operator in bank 0
         endcase
 
     always_ff @(posedge clk)
