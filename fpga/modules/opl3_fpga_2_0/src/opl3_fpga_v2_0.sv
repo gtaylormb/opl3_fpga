@@ -77,6 +77,7 @@ module opl3_fpga_v2_0 #(
 	opl3 opl3 (
         .clk(clk_12),
         .clk_host(s_axi_aclk),
+        .clk_dac(1'b0), // unused as we drive DAC clk ourselves using clk_12
         .ic_n(s_axi_aresetn), // clk_host reset
        .*
     );
