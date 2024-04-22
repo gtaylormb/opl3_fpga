@@ -92,7 +92,6 @@ module envelope_generator
     logic [AM_VAL_WIDTH-1:0] am_val_p2;
     logic [REG_ENV_WIDTH-1:0] requested_rate_p0;
     logic [ENV_RATE_COUNTER_OVERFLOW_WIDTH-1:0] rate_counter_overflow_p1;
-    logic [ENV_RATE_COUNTER_OVERFLOW_WIDTH-1:0] rate_counter_overflow_p2 = 0;
     logic signed [ENV_WIDTH+1:0] env_tmp_p2; // two more bits wide than env for >, < comparison
     logic [PIPELINE_DELAY:1] sample_clk_en_p;
     logic [PIPELINE_DELAY:1] [BANK_NUM_WIDTH-1:0] bank_num_p;
@@ -208,9 +207,8 @@ module envelope_generator
     );
 
     always_ff @(posedge clk) begin
-        env_int_p1 <= env_int_p0;
+        env_int_p1 <= key_on_pulse_p0 ? SILENCE : env_int_p0;
         env_int_p2 <= env_int_p1;
-        rate_counter_overflow_p2 <= rate_counter_overflow_p1;
 
         if (sample_clk_en_p[1]) begin
             if (state_p1 == ATTACK && rate_counter_overflow_p1 != 0 && env_int_p1 != 0)

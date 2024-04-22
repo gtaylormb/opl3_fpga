@@ -47,8 +47,6 @@ module vibrato
 (
     input wire clk,
     input wire sample_clk_en,
-    input wire [BANK_NUM_WIDTH-1:0] bank_num,
-    input wire [OP_NUM_WIDTH-1:0] op_num,
     input wire [REG_FNUM_WIDTH-1:0] fnum,
     input wire dvb,
     output logic signed [REG_FNUM_WIDTH-1:0] vib_val_p2 = 0
@@ -59,7 +57,7 @@ module vibrato
     logic [REG_FNUM_WIDTH-1:0] delta0_p1;
     logic [REG_FNUM_WIDTH-1:0] delta1_p1;
     logic [REG_FNUM_WIDTH-1:0] delta2_p1;
-    logic fnum_p1 = 0;
+    logic [REG_FNUM_WIDTH-1:0] fnum_p1 = 0;
     logic dvb_p1 = 0;
 
     always_ff @(posedge clk) begin
