@@ -78,7 +78,7 @@ package opl3_pkg;
     localparam OP_OUT_WIDTH = 13;
     localparam PHASE_ACC_WIDTH = 20;
     localparam AM_VAL_WIDTH = 5;
-    localparam ENV_RATE_COUNTER_OVERFLOW_WIDTH = 8;
+    localparam ENV_RATE_COUNTER_OVERFLOW_WIDTH = $clog2(7);
 
     localparam NUM_BANKS = 2;
     localparam NUM_OPERATORS_PER_BANK = 18;
