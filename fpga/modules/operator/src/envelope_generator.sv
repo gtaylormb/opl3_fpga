@@ -39,7 +39,7 @@
 #
 #******************************************************************************/
 `timescale 1ns / 1ps
-`default_nettype none // disable implicit net type declarations
+`default_nettype none
 
 module envelope_generator
     import opl3_pkg::*;
@@ -168,7 +168,7 @@ module envelope_generator
         endcase
 
         if (key_on_pulse_p0)
-            next_state_p0 = ATTACK;
+            next_state_p0 = env_int_p0 == 0 ? DECAY : ATTACK;
         else if (key_off_pulse_p0)
             next_state_p0 = RELEASE;
     end
@@ -207,11 +207,19 @@ module envelope_generator
     );
 
     always_ff @(posedge clk) begin
-        env_int_p1 <= key_on_pulse_p0 ? SILENCE : env_int_p0;
+        env_int_p1 <= env_int_p0;
         env_int_p2 <= env_int_p1;
 
         if (sample_clk_en_p[1]) begin
-            if (state_p1 == ATTACK && rate_counter_overflow_p1 != 0 && env_int_p1 != 0)
+            if (state_p1 == ATTACK && rate_counter_overflow_p1 != 0)
+                // The maximum value of overflow is 7. An overflow can only occur
+                // if m_env < floor(m_env/8)*7 + 1. Let's substitute m_env by 8*x:
+                // 8*x < 1 + x*7
+                // <=> 8*x - 7*x < 1
+                // <=> x < 1
+                // But the attack only occurs if m_env>0, so an overflow cannot occur
+                // here.
+                // +1 for one's complement.
                 env_int_p2 <= env_int_p1 - (((env_int_p1*rate_counter_overflow_p1) >> 3) + 1);
             else if (state_p1 == DECAY || state_p1 == RELEASE) begin
                 if (env_int_p1 + rate_counter_overflow_p1 > SILENCE)
