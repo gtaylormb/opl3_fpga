@@ -63,7 +63,7 @@ module calc_phase_inc
     logic signed [PHASE_ACC_WIDTH-1:0] post_mult_p2 = 0;
     logic signed [VIB_VAL_WIDTH-1:0] vib_val_p2;
     logic [PIPELINE_DELAY:1] vib_p;
-    logic signed [$clog2(30):0] multiplier_p0;
+    logic [$clog2(30)-1:0] multiplier_p0;
 
     always_comb pre_mult_p0 = fnum << block;
 
