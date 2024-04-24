@@ -61,31 +61,34 @@ module calc_phase_inc
     logic signed [PHASE_ACC_WIDTH-1:0] pre_mult_p0;
     logic signed [PHASE_ACC_WIDTH-1:0] post_mult_p1 = 0;
     logic signed [PHASE_ACC_WIDTH-1:0] post_mult_p2 = 0;
-    logic signed [REG_FNUM_WIDTH-1:0] vib_val_p2;
+    logic signed [VIB_VAL_WIDTH-1:0] vib_val_p2;
     logic [PIPELINE_DELAY:1] vib_p;
+    logic signed [$clog2(30):0] multiplier_p0;
 
     always_comb pre_mult_p0 = fnum << block;
 
-    always_ff @(posedge clk) begin
+    always_comb
         unique case (mult)
-        'h0: post_mult_p1 <= pre_mult_p0 >> 1;
-        'h1: post_mult_p1 <= pre_mult_p0;
-        'h2: post_mult_p1 <= pre_mult_p0*2;
-        'h3: post_mult_p1 <= pre_mult_p0*3;
-        'h4: post_mult_p1 <= pre_mult_p0*4;
-        'h5: post_mult_p1 <= pre_mult_p0*5;
-        'h6: post_mult_p1 <= pre_mult_p0*6;
-        'h7: post_mult_p1 <= pre_mult_p0*7;
-        'h8: post_mult_p1 <= pre_mult_p0*8;
-        'h9: post_mult_p1 <= pre_mult_p0*9;
-        'hA: post_mult_p1 <= pre_mult_p0*10;
-        'hB: post_mult_p1 <= pre_mult_p0*10;
-        'hC: post_mult_p1 <= pre_mult_p0*12;
-        'hD: post_mult_p1 <= pre_mult_p0*12;
-        'hE: post_mult_p1 <= pre_mult_p0*15;
-        'hF: post_mult_p1 <= pre_mult_p0*15;
+        'h0: multiplier_p0 = 1;
+        'h1: multiplier_p0 = 2;
+        'h2: multiplier_p0 = 4;
+        'h3: multiplier_p0 = 6;
+        'h4: multiplier_p0 = 8;
+        'h5: multiplier_p0 = 10;
+        'h6: multiplier_p0 = 12;
+        'h7: multiplier_p0 = 14;
+        'h8: multiplier_p0 = 16;
+        'h9: multiplier_p0 = 18;
+        'hA: multiplier_p0 = 20;
+        'hB: multiplier_p0 = 20;
+        'hC: multiplier_p0 = 24;
+        'hD: multiplier_p0 = 24;
+        'hE: multiplier_p0 = 30;
+        'hF: multiplier_p0 = 30;
         endcase
 
+    always_ff @(posedge clk) begin
+        post_mult_p1 <= (pre_mult_p0*multiplier_p0) >> 1;
         post_mult_p2 <= post_mult_p1;
     end
 
