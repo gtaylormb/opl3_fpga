@@ -68,14 +68,9 @@ module envelope_generator
     input wire key_off_pulse_p0,
     output logic [ENV_WIDTH-1:0] env_p3 = SILENCE
 );
-    localparam KSL_ADD_WIDTH = 8;
     localparam PIPELINE_DELAY = 3;
 
-    /*
-     * Because of the 2D array of state_p1 registers, this state_p1 machine isn't
-     * picked up by Vivado synthesis, therefore is not optimized. Manually
-     * optimize encoding to 1-hot
-     */
+    // state_t goes on a memory--explicitly define width/values
     typedef enum logic [3:0] {
         ATTACK    = 4'b0001,
         DECAY     = 4'b0010,
@@ -92,7 +87,7 @@ module envelope_generator
     logic [AM_VAL_WIDTH-1:0] am_val_p2;
     logic [REG_ENV_WIDTH-1:0] requested_rate_p0;
     logic [ENV_RATE_COUNTER_OVERFLOW_WIDTH-1:0] rate_counter_overflow_p1;
-    logic signed [ENV_WIDTH+1:0] env_tmp_p2; // two more bits wide than env for >, < comparison
+    logic signed [ENV_WIDTH+3-1:0] env_tmp_p2; // three more bits wide than env for >, < comparison
     logic [PIPELINE_DELAY:1] sample_clk_en_p;
     logic [PIPELINE_DELAY:1] [BANK_NUM_WIDTH-1:0] bank_num_p;
     logic [PIPELINE_DELAY:1] [OP_NUM_WIDTH-1:0] op_num_p;
@@ -207,7 +202,7 @@ module envelope_generator
     );
 
     always_ff @(posedge clk) begin
-        env_int_p1 <= key_on_pulse_p0 ? SILENCE : env_int_p0;
+        env_int_p1 <= env_int_p0;
         env_int_p2 <= env_int_p1;
 
         if (sample_clk_en_p[1]) begin
@@ -222,7 +217,7 @@ module envelope_generator
                 // +1 for one's complement.
                 env_int_p2 <= env_int_p1 - (((env_int_p1*rate_counter_overflow_p1) >> 3) + 1);
             else if (state_p1 == DECAY || state_p1 == RELEASE) begin
-                if (env_int_p1 + rate_counter_overflow_p1 > SILENCE)
+                if ((ENV_WIDTH+1)'(env_int_p1) + rate_counter_overflow_p1 > SILENCE)
                     // env_int would overflow
                     env_int_p2 <= SILENCE;
                 else

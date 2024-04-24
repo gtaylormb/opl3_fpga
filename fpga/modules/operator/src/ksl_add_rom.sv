@@ -44,17 +44,15 @@
 
 module ksl_add_rom
     import opl3_pkg::*;
-#(
-    KSL_ADD_WIDTH = 8 // do not override
-) (
+(
     input wire clk,
     input wire [REG_FNUM_WIDTH-1:0] fnum,
     input wire [REG_BLOCK_WIDTH-1:0] block,
     input wire [REG_KSL_WIDTH-1:0] ksl,
     output logic [KSL_ADD_WIDTH-1:0] ksl_add_p2 = 0
 );
-    logic [6:0] rom_out_p1 = 0;
-    logic signed [KSL_ADD_WIDTH-1:0] tmp0_p1 = 0;
+    logic [$clog2(64+1)-1:0] rom_out_p1 = 0;
+    logic [REG_BLOCK_WIDTH+3-1:0] tmp0_p1 = 0;
     logic signed [KSL_ADD_WIDTH-1:0] tmp1_p1;
     logic [REG_FNUM_WIDTH-6-1:0] fnum_shifted_p0;
     logic [REG_KSL_WIDTH-1:0] ksl_p1 = 0;
@@ -84,7 +82,7 @@ module ksl_add_rom
     always_ff @(posedge clk)
         tmp0_p1 <= block - 8;
 
-    always_comb tmp1_p1 = rom_out_p1 + (tmp0_p1 << 3);
+    always_comb tmp1_p1 = signed'(rom_out_p1 + (tmp0_p1 << 3));
 
     always_ff @(posedge clk) begin
         ksl_p1 <= ksl;

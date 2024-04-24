@@ -49,14 +49,14 @@ module vibrato
     input wire sample_clk_en,
     input wire [REG_FNUM_WIDTH-1:0] fnum,
     input wire dvb,
-    output logic signed [REG_FNUM_WIDTH-1:0] vib_val_p2 = 0
+    output logic [VIB_VAL_WIDTH-1:0] vib_val_p2 = 0
 );
     localparam VIBRATO_INDEX_WIDTH = 13;
 
     logic [VIBRATO_INDEX_WIDTH-1:0] vibrato_index_p1 = 0;
-    logic [REG_FNUM_WIDTH-1:0] delta0_p1;
-    logic [REG_FNUM_WIDTH-1:0] delta1_p1;
-    logic [REG_FNUM_WIDTH-1:0] delta2_p1;
+    logic [VIB_VAL_WIDTH-1:0] delta0_p1;
+    logic [VIB_VAL_WIDTH-1:0] delta1_p1;
+    logic [VIB_VAL_WIDTH-1:0] delta2_p1;
     logic [REG_FNUM_WIDTH-1:0] fnum_p1 = 0;
     logic dvb_p1 = 0;
 

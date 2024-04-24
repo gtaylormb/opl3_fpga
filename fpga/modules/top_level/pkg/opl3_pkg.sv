@@ -77,8 +77,12 @@ package opl3_pkg;
     localparam ENV_WIDTH = 9;
     localparam OP_OUT_WIDTH = 13;
     localparam PHASE_ACC_WIDTH = 20;
-    localparam AM_VAL_WIDTH = 5;
+    localparam VIB_VAL_WIDTH = REG_FNUM_WIDTH - 7;
     localparam ENV_RATE_COUNTER_OVERFLOW_WIDTH = $clog2(7);
+    localparam TREMOLO_MAX_COUNT = 13*1024;
+    localparam TREMOLO_INDEX_WIDTH = $clog2(TREMOLO_MAX_COUNT);
+    localparam AM_VAL_WIDTH = TREMOLO_INDEX_WIDTH - 8 + 1;
+    localparam KSL_ADD_WIDTH = 8;
 
     localparam NUM_BANKS = 2;
     localparam NUM_OPERATORS_PER_BANK = 18;
