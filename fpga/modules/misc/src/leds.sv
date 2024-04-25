@@ -49,11 +49,15 @@ module leds
     output logic [NUM_LEDS-1:0] led = 0
 );
     generate
-    genvar i;
-    for (i = 0; i < NUM_LEDS; ++i) begin: led_gen
-        always_ff @(posedge clk)
-            if (opl3_reg_wr.valid && opl3_reg_wr.bank_num == 0 && opl3_reg_wr.address == 'hB0 + i)
-                led[i] <= opl3_reg_wr.data[5];
+    if (NUM_LEDS == 0)
+        always_comb led = '0;
+    else begin
+        genvar i;
+        for (i = 0; i < NUM_LEDS; ++i) begin: led_gen
+            always_ff @(posedge clk)
+                if (opl3_reg_wr.valid && opl3_reg_wr.bank_num == 0 && opl3_reg_wr.address == 'hB0 + i)
+                    led[i] <= opl3_reg_wr.data[5]; // kon bit
+        end
     end
     endgenerate
 endmodule

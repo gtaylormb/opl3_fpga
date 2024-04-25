@@ -86,8 +86,6 @@ module channels
                 ryt <= opl3_reg_wr.data[5];
         end
 
-    wire [$clog2('h9)-1:0] ch_abcd_cnt_mem_wr_address = opl3_reg_wr.address - 'hC0;
-
     mem_multi_bank #(
         .DATA_WIDTH(REG_FILE_DATA_WIDTH),
         .DEPTH('h9),
@@ -99,7 +97,7 @@ module channels
         .wea(opl3_reg_wr.valid && opl3_reg_wr.address >= 'hC0 && opl3_reg_wr.address <= 'hC8),
         .reb('1),
         .banka(opl3_reg_wr.bank_num),
-        .addra(ch_abcd_cnt_mem_wr_address),
+        .addra(opl3_reg_wr.address[$clog2('h9)-1:0]),
         .bankb(self.bank_num),
         .addrb(signals.ch_abcd_cnt_mem_channel_num),
         .dia(opl3_reg_wr.data),
