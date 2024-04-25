@@ -46,7 +46,7 @@ module opl3
 (
     input wire clk, // opl3 clk
     input wire clk_host,
-    input wire clk_dac,
+    input wire clk_dac, // only used if INSTANTIATE_SAMPLE_SYNC_TO_DAC_CLK is set
     input wire ic_n, // clk_host reset
     input wire cs_n,
     input wire rd_n,

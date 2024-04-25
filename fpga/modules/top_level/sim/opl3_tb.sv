@@ -77,6 +77,7 @@ module opl3_tb
     end
 
     opl3 opl3 (
+        .clk_dac('0),
         .*
     );
 

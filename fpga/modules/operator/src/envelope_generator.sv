@@ -84,10 +84,11 @@ module envelope_generator
     logic [ENV_WIDTH-1:0] env_int_p0;
     logic [ENV_WIDTH-1:0] env_int_p1 = 0;
     logic [ENV_WIDTH-1:0] env_int_p2 = 0;
+    logic [ENV_WIDTH:0] env_add_p1; // one more bit for overflow check
     logic [AM_VAL_WIDTH-1:0] am_val_p2;
     logic [REG_ENV_WIDTH-1:0] requested_rate_p0;
     logic [ENV_RATE_COUNTER_OVERFLOW_WIDTH-1:0] rate_counter_overflow_p1;
-    logic signed [ENV_WIDTH+3-1:0] env_tmp_p2; // three more bits wide than env for >, < comparison
+    logic [ENV_WIDTH+1:0] env_tmp_p2; // two more bits wide than env for overflow check
     logic [PIPELINE_DELAY:1] sample_clk_en_p;
     logic [PIPELINE_DELAY:1] [BANK_NUM_WIDTH-1:0] bank_num_p;
     logic [PIPELINE_DELAY:1] [OP_NUM_WIDTH-1:0] op_num_p;
@@ -201,6 +202,8 @@ module envelope_generator
         .dob(env_int_p0)
     );
 
+    always_comb env_add_p1 = env_int_p1 + rate_counter_overflow_p1;
+
     always_ff @(posedge clk) begin
         env_int_p1 <= env_int_p0;
         env_int_p2 <= env_int_p1;
@@ -217,11 +220,11 @@ module envelope_generator
                 // +1 for one's complement.
                 env_int_p2 <= env_int_p1 - (((env_int_p1*rate_counter_overflow_p1) >> 3) + 1);
             else if (state_p1 == DECAY || state_p1 == RELEASE) begin
-                if ((ENV_WIDTH+1)'(env_int_p1) + rate_counter_overflow_p1 > SILENCE)
+                if (env_add_p1[ENV_WIDTH])
                     // env_int would overflow
                     env_int_p2 <= SILENCE;
                 else
-                    env_int_p2 <= env_int_p1 + rate_counter_overflow_p1;
+                    env_int_p2 <= env_add_p1;
             end
         end
     end
@@ -235,15 +238,13 @@ module envelope_generator
 
     always_comb
         if (am)
-            env_tmp_p2 = env_int_p2 + (tl_p[2] << 2) + ksl_add_p2 + am_val_p2;
+            env_tmp_p2 = env_int_p2 + (tl_p[2] << 2) + ksl_add_p2 + am_val_p2; // max val 1044
         else
             env_tmp_p2 = env_int_p2 + (tl_p[2] << 2) + ksl_add_p2;
 
     // clamp envelope
     always_ff @(posedge clk)
-        if (env_tmp_p2 < 0)
-            env_p3 <= 0;
-        else if (env_tmp_p2 > SILENCE)
+        if (env_tmp_p2[ENV_WIDTH+1:ENV_WIDTH] != 0) // overflow
             env_p3 <= SILENCE;
         else
             env_p3 <= env_tmp_p2;
