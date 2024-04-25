@@ -50,18 +50,18 @@ module calc_rhythm_phase
     input wire sample_clk_en,
     input wire [BANK_NUM_WIDTH-1:0] bank_num,
     input wire [OP_NUM_WIDTH-1:0] op_num,
-    input wire [PHASE_ACC_WIDTH-1:0] phase_acc_p2,
+    input wire [PHASE_ACC_WIDTH-1:0] phase_acc_p3,
     input var operator_t op_type,
-    output logic [PHASE_ACC_WIDTH-1:0] rhythm_phase_p2
+    output logic [PHASE_ACC_WIDTH-1:0] rhythm_phase_p3
 );
-    localparam PIPELINE_DELAY = 2;
+    localparam PIPELINE_DELAY = 3;
     localparam RAND_POLYNOMIAL = 'h800302; // verified on real opl3
     localparam RAND_NUM_WIDTH = $clog2(RAND_POLYNOMIAL);
 
     logic [PHASE_ACC_WIDTH-1:0] hh_phase_friend = 0;
-    logic [PHASE_ACC_WIDTH-1:0] hh_phase_p2;
-    logic [PHASE_ACC_WIDTH-1:0] phase_bit_p2;
-    logic [PHASE_ACC_WIDTH-1:0] noise_bit_p2;
+    logic [PHASE_ACC_WIDTH-1:0] hh_phase_p3;
+    logic [PHASE_ACC_WIDTH-1:0] phase_bit_p3;
+    logic [PHASE_ACC_WIDTH-1:0] noise_bit_p3;
     logic [RAND_NUM_WIDTH-1:0] rand_num = 1;
     logic [PIPELINE_DELAY:1] sample_clk_en_p;
     logic [PIPELINE_DELAY:1] [$bits(operator_t)-1:0] op_type_p;
@@ -86,33 +86,33 @@ module calc_rhythm_phase
 
     // Store the hi hat phase when it comes by. It's used in the top symbol and snare drum operators
     always_ff @(posedge clk)
-        if (sample_clk_en_p[2] && bank_num == 0 && op_num == 13)
-            hh_phase_friend <= phase_acc_p2;
+        if (sample_clk_en_p[3] && bank_num == 0 && op_num == 13)
+            hh_phase_friend <= phase_acc_p3;
 
     always_comb begin
         // used in hi hat, top cymbal, and snare drum
-        unique case (op_type_p[2])
-        OP_SNARE_DRUM: hh_phase_p2 = (hh_phase_friend & 'h100) ? 'h200 : 'h100;
-        OP_TOP_CYMBAL: hh_phase_p2 = hh_phase_friend;
-        default:       hh_phase_p2 = phase_acc_p2; // hi hat
+        unique case (op_type_p[3])
+        OP_SNARE_DRUM: hh_phase_p3 = (hh_phase_friend & 'h100) ? 'h200 : 'h100;
+        OP_TOP_CYMBAL: hh_phase_p3 = hh_phase_friend;
+        default:       hh_phase_p3 = phase_acc_p3; // hi hat
         endcase
 
         // used in hi hat and top cymbal
-        phase_bit_p2 = (((hh_phase_p2 & 'h88) ^ ((hh_phase_p2 << 5) & 'h80)) |
-         ((hh_phase_p2 ^ (hh_phase_p2 << 2)) & 'h20)) ? 'h02 : 'h00;
+        phase_bit_p3 = (((hh_phase_p3 & 'h88) ^ ((hh_phase_p3 << 5) & 'h80)) |
+         ((hh_phase_p3 ^ (hh_phase_p3 << 2)) & 'h20)) ? 'h02 : 'h00;
 
         // used in hi hat and snare drum
-        noise_bit_p2 = op_type_p[2] == OP_HI_HAT ? rand_num[0] << 1 : rand_num[0] << 8;
+        noise_bit_p3 = op_type_p[3] == OP_HI_HAT ? rand_num[0] << 1 : rand_num[0] << 8;
     end
 
     always_comb
-        unique case (op_type_p[2])
-        OP_NORMAL:     rhythm_phase_p2 = phase_acc_p2;
-        OP_BASS_DRUM:  rhythm_phase_p2 = phase_acc_p2;
-        OP_HI_HAT:     rhythm_phase_p2 = (phase_bit_p2 << 8) | ('h34 << (phase_bit_p2 ^ noise_bit_p2));
-        OP_TOM_TOM:    rhythm_phase_p2 = phase_acc_p2;
-        OP_SNARE_DRUM: rhythm_phase_p2 = hh_phase_p2 ^ noise_bit_p2;
-        OP_TOP_CYMBAL: rhythm_phase_p2 = (1 + phase_bit_p2) << 8;
+        unique case (op_type_p[3])
+        OP_NORMAL:     rhythm_phase_p3 = phase_acc_p3;
+        OP_BASS_DRUM:  rhythm_phase_p3 = phase_acc_p3;
+        OP_HI_HAT:     rhythm_phase_p3 = (phase_bit_p3 << 8) | ('h34 << (phase_bit_p3 ^ noise_bit_p3));
+        OP_TOM_TOM:    rhythm_phase_p3 = phase_acc_p3;
+        OP_SNARE_DRUM: rhythm_phase_p3 = hh_phase_p3 ^ noise_bit_p3;
+        OP_TOP_CYMBAL: rhythm_phase_p3 = (1 + phase_bit_p3) << 8;
         endcase
 
     always_ff @(posedge clk)
