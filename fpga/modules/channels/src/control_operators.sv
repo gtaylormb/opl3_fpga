@@ -138,8 +138,6 @@ module control_operators
         else
             operator_mem_rd_address = op_num + 4;
 
-    wire [$clog2('h16)-1:0] am_vib_egt_ksr_mult_mem_wr_address = opl3_reg_wr.address - 'h20;
-
     mem_multi_bank #(
         .DATA_WIDTH(REG_FILE_DATA_WIDTH),
         .DEPTH('h16),
@@ -151,14 +149,12 @@ module control_operators
         .wea(opl3_reg_wr.valid && opl3_reg_wr.address >= 'h20 && opl3_reg_wr.address <= 'h35),
         .reb(op_sample_clk_en),
         .banka(opl3_reg_wr.bank_num),
-        .addra(am_vib_egt_ksr_mult_mem_wr_address),
+        .addra(opl3_reg_wr.address[$clog2('h16)-1:0]),
         .bankb(bank_num),
         .addrb(operator_mem_rd_address),
         .dia(opl3_reg_wr.data),
         .dob({am, vib, egt, ksr, mult})
     );
-
-    wire [$clog2('h16)-1:0] ksl_tl_mem_wr_address = opl3_reg_wr.address - 'h40;
 
     mem_multi_bank #(
         .DATA_WIDTH(REG_FILE_DATA_WIDTH),
@@ -171,14 +167,12 @@ module control_operators
         .wea(opl3_reg_wr.valid && opl3_reg_wr.address >= 'h40 && opl3_reg_wr.address <= 'h55),
         .reb(op_sample_clk_en),
         .banka(opl3_reg_wr.bank_num),
-        .addra(ksl_tl_mem_wr_address),
+        .addra(opl3_reg_wr.address[$clog2('h16)-1:0]),
         .bankb(bank_num),
         .addrb(operator_mem_rd_address),
         .dia(opl3_reg_wr.data),
         .dob({ksl, tl})
     );
-
-    wire [$clog2('h16)-1:0] ar_dr_mem_wr_address = opl3_reg_wr.address - 'h60;
 
     mem_multi_bank #(
         .DATA_WIDTH(REG_FILE_DATA_WIDTH),
@@ -191,14 +185,12 @@ module control_operators
         .wea(opl3_reg_wr.valid && opl3_reg_wr.address >= 'h60 && opl3_reg_wr.address <= 'h75),
         .reb(op_sample_clk_en),
         .banka(opl3_reg_wr.bank_num),
-        .addra(ar_dr_mem_wr_address),
+        .addra(opl3_reg_wr.address[$clog2('h16)-1:0]),
         .bankb(bank_num),
         .addrb(operator_mem_rd_address),
         .dia(opl3_reg_wr.data),
         .dob({ar, dr})
     );
-
-    wire [$clog2('h16)-1:0] sl_rr_mem_wr_address = opl3_reg_wr.address - 'h80;
 
     mem_multi_bank #(
         .DATA_WIDTH(REG_FILE_DATA_WIDTH),
@@ -211,14 +203,12 @@ module control_operators
         .wea(opl3_reg_wr.valid && opl3_reg_wr.address >= 'h80 && opl3_reg_wr.address <= 'h95),
         .reb(op_sample_clk_en),
         .banka(opl3_reg_wr.bank_num),
-        .addra(sl_rr_mem_wr_address),
+        .addra(opl3_reg_wr.address[$clog2('h16)-1:0]),
         .bankb(bank_num),
         .addrb(operator_mem_rd_address),
         .dia(opl3_reg_wr.data),
         .dob({sl, rr})
     );
-
-    wire [$clog2('h16)-1:0] ws_mem_wr_address = opl3_reg_wr.address - 'hE0;
 
     mem_multi_bank #(
         .DATA_WIDTH(REG_WS_WIDTH),
@@ -231,7 +221,7 @@ module control_operators
         .wea(opl3_reg_wr.valid && opl3_reg_wr.address >= 'hE0 && opl3_reg_wr.address <= 'hF5),
         .reb(op_sample_clk_en),
         .banka(opl3_reg_wr.bank_num),
-        .addra(ws_mem_wr_address),
+        .addra(opl3_reg_wr.address[$clog2('h16)-1:0]),
         .bankb(bank_num),
         .addrb(operator_mem_rd_address),
         .dia(opl3_reg_wr.data[REG_WS_WIDTH-1:0]),
@@ -303,8 +293,6 @@ module control_operators
         endcase
     end
 
-    wire [$clog2('h9)-1:0] fnum_low_mem_wr_address = opl3_reg_wr.address - 'hA0;
-
     mem_multi_bank #(
         .DATA_WIDTH(REG_FILE_DATA_WIDTH),
         .DEPTH('h9),
@@ -316,14 +304,13 @@ module control_operators
         .wea(opl3_reg_wr.valid && opl3_reg_wr.address >= 'hA0 && opl3_reg_wr.address <= 'hA8),
         .reb(op_sample_clk_en),
         .banka(opl3_reg_wr.bank_num),
-        .addra(fnum_low_mem_wr_address),
+        .addra(opl3_reg_wr.address[$clog2('h9)-1:0]),
         .bankb(bank_num),
         .addrb(kon_block_fnum_channel_mem_rd_address),
         .dia(opl3_reg_wr.data),
         .dob(fnum[7:0])
     );
 
-    wire [$clog2('h9)-1:0] kon_block_fnum_high_mem_wr_address = opl3_reg_wr.address - 'hB0;
     localparam kon_block_fnum_high_mem_width = $bits(kon) + $bits(block) + $bits(fnum[9:8]);
 
     mem_multi_bank #(
@@ -337,14 +324,13 @@ module control_operators
         .wea(opl3_reg_wr.valid && opl3_reg_wr.address >= 'hB0 && opl3_reg_wr.address <= 'hB8),
         .reb(op_sample_clk_en),
         .banka(opl3_reg_wr.bank_num),
-        .addra(kon_block_fnum_high_mem_wr_address),
+        .addra(opl3_reg_wr.address[$clog2('h9)-1:0]),
         .bankb(bank_num),
         .addrb(kon_block_fnum_channel_mem_rd_address),
         .dia(opl3_reg_wr.data[kon_block_fnum_high_mem_width-1:0]),
         .dob({kon, block, fnum[9:8]})
     );
 
-    wire [$clog2('h9)-1:0] fb_cnt_mem_wr_address = opl3_reg_wr.address - 'hC0;
     localparam fb_cnt_mem_width = $bits(fb_p1) + $bits(cnt0_p1);
 
     mem_multi_bank #(
@@ -358,7 +344,7 @@ module control_operators
         .wea(opl3_reg_wr.valid && opl3_reg_wr.address >= 'hC0 && opl3_reg_wr.address <= 'hC8),
         .reb(op_sample_clk_en),
         .banka(opl3_reg_wr.bank_num),
-        .addra(fb_cnt_mem_wr_address),
+        .addra(opl3_reg_wr.address[$clog2('h9)-1:0]),
         .bankb(bank_num),
         .addrb(fb_cnt0_channel_mem_rd_address),
         .dia(opl3_reg_wr.data[fb_cnt_mem_width-1:0]),
@@ -367,6 +353,7 @@ module control_operators
 
     // used for 4 op connections, need both cnt0 and cnt1 simultaneously
     localparam cnt_mem_width = $bits(cnt1_p1);
+
     mem_multi_bank #(
         .DATA_WIDTH(cnt_mem_width),
         .DEPTH('h9),
@@ -378,7 +365,7 @@ module control_operators
         .wea(opl3_reg_wr.valid && opl3_reg_wr.address >= 'hC0 && opl3_reg_wr.address <= 'hC8),
         .reb(op_sample_clk_en),
         .banka(opl3_reg_wr.bank_num),
-        .addra(fb_cnt_mem_wr_address),
+        .addra(opl3_reg_wr.address[$clog2('h9)-1:0]),
         .bankb(bank_num),
         .addrb(cnt1_channel_mem_rd_address),
         .dia(opl3_reg_wr.data[cnt_mem_width-1:0]),
