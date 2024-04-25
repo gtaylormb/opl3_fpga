@@ -68,7 +68,6 @@ module phase_generator
     logic [PHASE_ACC_WIDTH-1:0] phase_acc_p2;
     logic [PHASE_ACC_WIDTH-1:0] phase_acc_p3 = 0;
     logic [PHASE_ACC_WIDTH-1:0] final_phase_p4 = 0;
-    logic [PHASE_ACC_WIDTH-1:0] final_phase_p4 = 0;
     logic [PHASE_ACC_WIDTH-1:0] final_phase_p5 = 0;
     logic prev_final_phase_msb_p2;
     logic prev_final_phase_msb_p3 = 0;
@@ -283,7 +282,6 @@ module phase_generator
     always_comb log_sin_plus_gain_p5 = (ws_post_opl_p[5] == 7 ? tmp_ws7_p5 : log_sin_out_p5) + (env_p5 << 3);
 
     always_ff @(posedge clk) begin
-        final_phase_p4 <= final_phase_p4;
         final_phase_p5 <= final_phase_p4;
         log_sin_plus_gain_p6 <= log_sin_plus_gain_p5;
     end
