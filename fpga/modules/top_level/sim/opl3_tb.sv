@@ -94,19 +94,31 @@ module opl3_tb
             output din;
         endclocking
 
-        task opl3_read (
+        task opl3_read_addr (
+            input [1:0] address,
             output [REG_FILE_DATA_WIDTH-1:0] value
         );
             bit [1:0] opl3_address;
 
-            cb.address <= 'b00;
+            cb.address <= address;
             cb.cs_n <= 0;
             cb.rd_n <= 0;
-            ##1;
+            ##3; // reads are held for multiple cycles on ao486 MiSTer
             value <= cb.dout;
             cb.cs_n <= 1;
             cb.rd_n <= 1;
             ##1;
+        endtask
+
+        task opl3_read (
+            output [REG_FILE_DATA_WIDTH-1:0] value
+        );
+            static bit [1:0] address = 'b00;
+
+            opl3_read_addr (
+                address,
+                value
+            );
         endtask
 
         task opl3_write (
@@ -150,7 +162,7 @@ module opl3_tb
             $display("Wrote 0x%0x to register 0x%0x, bank %0x", data_in, register, bank);
         endtask
 
-        task detect_opl3();
+        task detect_opl3(); // requires core to be built with INSTANTIATE_TIMERS=1
             bit [REG_FILE_DATA_WIDTH-1:0] stat1, stat2, dummy;
 
             opl3_write('h04, 'h60, 'b0); // mask timers 1 and 2
@@ -167,6 +179,9 @@ module opl3_tb
                 $display("OPL3 detected!");
             else
                 $error("OPL3 not detected...");
+            opl3_read_addr(2, stat1);
+            if (stat1 == 'hff)
+                $display("Doom OPL3 detected!");
         endtask
 
         task reset_opl3();
