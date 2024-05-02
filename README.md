@@ -2,7 +2,7 @@ opl3_fpga
 =========
 ## News
 2024-4-27
-* OPL3_FPGA has been merged into https://github.com/MiSTer-devel/ao486_MiSTer and replaced the old Z80-based OPL3 core!
+* OPL3_FPGA has been merged into https://github.com/MiSTer-devel/ao486_MiSTer and replaced the old Z80-based OPL3 core. This is a very cool project. It's been really fun working with it and playing all the old games from the 90s.
 
 2024-4-10
 * Massive refactoring. I changed up the top level interface/bus protocol to better match the real chip and make it easier to integrate into other projects. The register map is now internal instead of an external AXI version. Clock domain
