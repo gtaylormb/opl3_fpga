@@ -87,6 +87,7 @@ module phase_generator
     logic signed [OP_OUT_WIDTH-1:0] tmp_out2_p6;
     logic signed [OP_OUT_WIDTH-1:0] tmp_ws2_p6;
     logic signed [OP_OUT_WIDTH-1:0] tmp_ws4_p6;
+    logic [LOG_SIN_OUT_WIDTH-1:0] tmp_ws6_p5 = 0;
     logic [LOG_SIN_OUT_WIDTH-1:0] tmp_ws7_p5 = 0;
     logic [REG_WS_WIDTH-1:0] ws_post_opl_p0;
     logic [PIPELINE_DELAY:1] [REG_WS_WIDTH-1:0] ws_post_opl_p;
@@ -277,9 +278,17 @@ module phase_generator
         endcase
 
         tmp_ws7_p5[10:0] <= final_phase_p4[19] ? ~final_phase_p4[17:10] << 3 : final_phase_p4[17:10] << 3;
+
+        tmp_ws6_p5 <= 0;
+        tmp_ws6_p5[11] <= final_phase_p4[19];
     end
 
-    always_comb log_sin_plus_gain_p5 = (ws_post_opl_p[5] == 7 ? tmp_ws7_p5 : log_sin_out_p5) + (env_p5 << 3);
+    always_comb
+        unique case (ws_post_opl_p[5])
+        6: log_sin_plus_gain_p5 = tmp_ws6_p5 + (env_p5 << 3);
+        7: log_sin_plus_gain_p5 = tmp_ws7_p5 + (env_p5 << 3);
+        default: log_sin_plus_gain_p5 = log_sin_out_p5 + (env_p5 << 3);
+        endcase
 
     always_ff @(posedge clk) begin
         final_phase_p5 <= final_phase_p4;
@@ -314,7 +323,7 @@ module phase_generator
         3: tmp_out2_p6 = final_phase_p5[PHASE_ACC_WIDTH-2] ? 0 : tmp_ws2_p6;
         4: tmp_out2_p6 = tmp_ws4_p6;
         5: tmp_out2_p6 = tmp_ws4_p6 < 0 ? ~tmp_ws4_p6 : tmp_ws4_p6;
-        6: tmp_out2_p6 = tmp_out1_p6 > 0 ? 2**(OP_OUT_WIDTH-1) - 1 : -2**(OP_OUT_WIDTH-1);
+        6: tmp_out2_p6 = tmp_out1_p6;
         7: tmp_out2_p6 = tmp_out1_p6;
         endcase
 
