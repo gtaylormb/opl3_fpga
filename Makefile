@@ -75,3 +75,6 @@ clean:
 
 BOOT.bin:
 	bootgen -image software/bif/imfplay_port.bif -arch zynq -o BOOT.bin -w on
+
+program:
+	cd fpga && make program
