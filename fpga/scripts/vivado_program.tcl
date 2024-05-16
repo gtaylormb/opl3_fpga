@@ -1,6 +1,6 @@
 set outputDir build
 
-open_hw
+open_hw_manager
 #connect_hw_server -url localhost:3121
 connect_hw_server -url 192.168.68.63:3121
 
