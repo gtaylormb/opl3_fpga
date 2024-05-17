@@ -78,7 +78,7 @@ module trick_sw_detection
     input wire [REG_FILE_DATA_WIDTH-1:0] din,
     output logic force_timer_overflow
 );
-    localparam NUM_READS_TO_TRIGGER_OVERFLOW = 50;
+    localparam NUM_READS_TO_TRIGGER_OVERFLOW = 20;
 
     logic cs_p1_n = 1;
     logic wr_p1_n = 1;

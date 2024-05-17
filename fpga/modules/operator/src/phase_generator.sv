@@ -39,7 +39,7 @@
 #
 #******************************************************************************/
 `timescale 1ns / 1ps
-`default_nettype none // disable implicit net type declarations
+`default_nettype none
 
 module phase_generator
     import opl3_pkg::*;
@@ -278,14 +278,11 @@ module phase_generator
         endcase
 
         tmp_ws7_p5[10:0] <= final_phase_p4[19] ? ~final_phase_p4[17:10] << 3 : final_phase_p4[17:10] << 3;
-
-        tmp_ws6_p5 <= 0;
-        tmp_ws6_p5[11] <= final_phase_p4[19];
     end
 
     always_comb
         unique case (ws_post_opl_p[5])
-        6: log_sin_plus_gain_p5 = tmp_ws6_p5 + (env_p5 << 3);
+        6: log_sin_plus_gain_p5 = env_p5 << 3;
         7: log_sin_plus_gain_p5 = tmp_ws7_p5 + (env_p5 << 3);
         default: log_sin_plus_gain_p5 = log_sin_out_p5 + (env_p5 << 3);
         endcase

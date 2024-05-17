@@ -66,6 +66,7 @@ module host_if
     logic [1:0] opl3_address;
     logic [REG_FILE_DATA_WIDTH-1:0] opl3_data;
     logic wr_p1;
+    logic wr_p2 = 0;
     logic [REG_FILE_DATA_WIDTH-1:0] host_status;
 
     // relax timing on clk_host
@@ -74,6 +75,7 @@ module host_if
         wr_p1_n <= wr_n;
         address_p1 <= address;
         din_p1 <= din;
+        wr_p2 <= wr_p1;
     end
 
     always_comb wr_p1 = !cs_p1_n && !wr_p1_n;
@@ -84,7 +86,7 @@ module host_if
     ) afifo (
 		.i_wclk(clk_host),
 		.i_wr_reset_n(ic_n),
-		.i_wr(wr_p1),
+		.i_wr(wr_p1 && !wr_p2),
 		.i_wr_data({address_p1, din_p1}),
 		.o_wr_full(),
 		.i_rclk(clk),
