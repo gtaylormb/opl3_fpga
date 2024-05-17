@@ -45,6 +45,7 @@ module channels
     import opl3_pkg::*;
 (
     input wire clk,
+    input wire reset,
     input wire clk_dac,
     input var opl3_reg_wr_t opl3_reg_wr,
     input wire sample_clk_en,

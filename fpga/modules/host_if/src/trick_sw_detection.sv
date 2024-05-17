@@ -86,6 +86,7 @@ module trick_sw_detection
     logic [1:0] address_p1 = 0;
     logic [REG_FILE_DATA_WIDTH-1:0] din_p1 = 0;
     logic wr_p1;
+    logic wr_p2 = 0;
     logic [$clog2(NUM_READS_TO_TRIGGER_OVERFLOW)-1:0] host_rd_counter = 0;
     opl3_reg_wr_t host_reg_wr;
     logic rd_p1;
@@ -100,6 +101,7 @@ module trick_sw_detection
         rd_p1_n <= rd_n;
         address_p1 <= address;
         din_p1 <= din;
+        wr_p2 <= wr_p1;
     end
 
     always_comb wr_p1 = !cs_p1_n && !wr_p1_n;
@@ -107,7 +109,7 @@ module trick_sw_detection
     always_ff @(posedge clk_host) begin
         host_reg_wr.valid <= 0;
 
-        if (wr_p1)
+        if (wr_p1 && !wr_p2)
             if (!address_p1[0]) begin // address write mode
                 host_reg_wr.bank_num <= address_p1[1];
                 host_reg_wr.address <= din_p1;

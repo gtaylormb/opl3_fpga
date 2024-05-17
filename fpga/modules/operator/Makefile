@@ -14,6 +14,7 @@ RTL_SRC = \
 	../misc/src/edge_detector.sv \
 	../misc/src/mem_simple_dual_port.sv \
 	../misc/src/mem_multi_bank.sv \
+	../misc/src/mem_multi_bank_reset.sv \
 	../misc/src/pipeline_sr.sv
 
 SIM_SRC = \
@@ -26,7 +27,7 @@ compile:
 	vlog -incr $(SIM_SRC) $(RTL_SRC)
 
 sim: compile
-	vsim -c operator_tb -do "run all"
+	vsim -c operator_tb -do "run -a"
 
 sim-debug: compile
 	vsim operator_tb -voptargs=+acc

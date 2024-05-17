@@ -18,7 +18,7 @@
     if (max(code)>2^numbit-1) | (min(code)<0)
     disp('Warning: ADC may be clipping!!!');
     end
-    
+
     code = typecast(uint16(code), 'int16');
 
     %Plot results in the time domain
@@ -73,7 +73,7 @@
     %Find DC offset power
     Pdc=sum(spectP(1:span));
     %Extract overall signal power
-    Ps=sum(spectP(fin-span:fin+span));
+    %Ps=sum(spectP(fin-span:fin+span));
     %Vector/matrix to store both frequency and power of signal and harmonics
     Fh=[];
     %The 1st element in the vector/matrix represents the signal, the next element represents
@@ -91,47 +91,47 @@
     Fh=[Fh tone];
     %For this procedure to work, ensure the folded back high order harmonics do not overlap
     %with DC or signal or lower order harmonics
-    har_peak=max(spectP(round(tone*numpt)-spanh:round(tone*numpt)+spanh));
-    har_bin=find(spectP(round(tone*numpt)-spanh:round(tone*numpt)+spanh)==har_peak);
-    har_bin=har_bin+round(tone*numpt)-spanh-1;
-    Ph=[Ph sum(spectP(har_bin-1:har_bin+1))];
+    %har_peak=max(spectP(round(tone*numpt)-spanh:round(tone*numpt)+spanh));
+    %har_bin=find(spectP(round(tone*numpt)-spanh:round(tone*numpt)+spanh)==har_peak);
+    %har_bin=har_bin+round(tone*numpt)-spanh-1;
+    %Ph=[Ph sum(spectP(har_bin-1:har_bin+1))];
     end
 
     %Determine the total distortion power
-    Pd=sum(Ph(2:5));
+    %Pd=sum(Ph(2:5));
     %Determine the noise power
-    Pn=sum(spectP(1:numpt/2))-Pdc-Ps-Pd;
+    %Pn=sum(spectP(1:numpt/2))-Pdc-Ps-Pd;
 
     format;
     A=(max(code)-min(code))/2^numbit
     AdB=20*log10(A)
-    SINAD=10*log10(Ps/(Pn+Pd))
-    SNR=10*log10(Ps/Pn)
+    %SINAD=10*log10(Ps/(Pn+Pd))
+    %SNR=10*log10(Ps/Pn)
     disp('THD is calculated from 2nd through 5th order harmonics');
-    THD=10*log10(Pd/Ph(1))
-    
+    %THD=10*log10(Pd/Ph(1))
+
     %SFDR=10*log10(Ph(1)/max(Ph(2:10)))
     % GHT: this doesn't capture all spurs, so it isn't accurate
 
     % Instead subtract the highest spur from the fundamental frequency
     %[pks, locs] = findpeaks(Dout_dB(1:numpt/2), 'NPEAKS', 10, 'SORTSTR', 'descend');
-    
+
     % Octave findpeaks function doesn't match Matlabs, must rewrite
-    [pks, locs] = findpeaks(Dout_dB(1:numpt/2), "MinPeakHeight", 80);
-    pks = sort(pks, "descend"); 
-    
+    %[pks, locs] = findpeaks(Dout_dB(1:numpt/2), "MinPeakHeight", 80);
+    %pks = sort(pks, "descend");
+
 %    pks = -(pks(1) - pks(1:10));
 %    locs = locs/numpt*fclk;
-    fundamental = pks(1);
-    first_spur = pks(2);
-    SFDR = fundamental - first_spur
+    %fundamental = pks(1);
+    %first_spur = pks(2);
+    %SFDR = fundamental - first_spur
     %peaks = [pks, locs]
-    
-    disp('Signal & Harmonic Power Components:');
-    HD=10*log10(Ph(1:10)/Ph(1))
+
+    %disp('Signal & Harmonic Power Components:');
+    %HD=10*log10(Ph(1:10)/Ph(1))
 
     %Distinguish all harmonics locations within the FFT plot
     hold on;
     plot(Fh(2)*fclk,0,'mo',Fh(3)*fclk,0,'cx',Fh(4)*fclk,0,'r+',Fh(5)*fclk,0,'g*',Fh(6)*fclk,0,'bs',Fh(7)*fclk,0,'bd',Fh(8)*fclk,0,'kv',Fh(9)*fclk,0,'y^');
     legend('1st','2nd','3rd','4th','5th','6th','7th','8th','9th');
-    hold off; 
+    hold off;

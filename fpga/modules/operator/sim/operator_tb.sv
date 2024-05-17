@@ -48,6 +48,7 @@ module operator_tb
     localparam GATE_DELAY = 2; // in ns
 
     bit clk;
+    bit reset = 0;
     logic sample_clk_en;
     logic signed [OP_OUT_WIDTH-1:0] out_p6;
     logic signed [15:0] dac_input;
@@ -55,10 +56,10 @@ module operator_tb
     bit [REG_FNUM_WIDTH-1:0] fnum = 512;
     bit [REG_MULT_WIDTH-1:0] mult = 5;
     bit [REG_BLOCK_WIDTH-1:0] block = 4;
-    bit [REG_WS_WIDTH-1:0] ws = 0;
+    bit [REG_WS_WIDTH-1:0] ws = 6;
     bit vib = 0;
     bit dvb = 0;
-    bit kon [NUM_BANKS][NUM_OPERATORS_PER_BANK] = '{default: '0};
+    bit kon = 0;
     bit [REG_ENV_WIDTH-1:0] ar = 0; // attack rate
     bit [REG_ENV_WIDTH-1:0] dr = 0; // decay rate
     bit [REG_ENV_WIDTH-1:0] sl = 0; // sustain level
@@ -78,8 +79,11 @@ module operator_tb
     bit tom = 0;
     bit tc = 0;
     bit hh = 0;
-    bit is_new = 0;
+    bit is_new = 1;
     operator_t op_type = OP_NORMAL;
+    bit use_feedback_p1 = 0;
+    bit [REG_FB_WIDTH-1:0] fb_p1 = 0;
+    bit signed [OP_OUT_WIDTH-1:0] modulation_p1 = 0;
 
     bit [BANK_NUM_WIDTH-1:0] bank_num = 0;
     bit [OP_NUM_WIDTH-1:0] op_num = 0;
@@ -138,10 +142,6 @@ module operator_tb
     always_comb dac_input = out_p6; // this will sign extend out
 
     initial begin
-        for (int i = 0; i < 2; i++)
-            for (int j = 0; j < 18; j++)
-                mclk.kon[i][j] <= 0;
-
         ##10;
         mclk.ar <= 5;
         mclk.dr <= 7;
@@ -153,22 +153,22 @@ module operator_tb
         mclk.dam <= 1;
         mclk.fb <= 7;
         ##1000;
-        mclk.kon[0][0] <= 1;
+        mclk.kon <= 1;
         ##(CLK_FREQ/3);
-        mclk.kon[0][0] <= 0;
+        mclk.kon <= 0;
         ##12e6;
 
         mclk.fnum <= 128;
         mclk.mult <= 2;
         mclk.block <= 2;
-        mclk.kon[0][1] <= 1;
+        mclk.kon <= 1;
         mclk.ar <= 3; // attack rate
         mclk.dr <= 5; // decay rate
         mclk.sl <= 1; // sustain level
         mclk.rr <= 3; // release rate
         mclk.tl <= 1;  // total level
         ##(CLK_FREQ/3);
-        mclk.kon[0][1] <= 0;
+        mclk.kon <= 0;
         ##12e6;
     end
 

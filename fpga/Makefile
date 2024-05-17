@@ -73,6 +73,7 @@ RTL_SRC = \
 	modules/misc/src/edge_detector.sv \
 	modules/misc/src/mem_simple_dual_port.sv \
 	modules/misc/src/mem_multi_bank.sv \
+	modules/misc/src/mem_multi_bank_reset.sv \
 	modules/misc/src/pipeline_sr.sv \
 	modules/misc/src/synchronizer.sv \
 	modules/misc/src/leds.sv \
