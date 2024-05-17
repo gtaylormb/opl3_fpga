@@ -87,7 +87,6 @@ module phase_generator
     logic signed [OP_OUT_WIDTH-1:0] tmp_out2_p6;
     logic signed [OP_OUT_WIDTH-1:0] tmp_ws2_p6;
     logic signed [OP_OUT_WIDTH-1:0] tmp_ws4_p6;
-    logic [LOG_SIN_OUT_WIDTH-1:0] tmp_ws6_p5 = 0;
     logic [LOG_SIN_OUT_WIDTH-1:0] tmp_ws7_p5 = 0;
     logic [REG_WS_WIDTH-1:0] ws_post_opl_p0;
     logic [PIPELINE_DELAY:1] [REG_WS_WIDTH-1:0] ws_post_opl_p;
@@ -98,7 +97,6 @@ module phase_generator
     logic [OP_OUT_WIDTH-1:0] modulation_p2 = 0;
     logic [OP_OUT_WIDTH+10-1:0] modulation_shifted_p3 = 0;
     logic [PIPELINE_DELAY:1] [$bits(operator_t)-1:0] op_type_p;
-
 
     pipeline_sr #(
         .ENDING_CYCLE(PIPELINE_DELAY)

@@ -134,6 +134,7 @@ module envelope_generator
         .*
     );
 
+    // on reset all operators will go into RELEASE state
     mem_multi_bank_reset #(
         .DATA_WIDTH($bits(state_t)),
         .DEPTH(NUM_OPERATORS_PER_BANK),
@@ -154,7 +155,6 @@ module envelope_generator
         .dob({state_p0}),
         .reset_mem_done_pulse()
     );
-
 
     always_ff @(posedge clk)
         if (sample_clk_en)

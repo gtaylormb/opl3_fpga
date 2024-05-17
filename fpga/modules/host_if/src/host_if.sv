@@ -68,6 +68,7 @@ module host_if
     logic wr_p1;
     logic wr_p2 = 0;
     logic [REG_FILE_DATA_WIDTH-1:0] host_status;
+    logic [REG_FILE_DATA_WIDTH-1:0] host_status_p1 = 0;
 
     // relax timing on clk_host
     always_ff @(posedge clk_host) begin
@@ -122,10 +123,13 @@ module host_if
         .out(host_status)
     );
 
+    always_ff @(posedge clk_host)
+        host_status_p1 <= host_status;
+
     // Doom DMXOPTION=-opl3-phase detection routine specifically reads address 'b10 to see if it's all ones
     // Decompiled routine provided by Never_Again at https://www.vogons.org/viewtopic.php?f=7&t=100285
-    always_ff @(posedge clk_host)
-        dout <= address_p1 == 0 ? host_status : '1;
+    always_comb
+        dout = address_p1 == 0 ? host_status_p1 : '1;
 
     generate
     if (INSTANTIATE_TIMERS)
