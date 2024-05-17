@@ -47,6 +47,7 @@ module control_operators
     import opl3_pkg::*;
 (
     input wire clk,
+    input wire reset,
     input wire sample_clk_en,
     input var opl3_reg_wr_t opl3_reg_wr,
     input wire [REG_CONNECTION_SEL_WIDTH-1:0] connection_sel,
