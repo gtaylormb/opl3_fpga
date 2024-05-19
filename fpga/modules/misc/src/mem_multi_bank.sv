@@ -62,7 +62,6 @@ module mem_multi_bank #(
     localparam PIPELINE_DELAY = 2;
 
     logic [NUM_BANKS-1:0] wea_array;
-    logic [NUM_BANKS-1:0] reb_array;
     logic [DATA_WIDTH-1:0] dob_array [NUM_BANKS];
     logic [PIPELINE_DELAY:1] [BANK_WIDTH-1:0] bankb_p;
 
@@ -78,26 +77,42 @@ module mem_multi_bank #(
     generate
     genvar i;
     for (i = 0; i < NUM_BANKS; ++i) begin: bankgen
-        always_comb begin
-            wea_array[i] = wea && banka == i;
-            reb_array[i] = reb && bankb == i;
-        end
+        always_comb wea_array[i] = wea && banka == i;
 
-        mem_simple_dual_port #(
-            .DATA_WIDTH(DATA_WIDTH),
-            .DEPTH(DEPTH),
-            .OUTPUT_DELAY(OUTPUT_DELAY),
-            .DEFAULT_VALUE(DEFAULT_VALUE)
-        ) mem_bank (
-            .clka(clk),
-            .clkb(clk),
-            .wea(wea_array[i]),
-            .reb(reb_array[i]),
-            .addra,
-            .addrb,
-            .dia,
-            .dob(dob_array[i])
-        );
+        if (OUTPUT_DELAY == 0)
+            mem_simple_dual_port_async_read #(
+                .DATA_WIDTH(DATA_WIDTH),
+                .DEPTH(DEPTH),
+                .DEFAULT_VALUE(DEFAULT_VALUE)
+            ) mem_bank (
+                .clka(clk),
+                .wea(wea_array[i]),
+                .addra,
+                .addrb,
+                .dia,
+                .dob(dob_array[i])
+            );
+        else begin
+            logic reb_mem;
+
+            always_comb reb_mem = reb && bankb == i;
+
+            mem_simple_dual_port #(
+                .DATA_WIDTH(DATA_WIDTH),
+                .DEPTH(DEPTH),
+                .OUTPUT_DELAY(OUTPUT_DELAY),
+                .DEFAULT_VALUE(DEFAULT_VALUE)
+            ) mem_bank (
+                .clka(clk),
+                .clkb(clk),
+                .wea(wea_array[i]),
+                .reb(reb_mem),
+                .addra,
+                .addrb,
+                .dia,
+                .dob(dob_array[i])
+            );
+        end
     end
 
     if (OUTPUT_DELAY == 0)

@@ -71,6 +71,7 @@ RTL_SRC = \
 	modules/timers/src/timer.sv \
 	modules/misc/src/afifo.v \
 	modules/misc/src/edge_detector.sv \
+	modules/misc/src/mem_simple_dual_port_async_read.sv \
 	modules/misc/src/mem_simple_dual_port.sv \
 	modules/misc/src/mem_multi_bank.sv \
 	modules/misc/src/mem_multi_bank_reset.sv \

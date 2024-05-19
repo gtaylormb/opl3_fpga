@@ -24,3 +24,4 @@ fpga/NA/ps7_summary.html
 .project
 fpga/vsim.wlf
 fpga/modules/operator/vsim.wlf
+fpga/modules/misc/vsim.wlf

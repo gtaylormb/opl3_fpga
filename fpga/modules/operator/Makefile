@@ -12,6 +12,7 @@ RTL_SRC = \
 	src/tremolo.sv \
 	../clks/src/clk_div.sv \
 	../misc/src/edge_detector.sv \
+	../misc/src/mem_simple_dual_port_async_read.sv \
 	../misc/src/mem_simple_dual_port.sv \
 	../misc/src/mem_multi_bank.sv \
 	../misc/src/mem_multi_bank_reset.sv \
