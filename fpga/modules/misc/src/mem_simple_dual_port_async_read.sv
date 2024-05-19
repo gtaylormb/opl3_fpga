@@ -1,13 +1,17 @@
 /*******************************************************************************
 #   +html+<pre>
 #
-#   FILENAME: mem_simple_dual_port.sv
-#   AUTHOR: Greg Taylor     CREATION DATE: 1 April 2024
+#   FILENAME: mem_simple_dual_port_async_read.sv
+#   AUTHOR: Greg Taylor     CREATION DATE: 19 May 2024
 #
 #   DESCRIPTION:
+#   Quartus needs special syn_ramstyle = "MLAB, no_rw_check"
+#   directive on RAM to place in MLAB (LUT RAM), otherwise registers get used for async read. Was not able
+#   to successfully include this in mem_simple_dual_port even with generate statements
+#   so created a separate module. Discovered this directive at https://community.intel.com/t5/Programmable-Devices/Synthesis-ramstyle/m-p/74079
 #
 #   CHANGE HISTORY:
-#   1 April 2024    Greg Taylor
+#   19 May 2024    Greg Taylor
 #       Initial version
 #
 #   Copyright (C) 2014 Greg Taylor <gtaylor@sonic.net>
@@ -41,54 +45,25 @@
 `timescale 1ns / 1ps
 `default_nettype none
 
-module mem_simple_dual_port #(
+module mem_simple_dual_port_async_read #(
     parameter DATA_WIDTH = 0,
     parameter DEPTH = 0,
-    parameter OUTPUT_DELAY = 0, // 0, 1, or 2
     parameter logic [DATA_WIDTH-1:0] DEFAULT_VALUE = 0
 ) (
     input wire clka,
-    input wire clkb,
     input wire wea,
-    input wire reb, // only used if OUTPUT_DELAY >0
     input wire [$clog2(DEPTH)-1:0] addra,
     input wire [$clog2(DEPTH)-1:0] addrb,
     input wire [DATA_WIDTH-1:0] dia,
     output logic [DATA_WIDTH-1:0] dob
 );
-    logic [DATA_WIDTH-1:0] dob_p0;
-
+    /* synthesis syn_ramstyle = "MLAB, no_rw_check" */
     logic [DATA_WIDTH-1:0] ram [DEPTH-1:0] = '{default: DEFAULT_VALUE};
 
     always_ff @(posedge clka)
         if (wea)
             ram[addra] <= dia;
 
-    always_comb dob_p0 = ram[addrb];
-
-    generate
-    if (OUTPUT_DELAY != 0) begin
-        logic [DATA_WIDTH-1:0] dob_p1 = DEFAULT_VALUE;
-
-        always_ff @(posedge clkb)
-            if (reb)
-                dob_p1 <= dob_p0;
-
-        if (OUTPUT_DELAY == 1)
-            always_comb dob = dob_p1;
-        else if (OUTPUT_DELAY == 2) begin
-            logic [DATA_WIDTH-1:0] dob_p2 = DEFAULT_VALUE;
-
-            always_ff @(posedge clkb)
-                dob_p2 <= dob_p1;
-
-            always_comb dob = dob_p2;
-        end
-        // else
-        //     $fatal("OUTPUT_DELAY must be 0, 1, or 2"); unsupported by Quartus 17
-    end
-    else
-        always_comb dob = dob_p0;
-    endgenerate
+    always_comb dob = ram[addrb];
 endmodule
 `default_nettype wire
