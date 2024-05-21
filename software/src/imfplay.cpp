@@ -80,11 +80,15 @@ void opl2_out(unsigned char reg, unsigned char data_in, unsigned char bank)
 	address = bank ? 0x2 : 0x0;
 	data = reg;
 	Xil_Out8(XPAR_OPL3_FPGA_0_BASEADDR + address, data);
+	for (int i = 0; i < 20; ++i)
+		Xil_In8(XPAR_OPL3_FPGA_0_BASEADDR);
 
 	// write OPL3 data
 	address = 0x1;
 	data = data_in;
 	Xil_Out8(XPAR_OPL3_FPGA_0_BASEADDR + address, data);
+	for (int i = 0; i < 100; ++i)
+		Xil_In8(XPAR_OPL3_FPGA_0_BASEADDR);
 
 	shadow_opl[reg] = data;
 }

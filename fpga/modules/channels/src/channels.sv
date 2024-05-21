@@ -218,6 +218,20 @@ module channels
                     signals.add_d = chd && !connection_sel[self.channel_num+3];
                 end
             end
+            else if (self.channel_num < 6) begin
+                if (self.bank_num == 0) begin
+                    signals.add_a = !is_new || (cha && !connection_sel[self.channel_num-3]);
+                    signals.add_b = !is_new || (chb && !connection_sel[self.channel_num-3]);
+                    signals.add_c = !is_new || (chc && !connection_sel[self.channel_num-3]);
+                    signals.add_d = !is_new || (chd && !connection_sel[self.channel_num-3]);
+                end
+                else begin
+                    signals.add_a = cha && !connection_sel[self.channel_num];
+                    signals.add_b = chb && !connection_sel[self.channel_num];
+                    signals.add_c = chc && !connection_sel[self.channel_num];
+                    signals.add_d = chd && !connection_sel[self.channel_num];
+                end
+            end
             else begin
                 signals.add_a = (self.bank_num == 0 && !is_new) || cha;
                 signals.add_b = (self.bank_num == 0 && !is_new) || chb;
