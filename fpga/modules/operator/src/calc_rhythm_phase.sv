@@ -65,6 +65,8 @@ module calc_rhythm_phase
     logic [RAND_NUM_WIDTH-1:0] rand_num = 1;
     logic [PIPELINE_DELAY:1] sample_clk_en_p;
     logic [PIPELINE_DELAY:1] [$bits(operator_t)-1:0] op_type_p;
+    logic [PIPELINE_DELAY:1] [BANK_NUM_WIDTH-1:0] bank_num_p;
+    logic [PIPELINE_DELAY:1] [OP_NUM_WIDTH-1:0] op_num_p;
 
     pipeline_sr #(
         .ENDING_CYCLE(PIPELINE_DELAY)
@@ -84,15 +86,33 @@ module calc_rhythm_phase
         .out(op_type_p)
     );
 
+    pipeline_sr #(
+        .DATA_WIDTH(BANK_NUM_WIDTH),
+        .ENDING_CYCLE(PIPELINE_DELAY)
+    ) bank_num_sr (
+        .clk,
+        .in(bank_num),
+        .out(bank_num_p)
+    );
+
+    pipeline_sr #(
+        .DATA_WIDTH(OP_NUM_WIDTH),
+        .ENDING_CYCLE(PIPELINE_DELAY)
+    ) op_num_sr (
+        .clk,
+        .in(op_num),
+        .out(op_num_p)
+    );
+
     // Store the hi hat phase when it comes by. It's used in the top symbol and snare drum operators
     always_ff @(posedge clk)
-        if (sample_clk_en_p[3] && bank_num == 0 && op_num == 13)
+        if (sample_clk_en_p[3] && bank_num_p[3] == 0 && op_num_p[3] == 13)
             hh_phase_friend <= phase_acc_p3;
 
     always_comb begin
         // used in hi hat, top cymbal, and snare drum
         unique case (op_type_p[3])
-        OP_SNARE_DRUM: hh_phase_p3 = (hh_phase_friend & 'h100) ? 'h200 : 'h100;
+        OP_SNARE_DRUM: hh_phase_p3 = hh_phase_friend[8] ? 'h200 : 'h100;
         OP_TOP_CYMBAL: hh_phase_p3 = hh_phase_friend;
         default:       hh_phase_p3 = phase_acc_p3; // hi hat
         endcase
