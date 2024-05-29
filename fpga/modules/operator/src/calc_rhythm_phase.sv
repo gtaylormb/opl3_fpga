@@ -50,18 +50,18 @@ module calc_rhythm_phase
     input wire sample_clk_en,
     input wire [BANK_NUM_WIDTH-1:0] bank_num,
     input wire [OP_NUM_WIDTH-1:0] op_num,
-    input wire [PHASE_RHYTHM_WIDTH-1:0] phase_acc_p3,
+    input wire [PHASE_FINAL_WIDTH-1:0] phase_acc_p3,
     input var operator_t op_type_p0,
-    output logic [PHASE_RHYTHM_WIDTH-1:0] rhythm_phase_p3
+    output logic [PHASE_FINAL_WIDTH-1:0] rhythm_phase_p3
 );
     localparam PIPELINE_DELAY = 3;
     localparam RAND_POLYNOMIAL = 'h800302; // verified on real opl3
     localparam RAND_NUM_WIDTH = $clog2(RAND_POLYNOMIAL);
 
-    logic [PHASE_RHYTHM_WIDTH-1:0] hh_phase_friend = 0;
-    logic [PHASE_RHYTHM_WIDTH-1:0] hh_phase_p3;
-    logic [PHASE_RHYTHM_WIDTH-1:0] phase_bit_p3;
-    logic [PHASE_RHYTHM_WIDTH-1:0] noise_bit_p3;
+    logic [PHASE_FINAL_WIDTH-1:0] hh_phase_friend = 0;
+    logic [PHASE_FINAL_WIDTH-1:0] hh_phase_p3;
+    logic [PHASE_FINAL_WIDTH-1:0] phase_bit_p3;
+    logic [PHASE_FINAL_WIDTH-1:0] noise_bit_p3;
     logic [RAND_NUM_WIDTH-1:0] rand_num = 1;
     logic [PIPELINE_DELAY:1] sample_clk_en_p;
     logic [PIPELINE_DELAY:1] [$bits(operator_t)-1:0] op_type_p;

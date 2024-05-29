@@ -77,7 +77,7 @@ module phase_generator
     logic is_odd_period_p4 = 0;
     logic is_odd_period_p5 = 0;
     logic is_odd_period_p6 = 0;
-    logic [PHASE_RHYTHM_WIDTH-1:0] rhythm_phase_p3;
+    logic [PHASE_FINAL_WIDTH-1:0] rhythm_phase_p3;
     logic [LOG_SIN_OUT_WIDTH-1:0] log_sin_out_p5;
     logic [LOG_SIN_PLUS_GAIN_WIDTH-1:0] log_sin_plus_gain_p5 = 0;
     logic [LOG_SIN_PLUS_GAIN_WIDTH-1:0] log_sin_plus_gain_p6 = 0;
@@ -192,7 +192,7 @@ module phase_generator
      * Pass through phase normally.
      */
     calc_rhythm_phase calc_rhythm_phase (
-        .phase_acc_p3(phase_acc_p3[PHASE_ACC_WIDTH-1 -: PHASE_RHYTHM_WIDTH]),
+        .phase_acc_p3(phase_acc_p3[PHASE_ACC_WIDTH-1 -: PHASE_FINAL_WIDTH]),
         .*
     );
 
