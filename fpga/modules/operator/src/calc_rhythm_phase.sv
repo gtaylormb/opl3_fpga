@@ -51,7 +51,7 @@ module calc_rhythm_phase
     input wire [BANK_NUM_WIDTH-1:0] bank_num,
     input wire [OP_NUM_WIDTH-1:0] op_num,
     input wire [PHASE_ACC_WIDTH-1:0] phase_acc_p3,
-    input var operator_t op_type,
+    input var operator_t op_type_p0,
     output logic [PHASE_ACC_WIDTH-1:0] rhythm_phase_p3
 );
     localparam PIPELINE_DELAY = 3;
@@ -80,7 +80,7 @@ module calc_rhythm_phase
         .POR_VALUE(OP_NORMAL)
     ) op_type_sr (
         .clk,
-        .in(op_type),
+        .in(op_type_p0),
         .out(op_type_p)
     );
 

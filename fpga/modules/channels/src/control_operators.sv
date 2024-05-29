@@ -71,7 +71,6 @@ module control_operators
 
     logic use_feedback_p1 = 0;
     logic signed [OP_OUT_WIDTH-1:0] modulation_p1 = 0;
-    operator_t op_type;
     logic signed [OP_OUT_WIDTH-1:0] out_p6;
     logic signed [OP_OUT_WIDTH-1:0] modulation_out_p1;
 
@@ -387,19 +386,6 @@ module control_operators
         13:                   use_feedback_p1 <= !(bank_num == 0 && ryt); // aka hi hat operator in bank 0
         14:                   use_feedback_p1 <= !(bank_num == 0 && ryt); // aka tom tom operator in bank 0
         endcase
-
-    always_comb begin
-        op_type = OP_NORMAL;
-        if (bank_num == 0 && ryt)
-            unique case (op_num)
-            12, 15:  op_type = OP_BASS_DRUM;
-            13:      op_type = OP_HI_HAT;
-            14:      op_type = OP_TOM_TOM;
-            16:      op_type = OP_SNARE_DRUM;
-            17:      op_type = OP_TOP_CYMBAL;
-            default: op_type = OP_NORMAL;
-            endcase
-    end
 
     always_ff @(posedge clk) begin
         bank_num_p1 <= bank_num;

@@ -73,10 +73,10 @@ module operator
     input wire tom,
     input wire tc,
     input wire hh,
+    input wire ryt,
     input wire use_feedback_p1,
     input wire [REG_FB_WIDTH-1:0] fb_p1,
     input wire signed [OP_OUT_WIDTH-1:0] modulation_p1,
-    input var operator_t op_type,
     output logic signed [OP_OUT_WIDTH-1:0] out_p6
 );
     localparam PIPELINE_DELAY = 6;
@@ -90,17 +90,19 @@ module operator
     logic [ENV_WIDTH-1:0] env_p3;
     logic signed [OP_OUT_WIDTH-1:0] feedback_result_p1;
     logic signed [OP_OUT_WIDTH+1+2**REG_FB_WIDTH-1:0] feedback_result_tmp_p1;
-    logic bd_on_pulse;
-    logic sd_on_pulse;
-    logic tom_on_pulse;
-    logic tc_on_pulse;
-    logic hh_on_pulse;
-    logic rhythm_kon_pulse;
+    logic bd0_on_pulse_p0;
+    logic bd1_on_pulse_p0;
+    logic sd_on_pulse_p0;
+    logic tom_on_pulse_p0;
+    logic tc_on_pulse_p0;
+    logic hh_on_pulse_p0;
+    logic rhythm_kon_pulse_p0;
     logic prev_kon_p0;
     logic kon_p1;
     logic [1:0] [OP_OUT_WIDTH-1:0] feedback_p1;
     logic [1:0] [OP_OUT_WIDTH-1:0] feedback_p6;
     logic [PIPELINE_DELAY:2] [1:0] [OP_OUT_WIDTH-1:0] feedback_p;
+    operator_t op_type_p0;
 
     pipeline_sr #(
         .ENDING_CYCLE(PIPELINE_DELAY)
@@ -149,60 +151,83 @@ module operator
         .dob(prev_kon_p0)
     );
 
+    always_comb begin
+        op_type_p0 = OP_NORMAL;
+        if (bank_num == 0 && ryt)
+            unique case (op_num)
+            12, 15:  op_type_p0 = OP_BASS_DRUM;
+            13:      op_type_p0 = OP_HI_HAT;
+            14:      op_type_p0 = OP_TOM_TOM;
+            16:      op_type_p0 = OP_SNARE_DRUM;
+            17:      op_type_p0 = OP_TOP_CYMBAL;
+            default: op_type_p0 = OP_NORMAL;
+            endcase
+    end
+
     edge_detector #(
         .EDGE_LEVEL(1),
         .CLK_DLY(0)
-    ) bd_edge_detect (
-        .clk_en(op_type == OP_BASS_DRUM && sample_clk_en),
+    ) bd0_edge_detect (
+        .clk_en(ryt && sample_clk_en && bank_num == 0 && op_num == 12),
         .in(bd),
-        .edge_detected(bd_on_pulse),
+        .edge_detected(bd0_on_pulse_p0),
+        .*
+    );
+    edge_detector #(
+        .EDGE_LEVEL(1),
+        .CLK_DLY(0)
+    ) bd1_edge_detect (
+        .clk_en(ryt && sample_clk_en && bank_num == 0 && op_num == 15),
+        .in(bd),
+        .edge_detected(bd1_on_pulse_p0),
         .*
     );
     edge_detector #(
         .EDGE_LEVEL(1),
         .CLK_DLY(0)
     ) sd_edge_detect (
-        .clk_en(op_type == OP_SNARE_DRUM && sample_clk_en),
+        .clk_en(op_type_p0 == OP_SNARE_DRUM && sample_clk_en),
         .in(sd),
-        .edge_detected(sd_on_pulse),
+        .edge_detected(sd_on_pulse_p0),
         .*
     );
     edge_detector #(
         .EDGE_LEVEL(1),
         .CLK_DLY(0)
     ) tom_edge_detect (
-        .clk_en(op_type == OP_TOM_TOM && sample_clk_en),
+        .clk_en(op_type_p0 == OP_TOM_TOM && sample_clk_en),
         .in(tom),
-        .edge_detected(tom_on_pulse),
+        .edge_detected(tom_on_pulse_p0),
         .*
     );
     edge_detector #(
         .EDGE_LEVEL(1),
         .CLK_DLY(0)
     ) tc_edge_detect (
-        .clk_en(op_type == OP_TOP_CYMBAL && sample_clk_en),
+        .clk_en(op_type_p0 == OP_TOP_CYMBAL && sample_clk_en),
         .in(tc),
-        .edge_detected(tc_on_pulse),
+        .edge_detected(tc_on_pulse_p0),
         .*
     );
     edge_detector #(
         .EDGE_LEVEL(1),
         .CLK_DLY(0)
     ) hh_edge_detect (
-        .clk_en(op_type == OP_HI_HAT && sample_clk_en),
+        .clk_en(op_type_p0 == OP_HI_HAT && sample_clk_en),
         .in(hh),
-        .edge_detected(hh_on_pulse),
+        .edge_detected(hh_on_pulse_p0),
         .*
     );
 
-    always_comb rhythm_kon_pulse =
-     (op_type == OP_BASS_DRUM && bd_on_pulse) ||
-     (op_type == OP_SNARE_DRUM && sd_on_pulse) ||
-     (op_type == OP_TOM_TOM && tom_on_pulse) ||
-     (op_type == OP_TOP_CYMBAL && tc_on_pulse) ||
-     (op_type == OP_HI_HAT && hh_on_pulse);
+    always_comb rhythm_kon_pulse_p0 =
+     bd0_on_pulse_p0 ||
+     bd1_on_pulse_p0 ||
+     sd_on_pulse_p0 ||
+     tom_on_pulse_p0 ||
+     tc_on_pulse_p0 ||
+     hh_on_pulse_p0;
 
-    always_comb key_on_pulse_p0 = ((!prev_kon_p0 && kon) || rhythm_kon_pulse) && sample_clk_en;
+    always_comb key_on_pulse_p0 = (!prev_kon_p0 && kon) || rhythm_kon_pulse_p0;
     always_comb key_off_pulse_p0 = prev_kon_p0 && !kon && sample_clk_en;
 
     calc_phase_inc calc_phase_inc (
@@ -210,7 +235,7 @@ module operator
     );
 
     envelope_generator envelope_generator (
-        .egt(egt && op_type == OP_NORMAL),
+        .egt(egt && op_type_p0 == OP_NORMAL),
         .*
     );
 

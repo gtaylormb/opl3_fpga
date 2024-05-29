@@ -54,7 +54,7 @@ module phase_generator
     input wire [ENV_WIDTH-1:0] env_p3,
     input wire key_on_pulse_p0,
     input wire [OP_OUT_WIDTH-1:0] modulation_p1,
-    input var operator_t op_type,
+    input var operator_t op_type_p0,
     output logic signed [OP_OUT_WIDTH-1:0] out_p6 = 0
 );
     localparam LOG_SIN_OUT_WIDTH = 12;
@@ -137,7 +137,7 @@ module phase_generator
         .ENDING_CYCLE(PIPELINE_DELAY)
     ) op_type_sr (
         .clk,
-        .in(op_type),
+        .in(op_type_p0),
         .out(op_type_p)
     );
 
