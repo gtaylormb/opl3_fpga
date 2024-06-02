@@ -210,8 +210,7 @@ module phase_generator
                 phase_acc_p3 <= phase_acc_p2 + phase_inc_p2;
 
     always_ff @(posedge clk)
-        if (sample_clk_en_p[3])
-            final_phase_p4 <= rhythm_phase_p3 + modulation_p[3];
+        final_phase_p4 <= rhythm_phase_p3 + modulation_p[3];
 
     mem_multi_bank #(
         .DATA_WIDTH(1),
