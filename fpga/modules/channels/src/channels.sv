@@ -200,7 +200,7 @@ module channels
             if (ryt && self.bank_num == 0)
                 unique case (self.channel_num)
                 6:    signals.channel_2_op = self.operator_out_second*2; // bass drum
-                7, 8: signals.channel_2_op = cnt ? operator_mem_out + self.operator_out_second : self.operator_out_second; // hi-hat and snare drum, tom-tom and top cymbal
+                7, 8: signals.channel_2_op = (operator_mem_out + self.operator_out_second)*2; // hi-hat and snare drum, tom-tom and top cymbal
                 default:;
                 endcase
 

@@ -374,7 +374,7 @@ module control_operators
 
     always_ff @(posedge clk)
         unique case (op_num)
-        0, 1, 2, 12, 13, 14:  use_feedback_p1 <= 1;
+        0, 1, 2, 12:          use_feedback_p1 <= 1;
         3, 4, 5, 9, 10, 11,
         15, 16, 17:           use_feedback_p1 <= 0;
         6: if (bank_num == 0) use_feedback_p1 <= !connection_sel[0];
@@ -383,6 +383,7 @@ module control_operators
            else               use_feedback_p1 <= !connection_sel[4];
         8: if (bank_num == 0) use_feedback_p1 <= !connection_sel[2];
            else               use_feedback_p1 <= !connection_sel[5];
+        13, 14:               use_feedback_p1 <= !(bank_num == 0 && ryt); // hi-hat and tom-tom do not use feedback
         endcase
 
     always_ff @(posedge clk) begin
@@ -395,7 +396,7 @@ module control_operators
     always_comb
         unique case (op_num_p1)
         0, 1, 2, 12, 13, 14:      modulation_p1 = 0;
-        3, 4, 5, 15, 16, 17:      modulation_p1 = cnt0_p1 ? 0 : modulation_out_p1;
+        3, 4, 5, 15:              modulation_p1 = cnt0_p1 ? 0 : modulation_out_p1;
         6:
             if ((bank_num_p1 == 0 && connection_sel_p1[0]) || (bank_num_p1 == 1 && connection_sel_p1[3]))
                 unique case ({cnt0_p1, cnt1_p1}) // 4 op mode
@@ -438,6 +439,7 @@ module control_operators
                 'b11:             modulation_p1 = 0;
                 endcase
             else                  modulation_p1 = cnt0_p1 ? 0 : modulation_out_p1;
+        16, 17:                   modulation_p1 = cnt0_p1 || (ryt_p1 && bank_num_p1 == 0) ? 0 : modulation_out_p1; // snare drum and top cymbal do not use modulation
         endcase
 
     always_ff @(posedge clk)

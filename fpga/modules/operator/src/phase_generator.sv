@@ -84,7 +84,6 @@ module phase_generator
     logic [EXP_OUT_WIDTH-1:0] exp_out_p6;
     logic [OP_OUT_WIDTH-1:0] tmp_out0_p6;
     logic signed [OP_OUT_WIDTH-1:0] tmp_out1_p6;
-    logic signed [OP_OUT_WIDTH-1:0] tmp_out2_p6;
     logic signed [OP_OUT_WIDTH-1:0] tmp_ws2_p6;
     logic signed [OP_OUT_WIDTH-1:0] tmp_ws4_p6;
     logic [LOG_SIN_OUT_WIDTH-1:0] tmp_ws7_p5 = 0;
@@ -215,10 +214,7 @@ module phase_generator
             if (key_on_pulse_p[3])
                 final_phase_p4 <= 0;
             else
-                unique case (op_type_p[3])
-                OP_NORMAL, OP_BASS_DRUM, OP_TOM_TOM:     final_phase_p4 <= rhythm_phase_p3 + modulation_p[3];
-                OP_HI_HAT, OP_SNARE_DRUM, OP_TOP_CYMBAL: final_phase_p4 <= rhythm_phase_p3; // modulation gets added at the end
-                endcase
+                final_phase_p4 <= rhythm_phase_p3 + modulation_p[3];
 
     mem_multi_bank #(
         .DATA_WIDTH(1),
@@ -320,20 +316,14 @@ module phase_generator
      */
     always_comb
         unique case (ws_post_opl_p[6])
-        0: tmp_out2_p6 = tmp_out1_p6;
-        1: tmp_out2_p6 = tmp_out1_p6 < 0 ? 0 : tmp_out1_p6;
-        2: tmp_out2_p6 = tmp_ws2_p6;
-        3: tmp_out2_p6 = final_phase_p5[PHASE_FINAL_WIDTH-2] ? 0 : tmp_ws2_p6;
-        4: tmp_out2_p6 = tmp_ws4_p6;
-        5: tmp_out2_p6 = tmp_ws4_p6 < 0 ? ~tmp_ws4_p6 : tmp_ws4_p6;
-        6: tmp_out2_p6 = tmp_out1_p6;
-        7: tmp_out2_p6 = tmp_out1_p6;
-        endcase
-
-    always_comb
-        unique case (op_type_p[6])
-        OP_NORMAL, OP_BASS_DRUM, OP_TOM_TOM:     out_p6 = tmp_out2_p6;
-        OP_HI_HAT, OP_SNARE_DRUM, OP_TOP_CYMBAL: out_p6 = tmp_out2_p6 + modulation_p[6];
+        0: out_p6 = tmp_out1_p6;
+        1: out_p6 = tmp_out1_p6 < 0 ? 0 : tmp_out1_p6;
+        2: out_p6 = tmp_ws2_p6;
+        3: out_p6 = final_phase_p5[PHASE_FINAL_WIDTH-2] ? 0 : tmp_ws2_p6;
+        4: out_p6 = tmp_ws4_p6;
+        5: out_p6 = tmp_ws4_p6 < 0 ? ~tmp_ws4_p6 : tmp_ws4_p6;
+        6: out_p6 = tmp_out1_p6;
+        7: out_p6 = tmp_out1_p6;
         endcase
 endmodule
 `default_nettype wire
