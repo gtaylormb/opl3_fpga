@@ -55,15 +55,15 @@ module calc_rhythm_phase
     output logic [PHASE_FINAL_WIDTH-1:0] rhythm_phase_p3
 );
     localparam PIPELINE_DELAY = 3;
-    localparam RAND_POLYNOMIAL = 'h800302; // verified on real opl3
-    localparam RAND_NUM_WIDTH = $clog2(RAND_POLYNOMIAL);
+    localparam NOISE_WIDTH = 23;
 
     logic [PHASE_FINAL_WIDTH-1:0] hh_phase_friend = 0;
     logic [PHASE_FINAL_WIDTH-1:0] tc_phase_friend = 0;
     logic [PHASE_FINAL_WIDTH-1:0] hh_phase_p3;
     logic [PHASE_FINAL_WIDTH-1:0] tc_phase_p3;
     logic [PHASE_FINAL_WIDTH-1:0] noise_bit_p3;
-    logic [RAND_NUM_WIDTH-1:0] rand_num = 1;
+    logic [NOISE_WIDTH-1:0] noise = 1;
+    logic n_bit;
     logic rm_xor_p3;
     logic [PIPELINE_DELAY:1] sample_clk_en_p;
     logic [PIPELINE_DELAY:1] [$bits(operator_t)-1:0] op_type_p;
@@ -123,24 +123,20 @@ module calc_rhythm_phase
                     (hh_phase_p3[3] ^ hh_phase_p3[5]) ||
                     (tc_phase_p3[3] ^ tc_phase_p3[5]);
 
-        rhythm_phase_p3 = phase_acc_p3;
+        rhythm_phase_p3 = phase_acc_p3; // all operators except hi hat, snare drum, and top cymbol pass through
 
         unique case (op_type_p[3])
-        OP_HI_HAT:     rhythm_phase_p3 = (rm_xor_p3 << 9) | (rm_xor_p3 ^ rand_num[0]) ? 'hd0 : 'h34;
-        OP_SNARE_DRUM: rhythm_phase_p3 = (hh_phase_p3[8] << 9) | ((hh_phase_p3[8] ^ rand_num[0]) << 8);
+        OP_HI_HAT:     rhythm_phase_p3 = (rm_xor_p3 << 9) | ((rm_xor_p3 ^ noise[0]) ? 'hd0 : 'h34);
+        OP_SNARE_DRUM: rhythm_phase_p3 = (hh_phase_p3[8] << 9) | ((hh_phase_p3[8] ^ noise[0]) << 8);
         OP_TOP_CYMBAL: rhythm_phase_p3 = (rm_xor_p3 << 9) | 'h80;
         default:;
         endcase
+
+        n_bit = (noise >> 14) ^ noise;
     end
 
     always_ff @(posedge clk)
-        /*
-         * Only update once per sample, not every operator time slot
-         */
-        if (sample_clk_en && bank_num == 0 && op_num == 0)
-            if (rand_num[0])
-                rand_num <= (rand_num ^ RAND_POLYNOMIAL) >> 1;
-            else
-                rand_num <= rand_num >> 1;
+        if (sample_clk_en)
+            noise <= (noise >> 1) | (n_bit << 22);
 endmodule
 `default_nettype wire

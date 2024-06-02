@@ -211,10 +211,7 @@ module phase_generator
 
     always_ff @(posedge clk)
         if (sample_clk_en_p[3])
-            if (key_on_pulse_p[3])
-                final_phase_p4 <= 0;
-            else
-                final_phase_p4 <= rhythm_phase_p3 + modulation_p[3];
+            final_phase_p4 <= rhythm_phase_p3 + modulation_p[3];
 
     mem_multi_bank #(
         .DATA_WIDTH(1),
