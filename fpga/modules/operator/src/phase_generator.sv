@@ -58,9 +58,7 @@ module phase_generator
     output logic signed [OP_OUT_WIDTH-1:0] out_p6 = 0
 );
     localparam LOG_SIN_OUT_WIDTH = 12;
-    localparam EXP_IN_WIDTH = 8;
     localparam EXP_OUT_WIDTH = 10;
-    localparam LOG_SIN_PLUS_GAIN_WIDTH = 13;
     localparam PIPELINE_DELAY = 6;
 
     logic [PIPELINE_DELAY:1] sample_clk_en_p;
@@ -72,7 +70,7 @@ module phase_generator
     logic [PHASE_FINAL_WIDTH-1:0] rhythm_phase_p3;
     logic [LOG_SIN_OUT_WIDTH-1:0] log_sin_out_p4;
     logic [OP_OUT_WIDTH-1:0] pre_gain_p4;
-    logic [OP_OUT_WIDTH:0] post_gain_p4;
+    logic [OP_OUT_WIDTH:0] post_gain_p4; // need extra bit to detect overflow
     logic [REG_WS_WIDTH-1:0] ws_post_opl_p0;
     logic [PIPELINE_DELAY:1] [REG_WS_WIDTH-1:0] ws_post_opl_p;
     logic [PIPELINE_DELAY:1] [BANK_NUM_WIDTH-1:0] bank_num_p;
@@ -153,7 +151,10 @@ module phase_generator
     /*
      * OPL2 only supports first 4 waveforms
      */
-    always_comb ws_post_opl_p0 = ws & (is_new ? 'h7 : 'h3);
+    always_comb begin
+        ws_post_opl_p0 = ws;
+        ws_post_opl_p0[2] = ws[2] && is_new;
+    end
 
     pipeline_sr #(
         .DATA_WIDTH(REG_WS_WIDTH),
