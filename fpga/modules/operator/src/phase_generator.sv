@@ -7,6 +7,9 @@
 #   DESCRIPTION:
 #
 #   CHANGE HISTORY:
+#   3 June 2024     Greg Taylor
+#       Refactored to match implementation in https://github.com/nukeykt/Nuked-OPL3
+#
 #   13 Oct 2014    Greg Taylor
 #       Initial version
 #

@@ -9,6 +9,9 @@
 #   Simply passes through the unmodified phase otherwise.
 #
 #   CHANGE HISTORY:
+#   3 June 2024     Greg Taylor
+#       Refactored to match implementation in https://github.com/nukeykt/Nuked-OPL3
+#
 #   25 July 2015    Greg Taylor
 #       Initial version
 #
