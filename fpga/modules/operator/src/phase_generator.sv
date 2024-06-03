@@ -195,7 +195,7 @@ module phase_generator
 
     /*
      * Some rhythm instruments modify the phase, otherwise pass-through normally.
-     * Bottom 9 bits of phase accumulator are fractional and get dropped off.
+     * Bottom bits of phase accumulator are fractional and get dropped off.
      */
      calc_rhythm_phase calc_rhythm_phase (
         .phase_p2(phase_acc_p2[PHASE_ACC_WIDTH-1 -: PHASE_FINAL_WIDTH]),
