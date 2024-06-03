@@ -53,7 +53,6 @@ module env_rate_counter
     input wire [REG_FNUM_WIDTH-1:0] fnum,
     input wire [REG_BLOCK_WIDTH-1:0] block,
     input wire [REG_ENV_WIDTH-1:0] requested_rate_p0,
-    input wire key_on_pulse_p0,
     output logic [ENV_RATE_COUNTER_OVERFLOW_WIDTH-1:0] rate_counter_overflow_p1 = 0
 );
     localparam COUNTER_WIDTH = 15;
@@ -67,7 +66,6 @@ module env_rate_counter
     logic [$clog2(60)-2-1:0] rate_value_p1;
     logic [REG_ENV_WIDTH+2-1:0] requested_rate_shifted_p0;
     logic [1:0] rof_p1;
-    logic [COUNTER_WIDTH-1:0] counter_fifo_out_p1;
     logic [COUNTER_WIDTH-1:0] counter_p1;
     logic [COUNTER_WIDTH-1:0] counter_new_p2;
     logic [$clog2(OVERFLOW_TMP_MAX_VALUE)-1:0] overflow_tmp_p1;
@@ -140,14 +138,10 @@ module env_rate_counter
         .bankb(bank_num),
         .addrb(op_num),
         .dia(counter_new_p2),
-        .dob(counter_fifo_out_p1)
+        .dob(counter_p1)
     );
 
-    always_ff @(posedge clk)
-        key_on_pulse_p1 <= key_on_pulse_p0;
-
     always_comb begin
-        counter_p1 = key_on_pulse_p1 ? 0 : counter_fifo_out_p1;
         overflow_tmp_p1 = counter_p1 + ((4 | rof_p1) << rate_value_p1);
         rate_counter_overflow_p1 = overflow_tmp_p1 >> 15;
     end

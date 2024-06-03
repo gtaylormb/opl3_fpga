@@ -61,23 +61,27 @@ module edge_detector #(
     logic in_r1 = INITIAL_INPUT_LEVEL;
 
     always_ff @(posedge clk)
-    	if (!CLK_DLY)
-            in_r0 <= in;
-        else if (clk_en) begin
-            in_r0 <= in;
-            in_r1 <= in_r0;
+        if (clk_en) begin
+            if (!CLK_DLY)
+                in_r0 <= in;
+            else begin
+                in_r0 <= in;
+                in_r1 <= in_r0;
+            end
         end
 
     always_comb
-        if (EDGE_LEVEL)
+        if (EDGE_LEVEL) begin
             if (!CLK_DLY)
-                edge_detected = in && !in_r0;
+                edge_detected = clk_en && in && !in_r0;
             else
                 edge_detected = in_r0 && !in_r1;
-        else
+        end
+        else begin
             if (!CLK_DLY)
-                edge_detected = !in && in_r0;
+                edge_detected = clk_en && !in && in_r0;
             else
                 edge_detected = !in_r0 && in_r1;
+        end
 endmodule
 `default_nettype wire

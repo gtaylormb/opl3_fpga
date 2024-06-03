@@ -53,8 +53,7 @@ module channels
     output logic signed [DAC_OUTPUT_WIDTH-1:0] sample_l,
     output logic signed [DAC_OUTPUT_WIDTH-1:0] sample_r
 );
-    localparam CHAN_2_OP_WIDTH = OP_OUT_WIDTH + 1;
-    localparam CHAN_4_OP_WIDTH = OP_OUT_WIDTH + 2;
+    localparam CHANNEL_OUT_WIDTH = OP_OUT_WIDTH + 2;
 
     // + 1 because we combine 2 channels together for left and right
     localparam CHANNEL_ACCUMULATOR_WIDTH = OP_OUT_WIDTH + $clog2(NUM_OPERATORS_PER_BANK*NUM_BANKS) + 1;
@@ -154,8 +153,7 @@ module channels
         logic [$clog2(NUM_OPERATORS_PER_BANK)-1:0] op_mem_op_num;
         logic op_mem_rd;
         logic [$clog2(NUM_CHANNELS_PER_BANK)-1:0] ch_abcd_cnt_mem_channel_num;
-        logic signed [CHAN_2_OP_WIDTH-1:0] channel_2_op;
-        logic signed [CHAN_4_OP_WIDTH-1:0] channel_4_op;
+        logic signed [CHANNEL_OUT_WIDTH-1:0] channel_out;
         logic latch_channels;
         logic add_a;
         logic add_b;
@@ -196,11 +194,11 @@ module channels
         end
         LOAD_2_OP_FIRST_AND_ACCUMULATE: begin
             signals.ch_abcd_cnt_mem_channel_num = self.channel_num;
-            signals.channel_2_op = cnt ? operator_mem_out + self.operator_out_second : self.operator_out_second;
+            signals.channel_out = cnt ? operator_mem_out + self.operator_out_second : self.operator_out_second;
             if (ryt && self.bank_num == 0)
                 unique case (self.channel_num)
-                6:    signals.channel_2_op = cnt ? self.operator_out_second : operator_mem_out; // bass drum
-                7, 8: signals.channel_2_op = operator_mem_out + self.operator_out_second; // hi-hat and snare drum, tom-tom and top cymbal
+                6:    signals.channel_out = self.operator_out_second*2; // bass drum
+                7, 8: signals.channel_out = (operator_mem_out + self.operator_out_second)*2; // hi-hat and snare drum, tom-tom and top cymbal
                 default:;
                 endcase
 
@@ -240,14 +238,14 @@ module channels
             end
 
             unique case ({signals.add_a, signals.add_c})
-            'b01, 'b10: next_self.channel_l_acc_pre_clamp = self.channel_l_acc_pre_clamp + signals.channel_2_op;
-            'b11:       next_self.channel_l_acc_pre_clamp = self.channel_l_acc_pre_clamp + signals.channel_2_op*2;
+            'b01, 'b10: next_self.channel_l_acc_pre_clamp = self.channel_l_acc_pre_clamp + signals.channel_out;
+            'b11:       next_self.channel_l_acc_pre_clamp = self.channel_l_acc_pre_clamp + signals.channel_out*2;
             default:;
             endcase
 
             unique case ({signals.add_b, signals.add_d})
-            'b01, 'b10: next_self.channel_r_acc_pre_clamp = self.channel_r_acc_pre_clamp + signals.channel_2_op;
-            'b11:       next_self.channel_r_acc_pre_clamp = self.channel_r_acc_pre_clamp + signals.channel_2_op*2;
+            'b01, 'b10: next_self.channel_r_acc_pre_clamp = self.channel_r_acc_pre_clamp + signals.channel_out;
+            'b11:       next_self.channel_r_acc_pre_clamp = self.channel_r_acc_pre_clamp + signals.channel_out*2;
             default:;
             endcase
 
@@ -299,10 +297,10 @@ module channels
         LOAD_4_OP_FIRST_AND_ACCUMULATE: begin
             signals.ch_abcd_cnt_mem_channel_num = self.channel_num;
             unique case ({cnt, self.cnt_second})
-            'b00: signals.channel_4_op = self.operator_out_third;
-            'b01: signals.channel_4_op = operator_mem_out + self.operator_out_third;
-            'b10: signals.channel_4_op = operator_mem_out + self.operator_out_third;
-            'b11: signals.channel_4_op = operator_mem_out + self.operator_out_second + self.operator_out_third;
+            'b00: signals.channel_out = self.operator_out_third;
+            'b01: signals.channel_out = operator_mem_out + self.operator_out_third;
+            'b10: signals.channel_out = operator_mem_out + self.operator_out_third;
+            'b11: signals.channel_out = operator_mem_out + self.operator_out_second + self.operator_out_third;
             endcase
 
             if (self.bank_num == 0) begin
@@ -323,14 +321,14 @@ module channels
             * after the YAC512 DAC outputs. Here we'll just add digitally.
             */
             unique case ({signals.add_a, signals.add_c})
-            'b01, 'b10: next_self.channel_l_acc_pre_clamp = self.channel_l_acc_pre_clamp + signals.channel_4_op;
-            'b11:       next_self.channel_l_acc_pre_clamp = self.channel_l_acc_pre_clamp + signals.channel_4_op*2;
+            'b01, 'b10: next_self.channel_l_acc_pre_clamp = self.channel_l_acc_pre_clamp + signals.channel_out;
+            'b11:       next_self.channel_l_acc_pre_clamp = self.channel_l_acc_pre_clamp + signals.channel_out*2;
             default:;
             endcase
 
             unique case ({signals.add_b, signals.add_d})
-            'b01, 'b10: next_self.channel_r_acc_pre_clamp = self.channel_r_acc_pre_clamp + signals.channel_4_op;
-            'b11:       next_self.channel_r_acc_pre_clamp = self.channel_r_acc_pre_clamp + signals.channel_4_op*2;
+            'b01, 'b10: next_self.channel_r_acc_pre_clamp = self.channel_r_acc_pre_clamp + signals.channel_out;
+            'b11:       next_self.channel_r_acc_pre_clamp = self.channel_r_acc_pre_clamp + signals.channel_out*2;
             default:;
             endcase
 

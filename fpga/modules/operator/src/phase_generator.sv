@@ -7,6 +7,9 @@
 #   DESCRIPTION:
 #
 #   CHANGE HISTORY:
+#   3 June 2024     Greg Taylor
+#       Refactored to match implementation in https://github.com/nukeykt/Nuked-OPL3
+#
 #   13 Oct 2014    Greg Taylor
 #       Initial version
 #
@@ -31,7 +34,7 @@
 #   Copyright (C) 2008 Robson Cozendey <robson@cozendey.com>
 #
 #   Original C++ Code:
-#   Copyright (C) 2012  Steffen Ohrendorf <steffen.ohrendorf@gmx.de>
+#   Copyright (C) 2013-2020 Nuke.YKT
 #
 #   Some code based on forum posts in:
 #   http://forums.submarine.org.uk/phpBB/viewforum.php?f=9,
@@ -54,49 +57,36 @@ module phase_generator
     input wire [ENV_WIDTH-1:0] env_p3,
     input wire key_on_pulse_p0,
     input wire [OP_OUT_WIDTH-1:0] modulation_p1,
-    input var operator_t op_type,
+    input var operator_t op_type_p0,
     output logic signed [OP_OUT_WIDTH-1:0] out_p6 = 0
 );
     localparam LOG_SIN_OUT_WIDTH = 12;
-    localparam EXP_IN_WIDTH = 8;
     localparam EXP_OUT_WIDTH = 10;
-    localparam LOG_SIN_PLUS_GAIN_WIDTH = 13;
     localparam PIPELINE_DELAY = 6;
 
     logic [PIPELINE_DELAY:1] sample_clk_en_p;
     logic [PIPELINE_DELAY:1] key_on_pulse_p;
     logic [PHASE_ACC_WIDTH-1:0] phase_acc_p2;
     logic [PHASE_ACC_WIDTH-1:0] phase_acc_p3 = 0;
-    logic [PHASE_ACC_WIDTH-1:0] final_phase_p4 = 0;
-    logic [PHASE_ACC_WIDTH-1:0] final_phase_p5 = 0;
-    logic prev_final_phase_msb_p2;
-    logic prev_final_phase_msb_p3 = 0;
-    logic prev_final_phase_msb_p4 = 0;
-    logic is_odd_period_p2;
-    logic is_odd_period_p3 = 0;
-    logic is_odd_period_p4 = 0;
-    logic is_odd_period_p5 = 0;
-    logic is_odd_period_p6 = 0;
-    logic [PHASE_ACC_WIDTH-1:0] rhythm_phase_p3;
-    logic [LOG_SIN_OUT_WIDTH-1:0] log_sin_out_p5;
-    logic [LOG_SIN_PLUS_GAIN_WIDTH-1:0] log_sin_plus_gain_p5 = 0;
-    logic [LOG_SIN_PLUS_GAIN_WIDTH-1:0] log_sin_plus_gain_p6 = 0;
-    logic [EXP_OUT_WIDTH-1:0] exp_out_p6;
-    logic [OP_OUT_WIDTH-1:0] tmp_out0_p6;
-    logic signed [OP_OUT_WIDTH-1:0] tmp_out1_p6;
-    logic signed [OP_OUT_WIDTH-1:0] tmp_out2_p6;
-    logic signed [OP_OUT_WIDTH-1:0] tmp_ws2_p6;
-    logic signed [OP_OUT_WIDTH-1:0] tmp_ws4_p6;
-    logic [LOG_SIN_OUT_WIDTH-1:0] tmp_ws7_p5 = 0;
+    logic [PHASE_FINAL_WIDTH-1:0] final_phase_p3;
+    logic [7:0] theta_p3;
+    logic [PHASE_FINAL_WIDTH-1:0] rhythm_phase_p3;
+    logic [LOG_SIN_OUT_WIDTH-1:0] log_sin_out_p4;
+    logic [OP_OUT_WIDTH-1:0] pre_gain_p4;
+    logic [OP_OUT_WIDTH:0] post_gain_p4; // need extra bit to detect overflow
     logic [REG_WS_WIDTH-1:0] ws_post_opl_p0;
     logic [PIPELINE_DELAY:1] [REG_WS_WIDTH-1:0] ws_post_opl_p;
-    logic [ENV_WIDTH-1:0] env_p4 = 0;
-    logic [ENV_WIDTH-1:0] env_p5 = 0;
     logic [PIPELINE_DELAY:1] [BANK_NUM_WIDTH-1:0] bank_num_p;
     logic [PIPELINE_DELAY:1] [OP_NUM_WIDTH-1:0] op_num_p;
-    logic [OP_OUT_WIDTH-1:0] modulation_p2 = 0;
-    logic [OP_OUT_WIDTH+10-1:0] modulation_shifted_p3 = 0;
     logic [PIPELINE_DELAY:1] [$bits(operator_t)-1:0] op_type_p;
+    logic [PIPELINE_DELAY:2] [OP_OUT_WIDTH-1:0] modulation_p;
+    logic [PIPELINE_DELAY:4] [PHASE_FINAL_WIDTH-1:0] final_phase_p;
+    logic [ENV_WIDTH-1:0] env_p4 = 0;
+    logic [OP_OUT_WIDTH-1:0] level_p4;
+    logic [OP_OUT_WIDTH-1:0] level_p5 = 0;
+    logic [EXP_OUT_WIDTH-1:0] exp_out_p5;
+    logic [OP_OUT_WIDTH-1:0] exp_out_post_level_p5;
+    logic [OP_OUT_WIDTH-1:0] neg_p5 = 0;
 
     pipeline_sr #(
         .ENDING_CYCLE(PIPELINE_DELAY)
@@ -137,14 +127,37 @@ module phase_generator
         .ENDING_CYCLE(PIPELINE_DELAY)
     ) op_type_sr (
         .clk,
-        .in(op_type),
+        .in(op_type_p0),
         .out(op_type_p)
+    );
+
+    pipeline_sr #(
+        .DATA_WIDTH(OP_OUT_WIDTH),
+        .STARTING_CYCLE(2),
+        .ENDING_CYCLE(PIPELINE_DELAY)
+    ) modulation_sr (
+        .clk,
+        .in(modulation_p1),
+        .out(modulation_p)
+    );
+
+    pipeline_sr #(
+        .DATA_WIDTH(PHASE_FINAL_WIDTH),
+        .STARTING_CYCLE(4),
+        .ENDING_CYCLE(PIPELINE_DELAY)
+    ) final_phase_sr (
+        .clk,
+        .in(final_phase_p3),
+        .out(final_phase_p)
     );
 
     /*
      * OPL2 only supports first 4 waveforms
      */
-    always_comb ws_post_opl_p0 = ws & (is_new ? 'h7 : 'h3);
+    always_comb begin
+        ws_post_opl_p0 = ws;
+        ws_post_opl_p0[2] = ws[2] && is_new;
+    end
 
     pipeline_sr #(
         .DATA_WIDTH(REG_WS_WIDTH),
@@ -154,11 +167,6 @@ module phase_generator
         .in(ws_post_opl_p0),
         .out(ws_post_opl_p)
     );
-
-    always_ff @(posedge clk) begin
-        env_p4 <= env_p3;
-        env_p5 <= env_p4;
-    end
 
     mem_multi_bank #(
         .DATA_WIDTH(PHASE_ACC_WIDTH),
@@ -179,19 +187,6 @@ module phase_generator
     );
 
     /*
-     * Some rhythm instruments require further transformations to the phase.
-     * Pass through phase_acc[bank_num][op_num] normally.
-     */
-    calc_rhythm_phase calc_rhythm_phase (
-        .*
-    );
-
-    always_ff @(posedge clk) begin
-        modulation_p2 <= modulation_p1;
-        modulation_shifted_p3 <= modulation_p2 << 10;
-    end
-
-    /*
      * Phase Accumulator. Modulation and rhythm get added to the final phase but not
      * back into the accumulator.
      */
@@ -199,135 +194,73 @@ module phase_generator
         if (sample_clk_en_p[2])
             if (key_on_pulse_p[2])
                 phase_acc_p3 <= 0;
-            else if (ws_post_opl_p[2] == 4 || ws_post_opl_p[2] == 5)
-                // double the frequency
-                phase_acc_p3 <= phase_acc_p2 + (phase_inc_p2 << 1);
             else
                 phase_acc_p3 <= phase_acc_p2 + phase_inc_p2;
 
-    always_ff @(posedge clk)
-        if (sample_clk_en_p[3])
-            if (key_on_pulse_p[3])
-                final_phase_p4 <= 0;
-            else
-                final_phase_p4 <= rhythm_phase_p3 + modulation_shifted_p3;
-
-    mem_multi_bank #(
-        .DATA_WIDTH(1),
-        .DEPTH(NUM_OPERATORS_PER_BANK),
-        .OUTPUT_DELAY(2),
-        .DEFAULT_VALUE(0),
-        .NUM_BANKS(NUM_BANKS)
-    ) final_phase_msb_mem (
-        .clk,
-        .wea(sample_clk_en_p[4]),
-        .reb(sample_clk_en),
-        .banka(bank_num_p[4]),
-        .addra(op_num_p[4]),
-        .bankb(bank_num),
-        .addrb(op_num),
-        .dia(final_phase_p4[19]),
-        .dob(prev_final_phase_msb_p2)
-    );
-
-    mem_multi_bank #(
-        .DATA_WIDTH(1),
-        .DEPTH(NUM_OPERATORS_PER_BANK),
-        .OUTPUT_DELAY(2),
-        .DEFAULT_VALUE(0),
-        .NUM_BANKS(NUM_BANKS)
-    ) is_odd_period_msb_mem (
-        .clk,
-        .wea(sample_clk_en_p[5]),
-        .reb(sample_clk_en),
-        .banka(bank_num_p[5]),
-        .addra(op_num_p[5]),
-        .bankb(bank_num),
-        .addrb(op_num),
-        .dia(is_odd_period_p5),
-        .dob(is_odd_period_p2)
-    );
-
-    always_ff @(posedge clk) begin
-        prev_final_phase_msb_p3 <= prev_final_phase_msb_p2;
-        prev_final_phase_msb_p4 <= prev_final_phase_msb_p3;
-        is_odd_period_p3 <= is_odd_period_p2;
-        is_odd_period_p4 <= is_odd_period_p3;
-        is_odd_period_p5 <= prev_final_phase_msb_p4 && !final_phase_p4[19] ? !is_odd_period_p4 : is_odd_period_p4;
-        is_odd_period_p6 <= is_odd_period_p5;
-    end
-
-    opl3_log_sine_lut log_sine_lut_inst (
-        .theta(final_phase_p4[18] ? ~final_phase_p4[17:10]
-         : final_phase_p4[17:10]),
-        .out(log_sin_out_p5),
-    	.*
-    );
-
     /*
-     * Setting the msb effectively mutes. Mute 2nd and 3rd quadrant.
+     * Some rhythm instruments modify the phase, otherwise pass-through normally.
+     * Bottom bits of phase accumulator are fractional and get dropped off.
      */
-    always_ff @(posedge clk) begin
-        unique case (final_phase_p4[19:18])
-        0: tmp_ws7_p5[11] <= 0;
-        1: tmp_ws7_p5[11] <= 1;
-        2: tmp_ws7_p5[11] <= 1;
-        3: tmp_ws7_p5[11] <= 0;
-        endcase
-
-        tmp_ws7_p5[10:0] <= final_phase_p4[19] ? ~final_phase_p4[17:10] << 3 : final_phase_p4[17:10] << 3;
-    end
-
-    always_comb
-        unique case (ws_post_opl_p[5])
-        6: log_sin_plus_gain_p5 = env_p5 << 3;
-        7: log_sin_plus_gain_p5 = tmp_ws7_p5 + (env_p5 << 3);
-        default: log_sin_plus_gain_p5 = log_sin_out_p5 + (env_p5 << 3);
-        endcase
-
-    always_ff @(posedge clk) begin
-        final_phase_p5 <= final_phase_p4;
-        log_sin_plus_gain_p6 <= log_sin_plus_gain_p5;
-    end
-
-    opl3_exp_lut exp_lut_inst (
-        .in(~log_sin_plus_gain_p5[7:0]),
-        .out(exp_out_p6),
+     calc_rhythm_phase calc_rhythm_phase (
+        .phase_p2(phase_acc_p2[PHASE_ACC_WIDTH-1 -: PHASE_FINAL_WIDTH]),
         .*
     );
 
-    always_comb tmp_out0_p6 = (2**10 + exp_out_p6) << 1;
+    always_comb begin
+        final_phase_p3 = rhythm_phase_p3 + modulation_p[3];
 
-    always_comb
-        if (final_phase_p5[19])
-            tmp_out1_p6 = ~(tmp_out0_p6 >> log_sin_plus_gain_p6[LOG_SIN_PLUS_GAIN_WIDTH-1:8]);
-        else
-            tmp_out1_p6 = tmp_out0_p6 >> log_sin_plus_gain_p6[LOG_SIN_PLUS_GAIN_WIDTH-1:8];
+        unique case (ws_post_opl_p[3])
+        0, 1, 2: theta_p3 = final_phase_p3[8] ? final_phase_p3[7:0] ^ 'hff : final_phase_p3[7:0];
+        3:       theta_p3 = final_phase_p3[7:0];
+        4, 5:    theta_p3 = final_phase_p3[7] ? (final_phase_p3[7:0] ^ 'hff) << 1 : final_phase_p3[7:0] << 1;
+        default: theta_p3 = final_phase_p3[7:0]; // 6 and 7 don't use the log_sine_lut
+        endcase
+    end
 
-    always_comb tmp_ws2_p6 = tmp_out1_p6 < 0 ? ~tmp_out1_p6 : tmp_out1_p6;
-    always_comb tmp_ws4_p6 = is_odd_period_p6 ? tmp_out1_p6 : 0;
+    opl3_log_sine_lut log_sine_lut_inst (
+        .theta(theta_p3),
+        .out(log_sin_out_p4),
+    	.*
+    );
 
-    /*
-     * Select waveform, do proper transformations to the wave
-     */
-    always_comb
-        unique case (ws_post_opl_p[6])
-        0: tmp_out2_p6 = tmp_out1_p6;
-        1: tmp_out2_p6 = tmp_out1_p6 < 0 ? 0 : tmp_out1_p6;
-        2: tmp_out2_p6 = tmp_ws2_p6;
-        3: tmp_out2_p6 = final_phase_p5[PHASE_ACC_WIDTH-2] ? 0 : tmp_ws2_p6;
-        4: tmp_out2_p6 = tmp_ws4_p6;
-        5: tmp_out2_p6 = tmp_ws4_p6 < 0 ? ~tmp_ws4_p6 : tmp_ws4_p6;
-        6: tmp_out2_p6 = tmp_out1_p6;
-        7: tmp_out2_p6 = tmp_out1_p6;
+    always_ff @(posedge clk)
+        env_p4 <= env_p3;
+
+    always_comb begin
+        unique case (ws_post_opl_p[4])
+        0, 2:       pre_gain_p4 = log_sin_out_p4;
+        1, 4, 5:    pre_gain_p4 = final_phase_p[4][9] ? 'h1000 : log_sin_out_p4; // setting msb effectively mutes
+        3:          pre_gain_p4 = final_phase_p[4][8] ? 'h1000 : log_sin_out_p4;
+        6:          pre_gain_p4 = 0;
+        7:          pre_gain_p4 = (final_phase_p[4][9] ? (final_phase_p[4][8:0] ^ 'h1ff) : final_phase_p[4][9:0]) << 3;
         endcase
 
-    always_comb
-        unique case (op_type_p[6])
-        OP_NORMAL:    out_p6 = tmp_out2_p6;
-        OP_BASS_DRUM: out_p6 = tmp_out2_p6;
-        default:      out_p6 = tmp_out2_p6 << 1;
+        post_gain_p4 = pre_gain_p4 + (env_p4 << 3);
+        level_p4 = post_gain_p4 > 'h1fff ? 'h1fff : post_gain_p4;
+    end
+
+    opl3_exp_lut exp_lut_inst (
+        .in(~post_gain_p4[7:0]),
+        .out(exp_out_p5),
+        .*
+    );
+
+    always_ff @(posedge clk) begin
+        level_p5 <= level_p4;
+
+        unique case (ws_post_opl_p[4])
+        0, 6, 7: neg_p5 <= final_phase_p[4][9] ? '1 : 0;
+        4:       neg_p5 <= final_phase_p[4][9:8] == 1 ? '1 : 0;
+        default: neg_p5 <= 0;
         endcase
+    end
+
+    always_comb
+        exp_out_post_level_p5 = ((exp_out_p5 | 'h400) << 1) >> (level_p5 >> 8);
+
+    always_ff @(posedge clk)
+        out_p6 <= exp_out_post_level_p5 ^ neg_p5;
+
 endmodule
 `default_nettype wire
 
