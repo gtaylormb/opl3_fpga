@@ -50,21 +50,21 @@ module calc_rhythm_phase
     input wire sample_clk_en,
     input wire [BANK_NUM_WIDTH-1:0] bank_num,
     input wire [OP_NUM_WIDTH-1:0] op_num,
-    input wire [PHASE_FINAL_WIDTH-1:0] phase_acc_p3,
+    input wire [PHASE_FINAL_WIDTH-1:0] phase_p2,
     input var operator_t op_type_p0,
-    output logic [PHASE_FINAL_WIDTH-1:0] rhythm_phase_p3
+    output logic [PHASE_FINAL_WIDTH-1:0] rhythm_phase_p3 = 0
 );
     localparam PIPELINE_DELAY = 3;
     localparam NOISE_WIDTH = 23;
 
     logic [PHASE_FINAL_WIDTH-1:0] hh_phase_friend = 0;
     logic [PHASE_FINAL_WIDTH-1:0] tc_phase_friend = 0;
-    logic [PHASE_FINAL_WIDTH-1:0] hh_phase_p3;
-    logic [PHASE_FINAL_WIDTH-1:0] tc_phase_p3;
+    logic [PHASE_FINAL_WIDTH-1:0] hh_phase_p2;
+    logic [PHASE_FINAL_WIDTH-1:0] tc_phase_p2;
     logic [PHASE_FINAL_WIDTH-1:0] noise_bit_p3;
     logic [NOISE_WIDTH-1:0] noise = 1;
-    logic n_bit;
-    logic rm_xor_p3;
+    logic n_bit = 0;
+    logic rm_xor_p2;
     logic [PIPELINE_DELAY:1] sample_clk_en_p;
     logic [PIPELINE_DELAY:1] [$bits(operator_t)-1:0] op_type_p;
     logic [PIPELINE_DELAY:1] [BANK_NUM_WIDTH-1:0] bank_num_p;
@@ -108,35 +108,38 @@ module calc_rhythm_phase
 
     always_ff @(posedge clk) begin
         // Store the hi hat phase when it comes by
-        if (sample_clk_en_p[3] && bank_num_p[3] == 0 && op_num_p[3] == 13)
-            hh_phase_friend <= phase_acc_p3;
+        if (sample_clk_en_p[2] && bank_num_p[2] == 0 && op_num_p[2] == 13)
+            hh_phase_friend <= phase_p2;
 
         // Store the top cymbal phase when it comes by
-        if (sample_clk_en_p[3] && bank_num_p[3] == 0 && op_num_p[3] == 17)
-            tc_phase_friend <= phase_acc_p3;
+        if (sample_clk_en_p[2] && bank_num_p[2] == 0 && op_num_p[2] == 17)
+            tc_phase_friend <= phase_p2;
     end
 
     always_comb begin
-        hh_phase_p3 = op_type_p[3] == OP_HI_HAT ? phase_acc_p3 : hh_phase_friend;
-        tc_phase_p3 = op_type_p[3] == OP_TOP_CYMBAL ? phase_acc_p3 : tc_phase_friend;
-        rm_xor_p3 = (hh_phase_p3[2] ^ hh_phase_p3[7]) ||
-                    (hh_phase_p3[3] ^ hh_phase_p3[5]) ||
-                    (tc_phase_p3[3] ^ tc_phase_p3[5]);
-
-        rhythm_phase_p3 = phase_acc_p3; // all operators except hi hat, snare drum, and top cymbal pass through
-
-        unique case (op_type_p[3])
-        OP_HI_HAT:     rhythm_phase_p3 = (rm_xor_p3 << 9) | ((rm_xor_p3 ^ noise[0]) ? 'hd0 : 'h34);
-        OP_SNARE_DRUM: rhythm_phase_p3 = (hh_phase_p3[8] << 9) | ((hh_phase_p3[8] ^ noise[0]) << 8);
-        OP_TOP_CYMBAL: rhythm_phase_p3 = (rm_xor_p3 << 9) | 'h80;
-        default:;
-        endcase
-
-        n_bit = (noise >> 14) ^ noise;
+        hh_phase_p2 = op_type_p[2] == OP_HI_HAT ? phase_p2 : hh_phase_friend;
+        tc_phase_p2 = op_type_p[2] == OP_TOP_CYMBAL ? phase_p2 : tc_phase_friend;
+        rm_xor_p2 = (hh_phase_p2[2] ^ hh_phase_p2[7]) ||
+                    (hh_phase_p2[3] ^ hh_phase_p2[5]) ||
+                    (tc_phase_p2[3] ^ tc_phase_p2[5]);
     end
 
-    always_ff @(posedge clk)
+    always_ff @(posedge clk) begin
+        rhythm_phase_p3 <= phase_p2; // all operators except hi hat, snare drum, and top cymbal pass through
+
+        unique case (op_type_p[2])
+        OP_HI_HAT:     rhythm_phase_p3 <= (rm_xor_p2 << 9) | ((rm_xor_p2 ^ noise[0]) ? 'hd0 : 'h34);
+        OP_SNARE_DRUM: rhythm_phase_p3 <= (hh_phase_p2[8] << 9) | ((hh_phase_p2[8] ^ noise[0]) << 8);
+        OP_TOP_CYMBAL: rhythm_phase_p3 <= (rm_xor_p2 << 9) | 'h80;
+        default:;
+        endcase
+    end
+
+    always_ff @(posedge clk) begin
+        n_bit <= (noise >> 14) ^ noise;
+
         if (sample_clk_en)
             noise <= (noise >> 1) | (n_bit << 22);
+    end
 endmodule
 `default_nettype wire
