@@ -71,8 +71,8 @@ module phase_generator
     logic [7:0] theta_p3;
     logic [PHASE_FINAL_WIDTH-1:0] rhythm_phase_p3;
     logic [LOG_SIN_OUT_WIDTH-1:0] log_sin_out_p4;
-    logic [LOG_SIN_OUT_WIDTH-1:0] pre_gain_p4;
-    logic [LOG_SIN_OUT_WIDTH:0] post_gain_p4;
+    logic [OP_OUT_WIDTH-1:0] pre_gain_p4;
+    logic [OP_OUT_WIDTH:0] post_gain_p4;
     logic [REG_WS_WIDTH-1:0] ws_post_opl_p0;
     logic [PIPELINE_DELAY:1] [REG_WS_WIDTH-1:0] ws_post_opl_p;
     logic [PIPELINE_DELAY:1] [BANK_NUM_WIDTH-1:0] bank_num_p;
@@ -225,7 +225,7 @@ module phase_generator
     always_comb begin
         unique case (ws_post_opl_p[4])
         0, 2:       pre_gain_p4 = log_sin_out_p4;
-        1, 3, 4, 5: pre_gain_p4 = final_phase_p[4][9] ? 'h1000 : log_sin_out_p4;
+        1, 3, 4, 5: pre_gain_p4 = final_phase_p[4][9] ? 'h1000 : log_sin_out_p4; // setting msb effectively mutes
         6:          pre_gain_p4 = 0;
         7:          pre_gain_p4 = (final_phase_p[4][9] ? (final_phase_p[4][8:0] ^ 'h1ff) : final_phase_p[4][9:0]) << 3;
         endcase
