@@ -225,7 +225,8 @@ module phase_generator
     always_comb begin
         unique case (ws_post_opl_p[4])
         0, 2:       pre_gain_p4 = log_sin_out_p4;
-        1, 3, 4, 5: pre_gain_p4 = final_phase_p[4][9] ? 'h1000 : log_sin_out_p4; // setting msb effectively mutes
+        1, 4, 5:    pre_gain_p4 = final_phase_p[4][9] ? 'h1000 : log_sin_out_p4; // setting msb effectively mutes
+        3:          pre_gain_p4 = final_phase_p[4][8] ? 'h1000 : log_sin_out_p4;
         6:          pre_gain_p4 = 0;
         7:          pre_gain_p4 = (final_phase_p[4][9] ? (final_phase_p[4][8:0] ^ 'h1ff) : final_phase_p[4][9:0]) << 3;
         endcase
