@@ -55,16 +55,15 @@ module calc_rhythm_phase
     output logic [PHASE_FINAL_WIDTH-1:0] rhythm_phase_p3 = 0
 );
     localparam PIPELINE_DELAY = 3;
-    localparam NOISE_WIDTH = 23;
+    localparam RAND_POLYNOMIAL = 'h800302; // verified on real opl3
+    localparam RAND_NUM_WIDTH = $clog2(RAND_POLYNOMIAL);
 
     logic [PHASE_FINAL_WIDTH-1:0] hh_phase_friend = 0;
     logic [PHASE_FINAL_WIDTH-1:0] tc_phase_friend = 0;
     logic [PHASE_FINAL_WIDTH-1:0] hh_phase_p2;
     logic [PHASE_FINAL_WIDTH-1:0] tc_phase_p2;
-    logic [PHASE_FINAL_WIDTH-1:0] noise_bit_p3;
-    logic [NOISE_WIDTH-1:0] noise = 1;
-    logic n_bit = 0;
     logic rm_xor_p2;
+    logic [RAND_NUM_WIDTH-1:0] rand_num = 1;
     logic [PIPELINE_DELAY:1] sample_clk_en_p;
     logic [PIPELINE_DELAY:1] [$bits(operator_t)-1:0] op_type_p;
     logic [PIPELINE_DELAY:1] [BANK_NUM_WIDTH-1:0] bank_num_p;
@@ -120,7 +119,7 @@ module calc_rhythm_phase
         hh_phase_p2 = op_type_p[2] == OP_HI_HAT ? phase_p2 : hh_phase_friend;
         tc_phase_p2 = op_type_p[2] == OP_TOP_CYMBAL ? phase_p2 : tc_phase_friend;
         rm_xor_p2 = (hh_phase_p2[2] ^ hh_phase_p2[7]) ||
-                    (hh_phase_p2[3] ^ hh_phase_p2[5]) ||
+                    (hh_phase_p2[3] ^ tc_phase_p2[5]) ||
                     (tc_phase_p2[3] ^ tc_phase_p2[5]);
     end
 
@@ -128,18 +127,21 @@ module calc_rhythm_phase
         rhythm_phase_p3 <= phase_p2; // all operators except hi hat, snare drum, and top cymbal pass through
 
         unique case (op_type_p[2])
-        OP_HI_HAT:     rhythm_phase_p3 <= (rm_xor_p2 << 9) | ((rm_xor_p2 ^ noise[0]) ? 'hd0 : 'h34);
-        OP_SNARE_DRUM: rhythm_phase_p3 <= (hh_phase_p2[8] << 9) | ((hh_phase_p2[8] ^ noise[0]) << 8);
+        OP_HI_HAT:     rhythm_phase_p3 <= (rm_xor_p2 << 9) | ((rm_xor_p2 ^ rand_num[0]) ? 'hd0 : 'h34);
+        OP_SNARE_DRUM: rhythm_phase_p3 <= (hh_phase_p2[8] << 9) | ((hh_phase_p2[8] ^ rand_num[0]) << 8);
         OP_TOP_CYMBAL: rhythm_phase_p3 <= (rm_xor_p2 << 9) | 'h80;
         default:;
         endcase
     end
 
-    always_ff @(posedge clk) begin
-        n_bit <= (noise >> 14) ^ noise;
-
-        if (sample_clk_en)
-            noise <= (noise >> 1) | (n_bit << 22);
-    end
+    always_ff @(posedge clk)
+        /*
+         * Only update once per sample, not every operator time slot
+         */
+        if (sample_clk_en && bank_num == 0 && op_num == 0)
+            if (rand_num & 1)
+                rand_num <= (rand_num ^ RAND_POLYNOMIAL) >> 1;
+            else
+                rand_num <= rand_num >> 1;
 endmodule
 `default_nettype wire
