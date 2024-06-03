@@ -117,8 +117,8 @@ module calc_rhythm_phase
     end
 
     always_comb begin
-        hh_phase_p3 = op_type_p0 == OP_HI_HAT ? phase_acc_p3 : hh_phase_friend;
-        tc_phase_p3 = op_type_p0 == OP_TOP_CYMBAL ? phase_acc_p3 : tc_phase_friend;
+        hh_phase_p3 = op_type_p[3] == OP_HI_HAT ? phase_acc_p3 : hh_phase_friend;
+        tc_phase_p3 = op_type_p[3] == OP_TOP_CYMBAL ? phase_acc_p3 : tc_phase_friend;
         rm_xor_p3 = (hh_phase_p3[2] ^ hh_phase_p3[7]) ||
                     (hh_phase_p3[3] ^ hh_phase_p3[5]) ||
                     (tc_phase_p3[3] ^ tc_phase_p3[5]);
