@@ -124,13 +124,11 @@ module calc_rhythm_phase
     end
 
     always_ff @(posedge clk) begin
-        rhythm_phase_p3 <= phase_p2; // all operators except hi hat, snare drum, and top cymbal pass through
-
         unique case (op_type_p[2])
         OP_HI_HAT:     rhythm_phase_p3 <= (rm_xor_p2 << 9) | ((rm_xor_p2 ^ rand_num[0]) ? 'hd0 : 'h34);
         OP_SNARE_DRUM: rhythm_phase_p3 <= (hh_phase_p2[8] << 9) | ((hh_phase_p2[8] ^ rand_num[0]) << 8);
         OP_TOP_CYMBAL: rhythm_phase_p3 <= (rm_xor_p2 << 9) | 'h80;
-        default:;
+        default:       rhythm_phase_p3 <= phase_p2; // all others pass through
         endcase
     end
 

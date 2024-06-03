@@ -307,6 +307,7 @@ module operator
     );
 
     envelope_generator envelope_generator (
+        .egt(egt && op_type_p0 == OP_NORMAL),
         .*
     );
 
