@@ -123,7 +123,7 @@ module calc_rhythm_phase
                     (hh_phase_p3[3] ^ hh_phase_p3[5]) ||
                     (tc_phase_p3[3] ^ tc_phase_p3[5]);
 
-        rhythm_phase_p3 = phase_acc_p3; // all operators except hi hat, snare drum, and top cymbol pass through
+        rhythm_phase_p3 = phase_acc_p3; // all operators except hi hat, snare drum, and top cymbal pass through
 
         unique case (op_type_p[3])
         OP_HI_HAT:     rhythm_phase_p3 = (rm_xor_p3 << 9) | ((rm_xor_p3 ^ noise[0]) ? 'hd0 : 'h34);
