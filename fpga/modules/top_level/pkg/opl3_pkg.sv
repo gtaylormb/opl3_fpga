@@ -76,7 +76,7 @@ package opl3_pkg;
     localparam DAC_LEFT_SHIFT = signed'(DAC_OUTPUT_WIDTH - SAMPLE_WIDTH - 2) < 0 ? 0 : DAC_OUTPUT_WIDTH - SAMPLE_WIDTH - 3;
     localparam ENV_WIDTH = 9;
     localparam OP_OUT_WIDTH = 13;
-    localparam PHASE_ACC_WIDTH = 19;
+    localparam PHASE_ACC_WIDTH = 20;
     localparam PHASE_FINAL_WIDTH = 10;
     localparam VIB_VAL_WIDTH = REG_FNUM_WIDTH - 7;
     localparam ENV_RATE_COUNTER_OVERFLOW_WIDTH = $clog2(7);
