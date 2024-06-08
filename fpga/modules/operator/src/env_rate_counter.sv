@@ -73,7 +73,6 @@ module env_rate_counter
     logic [PIPELINE_DELAY:1] sample_clk_en_p;
     logic [PIPELINE_DELAY:1] [BANK_NUM_WIDTH-1:0] bank_num_p;
     logic [PIPELINE_DELAY:1] [OP_NUM_WIDTH-1:0] op_num_p;
-    logic key_on_pulse_p1 = 0;
 
     pipeline_sr #(
         .ENDING_CYCLE(PIPELINE_DELAY)
