@@ -84,6 +84,12 @@ module channels
 
             if (opl3_reg_wr.bank_num == 0 && opl3_reg_wr.address == 'hBD)
                 ryt <= opl3_reg_wr.data[5];
+
+            if (reset) begin
+                // these should be reset as next game after reset may be OPL2 and not clear bank 1
+                connection_sel <= 0;
+                is_new <= 0;
+            end
         end
 
     mem_multi_bank #(
