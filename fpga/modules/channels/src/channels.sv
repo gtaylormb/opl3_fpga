@@ -74,7 +74,7 @@ module channels
     logic cnt; // operator connection
     logic [REG_FB_WIDTH-1:0] fb_dummy;
 
-    always_ff @(posedge clk)
+    always_ff @(posedge clk) begin
         if (opl3_reg_wr.valid) begin
             if (opl3_reg_wr.bank_num == 1 && opl3_reg_wr.address == 4)
                 connection_sel <= opl3_reg_wr.data[REG_CONNECTION_SEL_WIDTH-1:0];
@@ -84,13 +84,14 @@ module channels
 
             if (opl3_reg_wr.bank_num == 0 && opl3_reg_wr.address == 'hBD)
                 ryt <= opl3_reg_wr.data[5];
-
-            if (reset) begin
-                // these should be reset as next game after reset may be OPL2 and not clear bank 1
-                connection_sel <= 0;
-                is_new <= 0;
-            end
         end
+
+        if (reset) begin
+            // these should be reset as next game after reset may be OPL2 and not clear bank 1
+            connection_sel <= 0;
+            is_new <= 0;
+        end
+    end
 
     mem_multi_bank #(
         .DATA_WIDTH(REG_FILE_DATA_WIDTH),
