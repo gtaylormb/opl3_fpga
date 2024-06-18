@@ -79,7 +79,7 @@ package opl3_pkg;
     localparam PHASE_ACC_WIDTH = 20;
     localparam PHASE_FINAL_WIDTH = 10;
     localparam VIB_VAL_WIDTH = REG_FNUM_WIDTH - 7;
-    localparam ENV_RATE_COUNTER_OVERFLOW_WIDTH = $clog2(7);
+    localparam ENV_SHIFT_WIDTH = 3;
     localparam TREMOLO_MAX_COUNT = 13*1024;
     localparam TREMOLO_INDEX_WIDTH = $clog2(TREMOLO_MAX_COUNT);
     localparam AM_VAL_WIDTH = TREMOLO_INDEX_WIDTH - 8;

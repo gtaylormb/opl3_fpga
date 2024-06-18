@@ -79,21 +79,27 @@ module envelope_generator
         RELEASE   = 4'b1000
     } state_t;
 
-    state_t state_p0, next_state_p0, state_p1 = RELEASE;
+    state_t state_p0, state_p1 = RELEASE, state_p2 = RELEASE, next_state_p2, state_p3 = RELEASE;
 
     logic [KSL_ADD_WIDTH-1:0] ksl_add_p2;
     logic [ENV_WIDTH-1:0] env_int_p0;
-    logic [ENV_WIDTH-1:0] env_int_p1 = 0;
-    logic [ENV_WIDTH-1:0] env_int_p2 = 0;
-    logic [ENV_WIDTH:0] env_add_p1; // one more bit for overflow check
+    logic [ENV_WIDTH-1:0] env_int_pre_p2;
+    logic [ENV_WIDTH-1:0] eg_inc_p2;
+    logic eg_off_p2;
+    logic [ENV_WIDTH-1:0] env_int_new_p3 = 0;
     logic [AM_VAL_WIDTH-1:0] am_val_p2;
     logic [REG_ENV_WIDTH-1:0] requested_rate_p0;
-    logic [ENV_RATE_COUNTER_OVERFLOW_WIDTH-1:0] rate_counter_overflow_p1;
-    logic [ENV_WIDTH+1:0] env_tmp_p2; // two more bits wide than env for overflow check
+    logic [ENV_SHIFT_WIDTH-1:0] env_shift_p2;
+    logic [REG_ENV_WIDTH+1-1:0] rate_hi_p2;
+    logic [ENV_WIDTH+1:0] env_pre_p2;
     logic [PIPELINE_DELAY:1] sample_clk_en_p;
     logic [PIPELINE_DELAY:1] [BANK_NUM_WIDTH-1:0] bank_num_p;
     logic [PIPELINE_DELAY:1] [OP_NUM_WIDTH-1:0] op_num_p;
     logic [PIPELINE_DELAY:1] [REG_TL_WIDTH-1:0] tl_p;
+    logic [PIPELINE_DELAY:1] [REG_ENV_WIDTH-1:0] sl_p;
+    logic [PIPELINE_DELAY:1] [ENV_WIDTH-1:0] env_int_p;
+    logic [PIPELINE_DELAY:1] key_on_pulse_p;
+    logic [PIPELINE_DELAY:1] key_off_pulse_p;
 
     pipeline_sr #(
         .ENDING_CYCLE(PIPELINE_DELAY)
@@ -130,6 +136,42 @@ module envelope_generator
         .out(tl_p)
     );
 
+    pipeline_sr #(
+        .DATA_WIDTH(REG_ENV_WIDTH),
+        .ENDING_CYCLE(PIPELINE_DELAY)
+    ) sl_sr (
+        .clk,
+        .in(sl),
+        .out(sl_p)
+    );
+
+    pipeline_sr #(
+        .DATA_WIDTH(ENV_WIDTH),
+        .ENDING_CYCLE(PIPELINE_DELAY)
+    ) env_int_sr (
+        .clk,
+        .in(env_int_p0),
+        .out(env_int_p)
+    );
+
+    pipeline_sr #(
+        .DATA_WIDTH(1),
+        .ENDING_CYCLE(PIPELINE_DELAY)
+    ) key_on_pulse_sr (
+        .clk,
+        .in(key_on_pulse_p0),
+        .out(key_on_pulse_p)
+    );
+
+    pipeline_sr #(
+        .DATA_WIDTH(1),
+        .ENDING_CYCLE(PIPELINE_DELAY)
+    ) key_off_pulse_sr (
+        .clk,
+        .in(key_off_pulse_p0),
+        .out(key_off_pulse_p)
+    );
+
     ksl_add_rom ksl_add_rom (
         .*
     );
@@ -145,41 +187,23 @@ module envelope_generator
         .clk,
         .reset('0),
         .reset_mem(reset),
-        .wea(sample_clk_en_p[1]),
+        .wea(sample_clk_en_p[3]),
         .reb(sample_clk_en),
-        .banka(bank_num_p[1]),
-        .addra(op_num_p[1]),
+        .banka(bank_num_p[3]),
+        .addra(op_num_p[3]),
         .bankb(bank_num),
         .addrb(op_num),
-        .dia({state_p1}),
+        .dia({state_p3}),
         .dob({state_p0}),
         .reset_mem_done_pulse()
     );
 
-    always_ff @(posedge clk)
-        if (sample_clk_en)
-            state_p1 <= next_state_p0;
-
-    always_comb begin
-        unique case (state_p0)
-        ATTACK: next_state_p0 = env_int_p0 == 0 ? DECAY : ATTACK;
-        DECAY: next_state_p0 = (env_int_p0 >> 4) >= sl ? SUSTAIN : DECAY;
-        SUSTAIN: next_state_p0 = !egt ? RELEASE : SUSTAIN;
-        RELEASE: next_state_p0 = RELEASE;
-        endcase
-
-        if (key_on_pulse_p0)
-            next_state_p0 = env_int_p0 == 0 ? DECAY : ATTACK;
-        else if (key_off_pulse_p0)
-            next_state_p0 = RELEASE;
-    end
-
     always_comb
-        unique case (next_state_p0)
+        unique case (state_p0)
         ATTACK: requested_rate_p0 = ar;
         DECAY: requested_rate_p0 = dr;
-        SUSTAIN: requested_rate_p0 = 0;
-        RELEASE: requested_rate_p0 = rr;
+        SUSTAIN: requested_rate_p0 = !egt ? rr : 0;
+        RELEASE: requested_rate_p0 = key_on_pulse_p0 ? ar : rr;
         endcase
 
     /*
@@ -197,42 +221,15 @@ module envelope_generator
         .NUM_BANKS(NUM_BANKS)
     ) env_int_mem (
         .clk,
-        .wea(sample_clk_en_p[2]),
+        .wea(sample_clk_en_p[3]),
         .reb(sample_clk_en),
-        .banka(bank_num_p[2]),
-        .addra(op_num_p[2]),
+        .banka(bank_num_p[3]),
+        .addra(op_num_p[3]),
         .bankb(bank_num),
         .addrb(op_num),
-        .dia(env_int_p2),
+        .dia(env_int_new_p3),
         .dob(env_int_p0)
     );
-
-    always_comb env_add_p1 = env_int_p1 + rate_counter_overflow_p1;
-
-    always_ff @(posedge clk) begin
-        env_int_p1 <= env_int_p0;
-        env_int_p2 <= env_int_p1;
-
-        if (sample_clk_en_p[1]) begin
-            if (state_p1 == ATTACK && rate_counter_overflow_p1 != 0)
-                // The maximum value of overflow is 7. An overflow can only occur
-                // if m_env < floor(m_env/8)*7 + 1. Let's substitute m_env by 8*x:
-                // 8*x < 1 + x*7
-                // <=> 8*x - 7*x < 1
-                // <=> x < 1
-                // But the attack only occurs if m_env>0, so an overflow cannot occur
-                // here.
-                // +1 for one's complement.
-                env_int_p2 <= env_int_p1 - (((env_int_p1*rate_counter_overflow_p1) >> 3) + 1);
-            else if (state_p1 == DECAY || state_p1 == RELEASE) begin
-                if (env_add_p1[ENV_WIDTH])
-                    // env_int would overflow
-                    env_int_p2 <= SILENCE;
-                else
-                    env_int_p2 <= env_add_p1;
-            end
-        end
-    end
 
     /*
      * Calculate am_val
@@ -241,17 +238,66 @@ module envelope_generator
         .*
     );
 
-    always_comb
-        if (am)
-            env_tmp_p2 = env_int_p2 + (tl_p[2] << 2) + ksl_add_p2 + am_val_p2; // max val 1044
-        else
-            env_tmp_p2 = env_int_p2 + (tl_p[2] << 2) + ksl_add_p2;
+    always_comb begin
+        env_int_pre_p2 = env_int_p[2];
+        eg_inc_p2 = 0;
+        eg_off_p2 = 0;
+        next_state_p2 = state_p2;
+
+        // instant attack
+        if (key_on_pulse_p[2] && rate_hi_p2 == 'hf)
+            env_int_pre_p2 = 0;
+
+        // envelope off
+        if (env_int_p[2] & 'h1f8 == 'h1f8)
+            eg_off_p2 = 1;
+        if (state_p2 != ATTACK && !key_on_pulse_p[2] && eg_off_p2)
+            env_int_pre_p2 = SILENCE;
+
+        unique case (state_p2)
+        ATTACK: begin
+            if (env_int_p[2] == 0)
+                next_state_p2 = DECAY;
+            else if (key_on_pulse_p[2] && env_shift_p2 > 0 && rate_hi_p2 != 'hf)
+                eg_inc_p2 = ~env_int_p[2] >> (4 - env_shift_p2);
+        end
+        DECAY: begin
+            if ((env_int_p[2] >> 4) == sl_p[2])
+                next_state_p2 = SUSTAIN;
+            else if (eg_off_p2 && !key_on_pulse_p[2] && env_shift_p2 > 0)
+                eg_inc_p2 = 1 << (env_shift_p2 - 1);
+        end
+        SUSTAIN, RELEASE: begin
+            if (!eg_off_p2 && !key_on_pulse_p[2] && env_shift_p2 > 0)
+                eg_inc_p2 = 1 << (env_shift_p2 - 1);
+        end
+        endcase
+
+        if (key_on_pulse_p[2])
+            next_state_p2 = ATTACK;
+        if (key_off_pulse_p[2])
+            next_state_p2 = RELEASE;
+    end
+
+    always_ff @(posedge clk) begin
+        state_p1 <= state_p0;
+        state_p2 <= state_p1;
+        state_p3 <= next_state_p2;
+        env_int_new_p3 <= env_int_pre_p2 + eg_inc_p2;
+    end
+
+    logic [REG_TL_WIDTH+2-1:0] tl_shifted_p2;
+
+    always_comb begin
+        tl_shifted_p2 = tl_p[2] << 2;
+        env_pre_p2 = env_int_p[2] + tl_shifted_p2 + ksl_add_p2 + (am ? am_val_p2 : 0); // max val 1044
+    end
 
     // clamp envelope
     always_ff @(posedge clk)
-        if (env_tmp_p2[ENV_WIDTH+1:ENV_WIDTH] != 0) // overflow
+        if (env_pre_p2[ENV_WIDTH+1:ENV_WIDTH] != 0) // overflow
             env_p3 <= SILENCE;
         else
-            env_p3 <= env_tmp_p2;
+            env_p3 <= env_pre_p2;
 endmodule
 `default_nettype wire

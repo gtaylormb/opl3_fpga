@@ -53,23 +53,35 @@ module env_rate_counter
     input wire [REG_FNUM_WIDTH-1:0] fnum,
     input wire [REG_BLOCK_WIDTH-1:0] block,
     input wire [REG_ENV_WIDTH-1:0] requested_rate_p0,
-    output logic [ENV_RATE_COUNTER_OVERFLOW_WIDTH-1:0] rate_counter_overflow_p1 = 0
+    output logic [REG_ENV_WIDTH+1-1:0] rate_hi_p2 = 0,
+    output logic [ENV_SHIFT_WIDTH-1:0] env_shift_p2 = 0
 );
-    localparam COUNTER_WIDTH = 15;
-    localparam OVERFLOW_TMP_MAX_VALUE = 7<<15;
-    localparam PIPELINE_DELAY = 2;
+    localparam EG_TIMER_WIDTH = 36;
+    localparam PIPELINE_DELAY = 3;
+    localparam EG_ADD_WIDTH = $clog2(13);
+    localparam logic [3:0] EG_INC_STEP [4] = {
+        4'b0000,
+        4'b1000,
+        4'b1010,
+        4'b1110
+    };
 
-    logic rate_tmp0_p0;
-    logic [REG_BLOCK_WIDTH+1-1:0] rate_tmp1_p0;
-    logic [REG_BLOCK_WIDTH+1-1:0] rate_tmp2_p0;
-    logic [$clog2(60)-1:0] effective_rate_p1 = 0;
-    logic [$clog2(60)-2-1:0] rate_value_p1;
+    logic [EG_TIMER_WIDTH-1:0] eg_timer = 0;
+    logic [2:0] timer = 0;
+    logic eg_timerrem = 0;
+    logic eg_state = 0;
+    logic [EG_ADD_WIDTH-1:0] eg_add = 0;
+    logic [REG_BLOCK_WIDTH:0] block_shifted;
+    logic [REG_BLOCK_WIDTH:0] ksv_p0;
+    logic [REG_BLOCK_WIDTH:0] ks_p0;
     logic [REG_ENV_WIDTH+2-1:0] requested_rate_shifted_p0;
-    logic [1:0] rof_p1;
-    logic [COUNTER_WIDTH-1:0] counter_p1;
-    logic [COUNTER_WIDTH-1:0] counter_new_p2;
-    logic [$clog2(OVERFLOW_TMP_MAX_VALUE)-1:0] overflow_tmp_p1;
-    logic [PIPELINE_DELAY:1] requested_rate_not_zero_p;
+    logic [REG_ENV_WIDTH+3-1:0] rate_p1 = 0;
+    logic [REG_ENV_WIDTH+1-1:0] rate_hi_pre_p1;
+    logic [REG_ENV_WIDTH+1-1:0] rate_hi_p1;
+    logic [2:0] rate_lo_p1;
+    logic [REG_ENV_WIDTH+2-1:0] eg_shift_p1;
+    logic requested_rate_not_zero_p1;
+    logic [ENV_SHIFT_WIDTH:0] env_shift_pre_p2;
     logic [PIPELINE_DELAY:1] sample_clk_en_p;
     logic [PIPELINE_DELAY:1] [BANK_NUM_WIDTH-1:0] bank_num_p;
     logic [PIPELINE_DELAY:1] [OP_NUM_WIDTH-1:0] op_num_p;
@@ -100,52 +112,84 @@ module env_rate_counter
         .out(op_num_p)
     );
 
-    pipeline_sr #(
-        .ENDING_CYCLE(PIPELINE_DELAY)
-    ) requested_rate_not_zero_sr (
-        .clk,
-        .in(requested_rate_p0 != 0),
-        .out(requested_rate_not_zero_p)
-    );
-
-    always_comb rate_tmp0_p0 = nts ? fnum[8] : fnum[9];
-    always_comb rate_tmp1_p0 = rate_tmp0_p0 | (block << 1);
-    always_comb rate_tmp2_p0 = ksr ? rate_tmp1_p0 : rate_tmp1_p0 >> 2;
-    always_comb requested_rate_shifted_p0 = requested_rate_p0 << 2;
-
-    always_ff @(posedge clk)
-        if (rate_tmp2_p0 + requested_rate_shifted_p0 > 60)
-            effective_rate_p1 <= 60;
-        else
-            effective_rate_p1 <= rate_tmp2_p0 + requested_rate_shifted_p0;
-
-    always_comb rate_value_p1 = effective_rate_p1 >> 2;
-    always_comb rof_p1 = effective_rate_p1[1:0];
-
-    mem_multi_bank #(
-        .DATA_WIDTH(COUNTER_WIDTH),
-        .DEPTH(NUM_OPERATORS_PER_BANK),
-        .OUTPUT_DELAY(1),
-        .DEFAULT_VALUE(0),
-        .NUM_BANKS(NUM_BANKS)
-    ) counter_mem (
-        .clk,
-        .wea(sample_clk_en_p[2] && requested_rate_not_zero_p[2]),
-        .reb(sample_clk_en),
-        .banka(bank_num_p[2]),
-        .addra(op_num_p[2]),
-        .bankb(bank_num),
-        .addrb(op_num),
-        .dia(counter_new_p2),
-        .dob(counter_p1)
-    );
-
     always_comb begin
-        overflow_tmp_p1 = counter_p1 + ((4 | rof_p1) << rate_value_p1);
-        rate_counter_overflow_p1 = overflow_tmp_p1 >> 15;
+        block_shifted = block << 1;
+        ksv_p0 = block_shifted | (nts ? fnum[8] : fnum[9]);
+        ks_p0 = ksv_p0 >> !ksr;
+        requested_rate_shifted_p0 = requested_rate_p0 << 2;
     end
 
     always_ff @(posedge clk)
-        counter_new_p2 <= overflow_tmp_p1;
+        rate_p1 = ks_p0 + requested_rate_shifted_p0;
+
+    always_comb begin
+        rate_hi_pre_p1 = rate_p1 >> 2;
+        rate_hi_p1 = rate_hi_pre_p1[4] ? 'h0f : rate_hi_pre_p1;
+        rate_lo_p1 = rate_p1[2:0];
+        eg_shift_p1 = rate_hi_p1 + eg_add;
+
+        env_shift_pre_p2 = rate_hi_p1[2:0] + EG_INC_STEP[rate_lo_p1][timer];
+    end
+
+    always_ff @(posedge clk) begin
+        requested_rate_not_zero_p1 = requested_rate_p0 != 0;
+        env_shift_p2 <= 0;
+        rate_hi_p2 <= rate_hi_p1;
+
+        if (requested_rate_not_zero_p1) begin
+            if (rate_hi_p1 < 12) begin
+                if (eg_state)
+                    unique case (eg_shift_p1)
+                    12: env_shift_p2 <= 1;
+                    13: env_shift_p2 <= (rate_lo_p1 >> 1) & 1;
+                    14: env_shift_p2 <= rate_lo_p1[0];
+                    default:;
+                    endcase
+            end
+            else begin
+                env_shift_p2 <= env_shift_pre_p2;
+                if (env_shift_pre_p2[ENV_SHIFT_WIDTH])
+                    env_shift_p2 <= 'h3;
+                if (env_shift_pre_p2 == 0)
+                    env_shift_p2 <= eg_state;
+            end
+        end
+    end
+
+    always_ff @(posedge clk)
+        // once per sample, after operators are done
+        if (bank_num_p[3] == 1 && op_num_p[3] == 17) begin
+            priority casex (eg_timer[12:0])
+            'b0_0000_0000_0000: eg_add <= 0;
+            'b1_0000_0000_0000: eg_add <= 13;
+            'bx_1000_0000_0000: eg_add <= 12;
+            'bx_x100_0000_0000: eg_add <= 11;
+            'bx_xx10_0000_0000: eg_add <= 10;
+            'bx_xxx1_0000_0000: eg_add <= 9;
+            'bx_xxxx_1000_0000: eg_add <= 8;
+            'bx_xxxx_x100_0000: eg_add <= 7;
+            'bx_xxxx_xx10_0000: eg_add <= 6;
+            'bx_xxxx_xxx1_0000: eg_add <= 5;
+            'bx_xxxx_xxxx_1000: eg_add <= 4;
+            'bx_xxxx_xxxx_x100: eg_add <= 3;
+            'bx_xxxx_xxxx_xx10: eg_add <= 2;
+            'bx_xxxx_xxxx_xxx1: eg_add <= 1;
+            'bx_xxxx_xxxx_xxxx:;
+            endcase
+
+            if (eg_timerrem || eg_state) begin
+                if (eg_timer == '1) begin
+                    eg_timer <= 0;
+                    eg_timerrem <= 1;
+                end
+                else begin
+                    eg_timer <= eg_timer + 1;
+                    eg_timerrem <= 0;
+                end
+            end
+
+            eg_state <= !eg_state;
+            timer <= timer + 1;
+        end
 endmodule
 `default_nettype wire
