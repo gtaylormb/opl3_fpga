@@ -67,7 +67,7 @@ module env_rate_counter
     };
 
     logic [EG_TIMER_WIDTH-1:0] eg_timer = 0;
-    logic [2:0] timer = 0;
+    logic [1:0] timer = 0;
     logic eg_timerrem = 0;
     logic eg_state = 0;
     logic [EG_ADD_WIDTH-1:0] eg_add = 0;
@@ -120,7 +120,7 @@ module env_rate_counter
     end
 
     always_ff @(posedge clk)
-        rate_p1 = ks_p0 + requested_rate_shifted_p0;
+        rate_p1 <= ks_p0 + requested_rate_shifted_p0;
 
     always_comb begin
         rate_hi_pre_p1 = rate_p1 >> 2;
@@ -132,7 +132,7 @@ module env_rate_counter
     end
 
     always_ff @(posedge clk) begin
-        requested_rate_not_zero_p1 = requested_rate_p0 != 0;
+        requested_rate_not_zero_p1 <= requested_rate_p0 != 0;
         env_shift_p2 <= 0;
         rate_hi_p2 <= rate_hi_p1;
 
@@ -158,7 +158,7 @@ module env_rate_counter
 
     always_ff @(posedge clk)
         // once per sample, after operators are done
-        if (bank_num_p[3] == 1 && op_num_p[3] == 17) begin
+        if (sample_clk_en_p[3] && bank_num_p[3] == 1 && op_num_p[3] == 17) begin
             priority casex (eg_timer[12:0])
             'b0_0000_0000_0000: eg_add <= 0;
             'b1_0000_0000_0000: eg_add <= 13;

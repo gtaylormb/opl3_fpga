@@ -55,7 +55,7 @@ module phase_generator
     input wire [PHASE_ACC_WIDTH-1:0] phase_inc_p2,
     input wire [REG_WS_WIDTH-1:0] ws,
     input wire [ENV_WIDTH-1:0] env_p3,
-    input wire key_on_pulse_p0,
+    input wire pg_reset_p2,
     input wire [OP_OUT_WIDTH-1:0] modulation_p1,
     input var operator_t op_type_p0,
     output logic signed [OP_OUT_WIDTH-1:0] out_p6 = 0
@@ -65,7 +65,6 @@ module phase_generator
     localparam PIPELINE_DELAY = 6;
 
     logic [PIPELINE_DELAY:1] sample_clk_en_p;
-    logic [PIPELINE_DELAY:1] key_on_pulse_p;
     logic [PHASE_ACC_WIDTH-1:0] phase_acc_p2;
     logic [PHASE_ACC_WIDTH-1:0] phase_acc_p3 = 0;
     logic [PHASE_FINAL_WIDTH-1:0] final_phase_p3;
@@ -91,14 +90,6 @@ module phase_generator
     pipeline_sr #(
         .ENDING_CYCLE(PIPELINE_DELAY)
     ) sample_clk_en_sr (
-        .clk,
-        .in(key_on_pulse_p0),
-        .out(key_on_pulse_p)
-    );
-
-    pipeline_sr #(
-        .ENDING_CYCLE(PIPELINE_DELAY)
-    ) key_on_pulse_sr (
         .clk,
         .in(sample_clk_en),
         .out(sample_clk_en_p)
@@ -192,7 +183,7 @@ module phase_generator
      */
     always_ff @(posedge clk)
         if (sample_clk_en_p[2])
-            if (key_on_pulse_p[2])
+            if (pg_reset_p2)
                 phase_acc_p3 <= 0;
             else
                 phase_acc_p3 <= phase_acc_p2 + phase_inc_p2;
@@ -205,6 +196,7 @@ module phase_generator
         .phase_p2(phase_acc_p2[PHASE_ACC_WIDTH-1 -: PHASE_FINAL_WIDTH]),
         .*
     );
+
 
     always_comb begin
         final_phase_p3 = rhythm_phase_p3 + modulation_p[3];

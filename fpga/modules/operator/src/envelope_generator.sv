@@ -65,9 +65,9 @@ module envelope_generator
     input wire [REG_FNUM_WIDTH-1:0] fnum,
     input wire [REG_MULT_WIDTH-1:0] mult,
     input wire [REG_BLOCK_WIDTH-1:0] block,
-    input wire key_on_pulse_p0,
-    input wire key_off_pulse_p0,
-    output logic [ENV_WIDTH-1:0] env_p3 = SILENCE
+    input wire key_on_p0,
+    output logic [ENV_WIDTH-1:0] env_p3 = SILENCE,
+    output logic pg_reset_p2
 );
     localparam PIPELINE_DELAY = 3;
 
@@ -86,20 +86,22 @@ module envelope_generator
     logic [ENV_WIDTH-1:0] env_int_pre_p2;
     logic [ENV_WIDTH-1:0] eg_inc_p2;
     logic eg_off_p2;
+    logic [ENV_WIDTH+4-1:0] env_int_extra_bits_p2;
     logic [ENV_WIDTH-1:0] env_int_new_p3 = 0;
     logic [AM_VAL_WIDTH-1:0] am_val_p2;
     logic [REG_ENV_WIDTH-1:0] requested_rate_p0;
     logic [ENV_SHIFT_WIDTH-1:0] env_shift_p2;
     logic [REG_ENV_WIDTH+1-1:0] rate_hi_p2;
     logic [ENV_WIDTH+1:0] env_pre_p2;
+    logic eg_reset_p0;
     logic [PIPELINE_DELAY:1] sample_clk_en_p;
     logic [PIPELINE_DELAY:1] [BANK_NUM_WIDTH-1:0] bank_num_p;
     logic [PIPELINE_DELAY:1] [OP_NUM_WIDTH-1:0] op_num_p;
     logic [PIPELINE_DELAY:1] [REG_TL_WIDTH-1:0] tl_p;
     logic [PIPELINE_DELAY:1] [REG_ENV_WIDTH-1:0] sl_p;
     logic [PIPELINE_DELAY:1] [ENV_WIDTH-1:0] env_int_p;
-    logic [PIPELINE_DELAY:1] key_on_pulse_p;
-    logic [PIPELINE_DELAY:1] key_off_pulse_p;
+    logic [PIPELINE_DELAY:1] key_on_p;
+    logic [PIPELINE_DELAY:1] eg_reset_p;
 
     pipeline_sr #(
         .ENDING_CYCLE(PIPELINE_DELAY)
@@ -157,19 +159,19 @@ module envelope_generator
     pipeline_sr #(
         .DATA_WIDTH(1),
         .ENDING_CYCLE(PIPELINE_DELAY)
-    ) key_on_pulse_sr (
+    ) key_on_sr (
         .clk,
-        .in(key_on_pulse_p0),
-        .out(key_on_pulse_p)
+        .in(key_on_p0),
+        .out(key_on_p)
     );
 
     pipeline_sr #(
         .DATA_WIDTH(1),
         .ENDING_CYCLE(PIPELINE_DELAY)
-    ) key_off_pulse_sr (
+    ) eg_reset_sr (
         .clk,
-        .in(key_off_pulse_p0),
-        .out(key_off_pulse_p)
+        .in(eg_reset_p0),
+        .out(eg_reset_p)
     );
 
     ksl_add_rom ksl_add_rom (
@@ -198,16 +200,24 @@ module envelope_generator
         .reset_mem_done_pulse()
     );
 
-    always_comb
-        unique case (state_p0)
-        ATTACK: requested_rate_p0 = ar;
-        DECAY: requested_rate_p0 = dr;
-        SUSTAIN: requested_rate_p0 = !egt ? rr : 0;
-        RELEASE: requested_rate_p0 = key_on_pulse_p0 ? ar : rr;
-        endcase
+    always_comb begin
+        eg_reset_p0 = 0;
+
+        if (key_on_p0 && state_p0 == RELEASE) begin
+            eg_reset_p0 = 1;
+            requested_rate_p0 = ar;
+        end
+        else
+            unique case (state_p0)
+            ATTACK: requested_rate_p0 = ar;
+            DECAY: requested_rate_p0 = dr;
+            SUSTAIN: requested_rate_p0 = !egt ? rr : 0;
+            RELEASE: requested_rate_p0 = rr;
+            endcase
+    end
 
     /*
-     * Calculate rate_counter_overflow
+     * Calculate envelope shift
      */
     env_rate_counter env_rate_counter (
         .*
@@ -239,43 +249,45 @@ module envelope_generator
     );
 
     always_comb begin
+        pg_reset_p2 = eg_reset_p[2];
         env_int_pre_p2 = env_int_p[2];
         eg_inc_p2 = 0;
         eg_off_p2 = 0;
         next_state_p2 = state_p2;
+        env_int_extra_bits_p2 = env_int_p[2];
 
         // instant attack
-        if (key_on_pulse_p[2] && rate_hi_p2 == 'hf)
+        if (eg_reset_p[2] && rate_hi_p2 == 'hf)
             env_int_pre_p2 = 0;
 
         // envelope off
         if (env_int_p[2] & 'h1f8 == 'h1f8)
             eg_off_p2 = 1;
-        if (state_p2 != ATTACK && !key_on_pulse_p[2] && eg_off_p2)
+        if (state_p2 != ATTACK && !eg_reset_p[2] && eg_off_p2)
             env_int_pre_p2 = SILENCE;
 
         unique case (state_p2)
         ATTACK: begin
             if (env_int_p[2] == 0)
                 next_state_p2 = DECAY;
-            else if (key_on_pulse_p[2] && env_shift_p2 > 0 && rate_hi_p2 != 'hf)
-                eg_inc_p2 = ~env_int_p[2] >> (4 - env_shift_p2);
+            else if (key_on_p[2] && env_shift_p2 > 0 && rate_hi_p2 != 'hf)
+                eg_inc_p2 = ~env_int_extra_bits_p2 >> (4 - env_shift_p2);
         end
         DECAY: begin
             if ((env_int_p[2] >> 4) == sl_p[2])
                 next_state_p2 = SUSTAIN;
-            else if (eg_off_p2 && !key_on_pulse_p[2] && env_shift_p2 > 0)
+            else if (eg_off_p2 && !eg_reset_p[2] && env_shift_p2 > 0)
                 eg_inc_p2 = 1 << (env_shift_p2 - 1);
         end
         SUSTAIN, RELEASE: begin
-            if (!eg_off_p2 && !key_on_pulse_p[2] && env_shift_p2 > 0)
+            if (!eg_off_p2 && !eg_reset_p[2] && env_shift_p2 > 0)
                 eg_inc_p2 = 1 << (env_shift_p2 - 1);
         end
         endcase
 
-        if (key_on_pulse_p[2])
+        if (eg_reset_p[2])
             next_state_p2 = ATTACK;
-        if (key_off_pulse_p[2])
+        if (!key_on_p[2])
             next_state_p2 = RELEASE;
     end
 

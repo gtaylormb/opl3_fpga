@@ -86,8 +86,8 @@ module operator_tb
     bit [REG_FB_WIDTH-1:0] fb_p1 = 0;
     bit signed [OP_OUT_WIDTH-1:0] modulation_p1 = 0;
 
-    bit [BANK_NUM_WIDTH-1:0] bank_num = 12;
-    bit [OP_NUM_WIDTH-1:0] op_num = 12;
+    bit [BANK_NUM_WIDTH-1:0] bank_num = 1;
+    bit [OP_NUM_WIDTH-1:0] op_num = 17;
 
     always begin
         #CLK_HALF_PERIOD clk = 0;
