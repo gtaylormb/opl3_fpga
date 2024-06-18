@@ -261,7 +261,7 @@ module envelope_generator
             env_int_pre_p2 = 0;
 
         // envelope off
-        if (env_int_p[2] & 'h1f8 == 'h1f8)
+        if ((env_int_p[2] & 'h1f8) == 'h1f8)
             eg_off_p2 = 1;
         if (state_p2 != ATTACK && !eg_reset_p[2] && eg_off_p2)
             env_int_pre_p2 = SILENCE;
@@ -276,7 +276,7 @@ module envelope_generator
         DECAY: begin
             if ((env_int_p[2] >> 4) == sl_p[2])
                 next_state_p2 = SUSTAIN;
-            else if (eg_off_p2 && !eg_reset_p[2] && env_shift_p2 > 0)
+            else if (!eg_off_p2 && !eg_reset_p[2] && env_shift_p2 > 0)
                 eg_inc_p2 = 1 << (env_shift_p2 - 1);
         end
         SUSTAIN, RELEASE: begin
