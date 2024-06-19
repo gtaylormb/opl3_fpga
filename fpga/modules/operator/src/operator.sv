@@ -87,7 +87,7 @@ module operator
     logic [PHASE_ACC_WIDTH-1:0] phase_inc_p2;
     logic key_on_p0_pulse_p0;
     logic key_off_pulse_p0;
-    logic [ENV_WIDTH-1:0] env_p3;
+    logic [FINAL_ENV_WIDTH-1:0] env_p3;
     logic signed [OP_OUT_WIDTH-1:0] feedback_result_p1;
     logic signed [OP_OUT_WIDTH+1+2**REG_FB_WIDTH-1:0] feedback_result_tmp_p1;
     logic [1:0] [OP_OUT_WIDTH-1:0] feedback_p1;

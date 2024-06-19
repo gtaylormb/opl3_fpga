@@ -54,7 +54,7 @@ module phase_generator
     input wire [OP_NUM_WIDTH-1:0] op_num,
     input wire [PHASE_ACC_WIDTH-1:0] phase_inc_p2,
     input wire [REG_WS_WIDTH-1:0] ws,
-    input wire [ENV_WIDTH-1:0] env_p3,
+    input wire [FINAL_ENV_WIDTH-1:0] env_p3,
     input wire pg_reset_p2,
     input wire [OP_OUT_WIDTH-1:0] modulation_p1,
     input var operator_t op_type_p0,
@@ -72,7 +72,7 @@ module phase_generator
     logic [PHASE_FINAL_WIDTH-1:0] rhythm_phase_p3;
     logic [LOG_SIN_OUT_WIDTH-1:0] log_sin_out_p4;
     logic [OP_OUT_WIDTH-1:0] pre_gain_p4;
-    logic [OP_OUT_WIDTH:0] post_gain_p4; // need extra bit to detect overflow
+    logic [FINAL_ENV_WIDTH+4-1:0] post_gain_p4; // need extra bits to detect overflow
     logic [REG_WS_WIDTH-1:0] ws_post_opl_p0;
     logic [PIPELINE_DELAY:1] [REG_WS_WIDTH-1:0] ws_post_opl_p;
     logic [PIPELINE_DELAY:1] [BANK_NUM_WIDTH-1:0] bank_num_p;
@@ -80,7 +80,7 @@ module phase_generator
     logic [PIPELINE_DELAY:1] [$bits(operator_t)-1:0] op_type_p;
     logic [PIPELINE_DELAY:2] [OP_OUT_WIDTH-1:0] modulation_p;
     logic [PIPELINE_DELAY:4] [PHASE_FINAL_WIDTH-1:0] final_phase_p;
-    logic [ENV_WIDTH-1:0] env_p4 = 0;
+    logic [FINAL_ENV_WIDTH+3-1:0] env_shifted_p4 = 0;
     logic [OP_OUT_WIDTH-1:0] level_p4;
     logic [OP_OUT_WIDTH-1:0] level_p5 = 0;
     logic [EXP_OUT_WIDTH-1:0] exp_out_p5;
@@ -214,7 +214,7 @@ module phase_generator
     );
 
     always_ff @(posedge clk)
-        env_p4 <= env_p3;
+        env_shifted_p4 <= env_p3 << 3;
 
     always_comb begin
         unique case (ws_post_opl_p[4])
@@ -225,7 +225,7 @@ module phase_generator
         7:          pre_gain_p4 = (final_phase_p[4][9] ? (final_phase_p[4][8:0] ^ 'h1ff) : final_phase_p[4][9:0]) << 3;
         endcase
 
-        post_gain_p4 = pre_gain_p4 + (env_p4 << 3);
+        post_gain_p4 = pre_gain_p4 + env_shifted_p4;
         level_p4 = post_gain_p4 > 'h1fff ? 'h1fff : post_gain_p4;
     end
 

@@ -66,10 +66,11 @@ module envelope_generator
     input wire [REG_MULT_WIDTH-1:0] mult,
     input wire [REG_BLOCK_WIDTH-1:0] block,
     input wire key_on_p0,
-    output logic [ENV_WIDTH-1:0] env_p3 = SILENCE,
+    output logic [FINAL_ENV_WIDTH-1:0] env_p3 = SILENCE,
     output logic pg_reset_p2
 );
     localparam PIPELINE_DELAY = 3;
+    localparam ENV_WIDTH = 9;
 
     // state_t goes on a memory--explicitly define width/values
     typedef enum logic [3:0] {
@@ -94,6 +95,7 @@ module envelope_generator
     logic [REG_ENV_WIDTH+1-1:0] rate_hi_p2;
     logic [ENV_WIDTH+1:0] env_pre_p2;
     logic eg_reset_p0;
+    logic [REG_TL_WIDTH+2-1:0] tl_shifted_p2;
     logic [PIPELINE_DELAY:1] sample_clk_en_p;
     logic [PIPELINE_DELAY:1] [BANK_NUM_WIDTH-1:0] bank_num_p;
     logic [PIPELINE_DELAY:1] [OP_NUM_WIDTH-1:0] op_num_p;
@@ -298,18 +300,9 @@ module envelope_generator
         env_int_new_p3 <= env_int_pre_p2 + eg_inc_p2;
     end
 
-    logic [REG_TL_WIDTH+2-1:0] tl_shifted_p2;
+    always_comb tl_shifted_p2 = tl_p[2] << 2;
 
-    always_comb begin
-        tl_shifted_p2 = tl_p[2] << 2;
-        env_pre_p2 = env_int_p[2] + tl_shifted_p2 + ksl_add_p2 + (am ? am_val_p2 : 0); // max val 1044
-    end
-
-    // clamp envelope
     always_ff @(posedge clk)
-        if (env_pre_p2[ENV_WIDTH+1:ENV_WIDTH] != 0) // overflow
-            env_p3 <= SILENCE;
-        else
-            env_p3 <= env_pre_p2;
+        env_p3 <= env_int_p[2] + tl_shifted_p2 + ksl_add_p2 + (am ? am_val_p2 : 0); // max val 1044
 endmodule
 `default_nettype wire
