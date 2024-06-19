@@ -182,11 +182,10 @@ module phase_generator
      * back into the accumulator.
      */
     always_ff @(posedge clk)
-        if (sample_clk_en_p[2])
-            if (pg_reset_p2)
-                phase_acc_p3 <= 0;
-            else
-                phase_acc_p3 <= phase_acc_p2 + phase_inc_p2;
+        if (pg_reset_p2)
+            phase_acc_p3 <= 0;
+        else
+            phase_acc_p3 <= phase_acc_p2 + phase_inc_p2;
 
     /*
      * Some rhythm instruments modify the phase, otherwise pass-through normally.
@@ -196,7 +195,6 @@ module phase_generator
         .phase_p2(phase_acc_p2[PHASE_ACC_WIDTH-1 -: PHASE_FINAL_WIDTH]),
         .*
     );
-
 
     always_comb begin
         final_phase_p3 = rhythm_phase_p3 + modulation_p[3];
