@@ -95,13 +95,13 @@ Close up of the attack phase:
     +----------------------------+------+-------+------------+-----------+-------+
     |          Site Type         | Used | Fixed | Prohibited | Available | Util% |
     +----------------------------+------+-------+------------+-----------+-------+
-    | Slice LUTs                 | 1256 |     0 |          0 |     17600 |  7.14 |
-    |   LUT as Logic             | 1014 |     0 |          0 |     17600 |  5.76 |
-    |   LUT as Memory            |  242 |     0 |          0 |      6000 |  4.03 |
-    |     LUT as Distributed RAM |  192 |     0 |            |           |       |
-    |     LUT as Shift Register  |   50 |     0 |            |           |       |
-    | Slice Registers            | 1106 |     0 |          0 |     35200 |  3.14 |
-    |   Register as Flip Flop    | 1106 |     0 |          0 |     35200 |  3.14 |
+    | Slice LUTs                 | 1164 |     0 |          0 |     17600 |  6.61 |
+    |   LUT as Logic             |  967 |     0 |          0 |     17600 |  5.49 |
+    |   LUT as Memory            |  197 |     0 |          0 |      6000 |  3.28 |
+    |     LUT as Distributed RAM |  144 |     0 |            |           |       |
+    |     LUT as Shift Register  |   53 |     0 |            |           |       |
+    | Slice Registers            | 1102 |     0 |          0 |     35200 |  3.13 |
+    |   Register as Flip Flop    | 1102 |     0 |          0 |     35200 |  3.13 |
     |   Register as Latch        |    0 |     0 |          0 |     35200 |  0.00 |
     | F7 Muxes                   |    9 |     0 |          0 |      8800 |  0.10 |
     | F8 Muxes                   |    1 |     0 |          0 |      4400 |  0.02 |
