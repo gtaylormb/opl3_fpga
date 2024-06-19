@@ -78,7 +78,7 @@ module env_rate_counter
     logic [REG_ENV_WIDTH+3-1:0] rate_p1 = 0;
     logic [REG_ENV_WIDTH+1-1:0] rate_hi_pre_p1;
     logic [REG_ENV_WIDTH+1-1:0] rate_hi_p1;
-    logic [2:0] rate_lo_p1;
+    logic [1:0] rate_lo_p1;
     logic [REG_ENV_WIDTH+2-1:0] eg_shift_p1;
     logic requested_rate_not_zero_p1;
     logic [ENV_SHIFT_WIDTH:0] env_shift_pre_p2;
@@ -115,7 +115,7 @@ module env_rate_counter
     always_comb begin
         block_shifted = block << 1;
         ksv_p0 = block_shifted | (nts ? fnum[8] : fnum[9]);
-        ks_p0 = ksv_p0 >> !ksr;
+        ks_p0 = ksr ? ksv_p0 : ksv_p0 >> 2;
         requested_rate_shifted_p0 = requested_rate_p0 << 2;
     end
 
@@ -125,10 +125,10 @@ module env_rate_counter
     always_comb begin
         rate_hi_pre_p1 = rate_p1 >> 2;
         rate_hi_p1 = rate_hi_pre_p1[4] ? 'h0f : rate_hi_pre_p1;
-        rate_lo_p1 = rate_p1[2:0];
+        rate_lo_p1 = rate_p1[1:0];
         eg_shift_p1 = rate_hi_p1 + eg_add;
 
-        env_shift_pre_p2 = rate_hi_p1[2:0] + EG_INC_STEP[rate_lo_p1][timer];
+        env_shift_pre_p2 = rate_hi_p1[1:0] + EG_INC_STEP[rate_lo_p1][timer];
     end
 
     always_ff @(posedge clk) begin
@@ -141,7 +141,7 @@ module env_rate_counter
                 if (eg_state)
                     unique case (eg_shift_p1)
                     12: env_shift_p2 <= 1;
-                    13: env_shift_p2 <= (rate_lo_p1 >> 1) & 1;
+                    13: env_shift_p2 <= rate_lo_p1[1];
                     14: env_shift_p2 <= rate_lo_p1[0];
                     default:;
                     endcase
