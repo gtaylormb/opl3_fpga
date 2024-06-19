@@ -1,12 +1,16 @@
 /*******************************************************************************
 #   +html+<pre>
 #
-#   FILENAME: env_rate_counter.sv
+#   FILENAME: calc_envelope_shift.sv
 #   AUTHOR: Greg Taylor     CREATION DATE: 2 Nov 2014
 #
 #   DESCRIPTION:
 #
 #   CHANGE HISTORY:
+#   3 June 2024     Greg Taylor
+#       Renamed from env_rate_counter.sv and refactored to match implementation in
+#       https://github.com/nukeykt/Nuked-OPL3
+#
 #   2 Nov 2014    Greg Taylor
 #       Initial version
 #
@@ -31,7 +35,7 @@
 #   Copyright (C) 2008 Robson Cozendey <robson@cozendey.com>
 #
 #   Original C++ Code:
-#   Copyright (C) 2012  Steffen Ohrendorf <steffen.ohrendorf@gmx.de>
+#   Copyright (C) 2013-2020 Nuke.YKT
 #
 #   Some code based on forum posts in:
 #   http://forums.submarine.org.uk/phpBB/viewforum.php?f=9,
@@ -41,7 +45,7 @@
 `timescale 1ns / 1ps
 `default_nettype none
 
-module env_rate_counter
+module calc_envelope_shift
     import opl3_pkg::*;
 (
     input wire clk,

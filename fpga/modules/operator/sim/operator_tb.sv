@@ -57,7 +57,7 @@ module operator_tb
     bit [REG_MULT_WIDTH-1:0] mult = 5;
     bit [REG_BLOCK_WIDTH-1:0] block = 4;
 
-    bit [REG_WS_WIDTH-1:0] ws = 7;
+    bit [REG_WS_WIDTH-1:0] ws = 0;
     bit vib = 0;
     bit dvb = 0;
     bit kon = 0;

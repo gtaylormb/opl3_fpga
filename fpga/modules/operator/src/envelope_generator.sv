@@ -7,6 +7,9 @@
 #   DESCRIPTION:
 #
 #   CHANGE HISTORY:
+#   19 June 2024     Greg Taylor
+#       Refactored to match implementation in https://github.com/nukeykt/Nuked-OPL3
+#
 #   30 Oct 2014    Greg Taylor
 #       Initial version
 #
@@ -31,7 +34,7 @@
 #   Copyright (C) 2008 Robson Cozendey <robson@cozendey.com>
 #
 #   Original C++ Code:
-#   Copyright (C) 2012  Steffen Ohrendorf <steffen.ohrendorf@gmx.de>
+#   Copyright (C) 2013-2020 Nuke.YKT
 #
 #   Some code based on forum posts in:
 #   http://forums.submarine.org.uk/phpBB/viewforum.php?f=9,
@@ -221,7 +224,7 @@ module envelope_generator
     /*
      * Calculate envelope shift
      */
-    env_rate_counter env_rate_counter (
+    calc_envelope_shift calc_envelope_shift (
         .*
     );
 
