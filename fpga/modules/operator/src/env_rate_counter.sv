@@ -56,7 +56,7 @@ module env_rate_counter
     output logic [REG_ENV_WIDTH+1-1:0] rate_hi_p2 = 0,
     output logic [ENV_SHIFT_WIDTH-1:0] env_shift_p2 = 0
 );
-    localparam EG_TIMER_WIDTH = 36;
+    localparam EG_TIMER_WIDTH = 13;
     localparam PIPELINE_DELAY = 3;
     localparam EG_ADD_WIDTH = $clog2(13);
     localparam logic [3:0] EG_INC_STEP [4] = {
@@ -159,7 +159,7 @@ module env_rate_counter
     always_ff @(posedge clk)
         // once per sample, after operators are done
         if (sample_clk_en_p[3] && bank_num_p[3] == 1 && op_num_p[3] == 17) begin
-            priority casex (eg_timer[12:0])
+            priority casex (eg_timer)
             'b0_0000_0000_0000: eg_add <= 0;
             'b1_0000_0000_0000: eg_add <= 13;
             'bx_1000_0000_0000: eg_add <= 12;

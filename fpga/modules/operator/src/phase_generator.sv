@@ -226,7 +226,7 @@ module phase_generator
         endcase
 
         post_gain_p4 = pre_gain_p4 + env_shifted_p4;
-        level_p4 = post_gain_p4 > 'h1fff ? 'h1fff : post_gain_p4;
+        level_p4 = post_gain_p4 > 'h1fff ? 'h1fff : post_gain_p4; // clamp level
     end
 
     opl3_exp_lut exp_lut_inst (
