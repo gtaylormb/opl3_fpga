@@ -7,7 +7,7 @@ RTL_SRC = \
 	src/opl3_exp_lut.sv \
 	src/vibrato.sv \
 	src/envelope_generator.sv \
-	src/env_rate_counter.sv \
+	src/calc_envelope_shift.sv \
 	src/ksl_add_rom.sv \
 	src/tremolo.sv \
 	../clks/src/clk_div.sv \
