@@ -63,7 +63,7 @@ module calc_envelope_shift
     localparam EG_TIMER_WIDTH = 36;
     localparam PIPELINE_DELAY = 3;
     localparam EG_ADD_WIDTH = $clog2(13);
-    localparam logic [3:0] EG_INC_STEP [4] = {
+    localparam logic [3:0][3:0] EG_INC_STEP = {
         4'b0000,
         4'b1000,
         4'b1010,
