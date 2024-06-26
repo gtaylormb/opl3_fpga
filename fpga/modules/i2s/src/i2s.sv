@@ -44,9 +44,9 @@
 `timescale 1ns / 1ps
 `default_nettype none
 
-import opl3_pkg::*;
-
-module i2s (
+module i2s
+    import opl3_pkg::*;
+(
     input wire clk,
     input wire sample_valid,
     input wire [DAC_OUTPUT_WIDTH-1:0] left_channel,

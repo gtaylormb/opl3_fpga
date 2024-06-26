@@ -111,6 +111,9 @@ sim: compile
 sim-debug: compile
 	vsim opl3_tb -voptargs=+acc
 
+lint:
+	verilator --lint-only -Wall --top-module opl3 ${PKG_SRC} ${RTL_SRC}
+
 bd: build/design_1/design_1.bd
 
 syn: build/post_syn.dcp
