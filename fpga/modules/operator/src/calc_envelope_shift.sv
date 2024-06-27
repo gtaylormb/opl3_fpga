@@ -57,7 +57,7 @@ module calc_envelope_shift
     input wire [REG_FNUM_WIDTH-1:0] fnum,
     input wire [REG_BLOCK_WIDTH-1:0] block,
     input wire [REG_ENV_WIDTH-1:0] requested_rate_p0,
-    output logic [REG_ENV_WIDTH+1-1:0] rate_hi_p2 = 0,
+    output logic [REG_ENV_WIDTH-1:0] rate_hi_p2 = 0,
     output logic [ENV_SHIFT_WIDTH-1:0] env_shift_p2 = 0
 );
     localparam EG_TIMER_WIDTH = 36;
@@ -81,7 +81,7 @@ module calc_envelope_shift
     logic [REG_ENV_WIDTH+2-1:0] requested_rate_shifted_p0;
     logic [REG_ENV_WIDTH+3-1:0] rate_p1 = 0;
     logic [REG_ENV_WIDTH+1-1:0] rate_hi_pre_p1;
-    logic [REG_ENV_WIDTH+1-1:0] rate_hi_p1;
+    logic [REG_ENV_WIDTH-1:0] rate_hi_p1;
     logic [1:0] rate_lo_p1;
     logic [REG_ENV_WIDTH+2-1:0] eg_shift_p1;
     logic requested_rate_not_zero_p1;
@@ -128,7 +128,7 @@ module calc_envelope_shift
 
     always_comb begin
         rate_hi_pre_p1 = rate_p1 >> 2;
-        rate_hi_p1 = rate_hi_pre_p1[4] ? 'h0f : rate_hi_pre_p1;
+        rate_hi_p1 = rate_hi_pre_p1[4] ? 'hf : rate_hi_pre_p1;
         rate_lo_p1 = rate_p1[1:0];
         eg_shift_p1 = rate_hi_p1 + eg_add;
 
@@ -152,7 +152,7 @@ module calc_envelope_shift
             end
             else begin
                 env_shift_p2 <= env_shift_pre_p2;
-                if (env_shift_pre_p2[ENV_SHIFT_WIDTH])
+                if (env_shift_pre_p2[2])
                     env_shift_p2 <= 'h3;
                 if (env_shift_pre_p2 == 0)
                     env_shift_p2 <= eg_state;
@@ -164,22 +164,21 @@ module calc_envelope_shift
         // once per sample, after operators are done
         if (sample_clk_en_p[3] && bank_num_p[3] == 1 && op_num_p[3] == 17) begin
             if (eg_state)
-                priority casex (eg_timer)
+                unique casez (eg_timer)
                 'b0_0000_0000_0000: eg_add <= 0;
                 'b1_0000_0000_0000: eg_add <= 13;
-                'bx_1000_0000_0000: eg_add <= 12;
-                'bx_x100_0000_0000: eg_add <= 11;
-                'bx_xx10_0000_0000: eg_add <= 10;
-                'bx_xxx1_0000_0000: eg_add <= 9;
-                'bx_xxxx_1000_0000: eg_add <= 8;
-                'bx_xxxx_x100_0000: eg_add <= 7;
-                'bx_xxxx_xx10_0000: eg_add <= 6;
-                'bx_xxxx_xxx1_0000: eg_add <= 5;
-                'bx_xxxx_xxxx_1000: eg_add <= 4;
-                'bx_xxxx_xxxx_x100: eg_add <= 3;
-                'bx_xxxx_xxxx_xx10: eg_add <= 2;
-                'bx_xxxx_xxxx_xxx1: eg_add <= 1;
-                'bx_xxxx_xxxx_xxxx:;
+                'b?_1000_0000_0000: eg_add <= 12;
+                'b?_?100_0000_0000: eg_add <= 11;
+                'b?_??10_0000_0000: eg_add <= 10;
+                'b?_???1_0000_0000: eg_add <= 9;
+                'b?_????_1000_0000: eg_add <= 8;
+                'b?_????_?100_0000: eg_add <= 7;
+                'b?_????_??10_0000: eg_add <= 6;
+                'b?_????_???1_0000: eg_add <= 5;
+                'b?_????_????_1000: eg_add <= 4;
+                'b?_????_????_?100: eg_add <= 3;
+                'b?_????_????_??10: eg_add <= 2;
+                'b?_????_????_???1: eg_add <= 1;
                 endcase
 
             if (eg_timerrem || eg_state) begin

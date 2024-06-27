@@ -90,13 +90,12 @@ module envelope_generator
     logic [ENV_WIDTH-1:0] env_int_pre_p2;
     logic [ENV_WIDTH-1:0] eg_inc_p2;
     logic eg_off_p2;
-    logic [ENV_WIDTH+4-1:0] env_int_extra_bits_p2;
+    logic [ENV_WIDTH+3-1:0] env_int_extra_bits_p2;
     logic [ENV_WIDTH-1:0] env_int_new_p3 = 0;
     logic [AM_VAL_WIDTH-1:0] am_val_p2;
     logic [REG_ENV_WIDTH-1:0] requested_rate_p0;
     logic [ENV_SHIFT_WIDTH-1:0] env_shift_p2;
-    logic [REG_ENV_WIDTH+1-1:0] rate_hi_p2;
-    logic [ENV_WIDTH+1:0] env_pre_p2;
+    logic [REG_ENV_WIDTH-1:0] rate_hi_p2;
     logic eg_reset_p0;
     logic [REG_TL_WIDTH+2-1:0] tl_shifted_p2;
     logic [REG_ENV_WIDTH:0] sl_increased_p2;
