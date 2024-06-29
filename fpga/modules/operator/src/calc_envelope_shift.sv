@@ -60,7 +60,7 @@ module calc_envelope_shift
     output logic [REG_ENV_WIDTH-1:0] rate_hi_p2 = 0,
     output logic [ENV_SHIFT_WIDTH-1:0] env_shift_p2 = 0
 );
-    localparam EG_TIMER_WIDTH = 36;
+    localparam EG_TIMER_WIDTH = 13;
     localparam PIPELINE_DELAY = 3;
     localparam EG_ADD_WIDTH = $clog2(13);
     localparam logic [3:0][3:0] EG_INC_STEP = {
@@ -72,7 +72,6 @@ module calc_envelope_shift
 
     logic [EG_TIMER_WIDTH-1:0] eg_timer = 0;
     logic [1:0] timer = 0;
-    logic eg_timerrem = 0;
     logic eg_state = 0;
     logic [EG_ADD_WIDTH-1:0] eg_add = 0;
     logic [REG_BLOCK_WIDTH:0] block_shifted;
@@ -163,7 +162,7 @@ module calc_envelope_shift
     always_ff @(posedge clk)
         // once per sample, after operators are done
         if (sample_clk_en_p[3] && bank_num_p[3] == 1 && op_num_p[3] == 17) begin
-            if (eg_state)
+            if (eg_state) begin
                 unique casez (eg_timer)
                 'b0_0000_0000_0000: eg_add <= 0;
                 'b1_0000_0000_0000: eg_add <= 13;
@@ -181,15 +180,7 @@ module calc_envelope_shift
                 'b?_????_????_???1: eg_add <= 1;
                 endcase
 
-            if (eg_timerrem || eg_state) begin
-                if (eg_timer == '1) begin
-                    eg_timer <= 0;
-                    eg_timerrem <= 1;
-                end
-                else begin
-                    eg_timer <= eg_timer + 1;
-                    eg_timerrem <= 0;
-                end
+                eg_timer <= eg_timer + 1;
             end
 
             eg_state <= !eg_state;
