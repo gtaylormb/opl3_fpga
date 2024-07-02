@@ -71,7 +71,6 @@ module calc_envelope_shift
     };
 
     logic [EG_TIMER_WIDTH-1:0] eg_timer = 0;
-    logic [1:0] timer = 0;
     logic eg_state = 0;
     logic [EG_ADD_WIDTH-1:0] eg_add = 0;
     logic [REG_BLOCK_WIDTH:0] block_shifted;
@@ -82,6 +81,7 @@ module calc_envelope_shift
     logic [REG_ENV_WIDTH+1-1:0] rate_hi_pre_p1;
     logic [REG_ENV_WIDTH-1:0] rate_hi_p1;
     logic [1:0] rate_lo_p1;
+    logic [1:0] eg_timer_lo = 0;
     logic [REG_ENV_WIDTH+2-1:0] eg_shift_p1;
     logic requested_rate_not_zero_p1;
     logic [ENV_SHIFT_WIDTH:0] env_shift_pre_p2;
@@ -131,7 +131,7 @@ module calc_envelope_shift
         rate_lo_p1 = rate_p1[1:0];
         eg_shift_p1 = rate_hi_p1 + eg_add;
 
-        env_shift_pre_p2 = rate_hi_p1[1:0] + EG_INC_STEP[rate_lo_p1][timer];
+        env_shift_pre_p2 = rate_hi_p1[1:0] + EG_INC_STEP[rate_lo_p1][eg_timer_lo];
     end
 
     always_ff @(posedge clk) begin
@@ -181,10 +181,10 @@ module calc_envelope_shift
                 endcase
 
                 eg_timer <= eg_timer + 1;
+                eg_timer_lo <= eg_timer[1:0];
             end
 
             eg_state <= !eg_state;
-            timer <= timer + 1;
         end
 endmodule
 `default_nettype wire
