@@ -84,7 +84,7 @@ module calc_envelope_shift
     logic [1:0] eg_timer_lo = 0;
     logic [REG_ENV_WIDTH+2-1:0] eg_shift_p1;
     logic requested_rate_not_zero_p1;
-    logic [ENV_SHIFT_WIDTH:0] env_shift_pre_p2;
+    logic [ENV_SHIFT_WIDTH:0] env_shift_pre_p1;
     logic [PIPELINE_DELAY:1] sample_clk_en_p;
     logic [PIPELINE_DELAY:1] [BANK_NUM_WIDTH-1:0] bank_num_p;
     logic [PIPELINE_DELAY:1] [OP_NUM_WIDTH-1:0] op_num_p;
@@ -131,7 +131,7 @@ module calc_envelope_shift
         rate_lo_p1 = rate_p1[1:0];
         eg_shift_p1 = rate_hi_p1 + eg_add;
 
-        env_shift_pre_p2 = rate_hi_p1[1:0] + EG_INC_STEP[rate_lo_p1][eg_timer_lo];
+        env_shift_pre_p1 = rate_hi_p1[1:0] + EG_INC_STEP[rate_lo_p1][eg_timer_lo];
     end
 
     always_ff @(posedge clk) begin
@@ -150,10 +150,10 @@ module calc_envelope_shift
                     endcase
             end
             else begin
-                env_shift_p2 <= env_shift_pre_p2;
-                if (env_shift_pre_p2[2])
+                env_shift_p2 <= env_shift_pre_p1;
+                if (env_shift_pre_p1[2])
                     env_shift_p2 <= 'h3;
-                if (env_shift_pre_p2 == 0)
+                if (env_shift_pre_p1 == 0)
                     env_shift_p2 <= eg_state;
             end
         end
