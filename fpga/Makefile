@@ -97,6 +97,9 @@ PRE_SYN_XDC_SRC = \
 POST_SYN_XDC_SRC = \
 	constraints/post_synth.xdc
 
+IP_SRC = \
+	modules/misc/ip/ila_0/ila_0.xci
+
 INC_DIR0 = \
 	modules/
 
@@ -137,11 +140,11 @@ build/design_1/design_1.bd: $(BD_SRC)
 	vivado -mode batch -source scripts/vivado_bd.tcl -nojournal \
 	-log build/bd_log.txt -tclargs "$(BD_SRC)" "${BOARD}"
 
-build/post_syn.dcp: build/design_1/design_1.bd ${PKG_SRC} $(RTL_SRC) $(PRE_SYN_XDC_SRC) $(POST_SYN_XDC_SRC)
+build/post_syn.dcp: build/design_1/design_1.bd ${PKG_SRC} $(RTL_SRC) $(PRE_SYN_XDC_SRC) $(POST_SYN_XDC_SRC) $(IP_SRC)
 	test -e build || mkdir build
 	rm -rf ipshared
 	vivado -mode batch -source scripts/vivado_syn.tcl -nojournal \
-	-log build/syn_log.txt -tclargs "${PKG_SRC}" "$(RTL_SRC)" "$(INC_DIR0)" "$(PRE_SYN_XDC_SRC)" "$(POST_SYN_XDC_SRC)"
+	-log build/syn_log.txt -tclargs "${PKG_SRC}" "$(RTL_SRC)" "$(INC_DIR0)" "$(PRE_SYN_XDC_SRC)" "$(POST_SYN_XDC_SRC)" "$(IP_SRC)"
 
 build/post_place.dcp: build/post_syn.dcp
 	vivado -mode batch -source scripts/vivado_place.tcl -log build/place_log.txt -nojournal

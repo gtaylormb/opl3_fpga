@@ -3,6 +3,7 @@ set RTL_SRC [lindex $argv 1]
 set INC_DIR0 [lindex $argv 2]
 set PRE_SYN_XDC_SRC [lindex $argv 3]
 set POST_SYN_XDC_SRC [lindex $argv 4]
+set IP_SRC [lindex $argv 5]
 
 set outputDir build
 
@@ -23,6 +24,7 @@ make_wrapper -files [get_files $outputDir/design_1/design_1.bd] -top -import -fo
 
 read_verilog -sv ${PKG_SRC}
 read_verilog -sv ${RTL_SRC}
+read_ip ${IP_SRC}
 read_xdc ${PRE_SYN_XDC_SRC}
 
 synth_design -name opl3 -part xc7z010clg400-1 -top design_1_wrapper -include_dirs \
