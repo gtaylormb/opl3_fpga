@@ -66,6 +66,7 @@ module phase_generator
 
     logic [PIPELINE_DELAY:1] sample_clk_en_p;
     logic [PHASE_ACC_WIDTH-1:0] phase_acc_p2;
+    logic [PHASE_FINAL_WIDTH-1:0] phase_acc_shifted_p2;
     logic [PHASE_ACC_WIDTH-1:0] phase_acc_p3 = 0;
     logic [PHASE_FINAL_WIDTH-1:0] final_phase_p3;
     logic [7:0] theta_p3;
@@ -187,12 +188,14 @@ module phase_generator
         else
             phase_acc_p3 <= phase_acc_p2 + phase_inc_p2;
 
+    always_comb phase_acc_shifted_p2 = phase_acc_p2 >> 9;
+
     /*
      * Some rhythm instruments modify the phase, otherwise pass-through normally.
      * Bottom bits of phase accumulator are fractional and get dropped off.
      */
      calc_rhythm_phase calc_rhythm_phase (
-        .phase_p2(phase_acc_p2[PHASE_ACC_WIDTH-1 -: PHASE_FINAL_WIDTH]),
+        .phase_p2(phase_acc_shifted_p2),
         .*
     );
 
