@@ -91,6 +91,8 @@ void opl2_out(unsigned char reg, unsigned char data_in, unsigned char bank)
 		Xil_In8(XPAR_OPL3_FPGA_0_BASEADDR);
 
 	shadow_opl[reg] = data;
+	// printf("opl3_write('h%0x, 'h%0x, 'b%0x);\n", reg, data_in, bank);
+	// fflush(stdout);
 }
 
 void opl2_clear(void)
@@ -391,9 +393,12 @@ int imfplay(char *filename)
 
 		while (run)
 		{
-			for (long clock_ticks = 0; clock_ticks < next_event; clock_ticks++)
+			for (long clock_ticks = 0; clock_ticks < next_event; clock_ticks++) {
 			//	TimerDelay((1/freq_div)*1000000);
 				TimerDelay(1000);
+				// printf("$display(\"%%tn wait 1000us\", $time) #1000000;\n");
+				// fflush(stdout);
+			}
 
 			res = read_next_cmd(&f, &c);
 			if (res == CMD_EOF)
@@ -418,14 +423,6 @@ int imfplay(char *filename)
 			}
 
 			next_event = c.delay;
-
-			/*
-			 * Prevent drop-out due to back to back command, fast clock speed of
-			 * CPU, slow clock speed of FPGA. FPGA can miss key-off, key-on
-			 * event.
-			 */
-			if (next_event == 0)
-				TimerDelay(1);
 		}
 	}
 

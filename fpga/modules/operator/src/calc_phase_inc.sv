@@ -58,14 +58,14 @@ module calc_phase_inc
 );
     localparam PIPELINE_DELAY = 2;
 
-    logic signed [PHASE_ACC_WIDTH-1:0] pre_mult_p0;
-    logic signed [PHASE_ACC_WIDTH-1:0] pre_mult_p1 = 0;
+    logic signed [REG_FNUM_WIDTH+2**REG_BLOCK_WIDTH-1-1:0] pre_mult_p0;
+    logic signed [REG_FNUM_WIDTH+2**REG_BLOCK_WIDTH-1-1:0] pre_mult_p1 = 0;
     logic signed [PHASE_ACC_WIDTH-1:0] post_mult_p2 = 0;
     logic [VIB_VAL_WIDTH-1:0] vib_val_p2;
     logic [PIPELINE_DELAY:1] vib_p;
     logic [$clog2(30)-1:0] multiplier_p1 = 0;
 
-    always_comb pre_mult_p0 = fnum << block;
+    always_comb pre_mult_p0 = (fnum << block) >> 1;
 
     always_ff @(posedge clk)
         unique case (mult)

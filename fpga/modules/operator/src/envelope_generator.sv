@@ -90,15 +90,15 @@ module envelope_generator
     logic [ENV_WIDTH-1:0] env_int_pre_p2;
     logic [ENV_WIDTH-1:0] eg_inc_p2;
     logic eg_off_p2;
-    logic [ENV_WIDTH+4-1:0] env_int_extra_bits_p2;
+    logic [ENV_WIDTH+3-1:0] env_int_extra_bits_p2;
     logic [ENV_WIDTH-1:0] env_int_new_p3 = 0;
     logic [AM_VAL_WIDTH-1:0] am_val_p2;
     logic [REG_ENV_WIDTH-1:0] requested_rate_p0;
     logic [ENV_SHIFT_WIDTH-1:0] env_shift_p2;
-    logic [REG_ENV_WIDTH+1-1:0] rate_hi_p2;
-    logic [ENV_WIDTH+1:0] env_pre_p2;
+    logic [REG_ENV_WIDTH-1:0] rate_hi_p2;
     logic eg_reset_p0;
     logic [REG_TL_WIDTH+2-1:0] tl_shifted_p2;
+    logic [REG_ENV_WIDTH:0] sl_increased_p2;
     logic [PIPELINE_DELAY:1] sample_clk_en_p;
     logic [PIPELINE_DELAY:1] [BANK_NUM_WIDTH-1:0] bank_num_p;
     logic [PIPELINE_DELAY:1] [OP_NUM_WIDTH-1:0] op_num_p;
@@ -259,7 +259,8 @@ module envelope_generator
         eg_inc_p2 = 0;
         eg_off_p2 = 0;
         next_state_p2 = state_p2;
-        env_int_extra_bits_p2 = env_int_p[2];
+        env_int_extra_bits_p2 = env_int_p[2]; // need extra bits to shift in 1s when inverted
+        sl_increased_p2 = sl_p[2] == 'hf ? 'h1f : sl_p[2];
 
         // instant attack
         if (eg_reset_p[2] && rate_hi_p2 == 'hf)
@@ -279,7 +280,7 @@ module envelope_generator
                 eg_inc_p2 = ~env_int_extra_bits_p2 >> (4 - env_shift_p2);
         end
         DECAY: begin
-            if ((env_int_p[2] >> 4) == sl_p[2])
+            if ((env_int_p[2] >> 4) == sl_increased_p2)
                 next_state_p2 = SUSTAIN;
             else if (!eg_off_p2 && !eg_reset_p[2] && env_shift_p2 > 0)
                 eg_inc_p2 = 1 << (env_shift_p2 - 1);
