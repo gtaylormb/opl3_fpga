@@ -40,6 +40,9 @@
 #   Copyright (C) 2010-2013 by carbon14 and opl3
 #
 #******************************************************************************/
+`timescale 1ns / 1ps
+`default_nettype none
+
 package opl3_pkg;
     /*
      * Original OPL3 used a 14.31818MHz master clock, divided by 288 giving a
@@ -118,3 +121,4 @@ package opl3_pkg;
     } operator_out_t;
 
 endpackage
+`default_nettype wire

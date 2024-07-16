@@ -105,7 +105,7 @@ INC_DIR0 = \
 
 compile:
 	test -e work || vlib work
-	vlog -incr ${PKG_SRC} $(SIM_SRC) $(RTL_SRC) +define+SIM +incdir+$(INC_DIR0)
+	vlog -incr $(PKG_SRC) $(SIM_SRC) $(RTL_SRC) +define+SIM +incdir+$(INC_DIR0)
 
 sim: compile
 	vsim -c opl3_tb -do "run -a"
@@ -128,6 +128,9 @@ probes: build/opl3.ltx
 
 program: build/opl3.bit
 	vivado -mode batch -source scripts/vivado_program.tcl -log build/program_log.txt -nojournal
+
+lint:
+	slang $(PKG_SRC) $(RTL_SRC)
 
 clean:
 	rm -rf  *.tmp  *.log  log transcript work *.wlf vsim.fcdb
