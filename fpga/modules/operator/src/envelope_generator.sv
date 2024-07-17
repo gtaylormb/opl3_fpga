@@ -207,6 +207,7 @@ module envelope_generator
 
     always_comb begin
         eg_reset_p0 = 0;
+        requested_rate_p0 = 0;
 
         if (key_on_p0 && state_p0 == RELEASE) begin
             eg_reset_p0 = 1;

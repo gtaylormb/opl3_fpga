@@ -44,8 +44,6 @@
 #   Copyright (C) 2010-2013 by carbon14 and opl3
 #
 #******************************************************************************
-uname_O := $(shell sh -c 'uname -o 2>/dev/null || echo not')
-
 BOARD = zybo
 
 RTL_SRC = \
@@ -129,8 +127,9 @@ probes: build/opl3.ltx
 program: build/opl3.bit
 	vivado -mode batch -source scripts/vivado_program.tcl -log build/program_log.txt -nojournal
 
-lint:
+lint: $(PKG_SRC) $(RTL_SRC)
 	slang $(PKG_SRC) $(RTL_SRC)
+	verilator --lint-only -Wno-WIDTHEXPAND -Wno-WIDTHTRUNC --top-module opl3 $(PKG_SRC) $(RTL_SRC)
 
 clean:
 	rm -rf  *.tmp  *.log  log transcript work *.wlf vsim.fcdb

@@ -97,6 +97,7 @@ module channels
         logic signed [CHANNEL_ACCUMULATOR_WIDTH-1:0] channel_r_acc_pre_clamp;
     } self = 0, next_self;
 
+    // verilator lint_off UNOPTFLAT
     struct packed {
         logic [$clog2(NUM_OPERATORS_PER_BANK)-1:0] op_mem_op_num;
         logic op_mem_rd;
@@ -108,6 +109,7 @@ module channels
         logic add_c;
         logic add_d;
     } signals;
+    // verilator lint_on UNOPTFLAT
 
     always_ff @(posedge clk) begin
         if (opl3_reg_wr.valid) begin

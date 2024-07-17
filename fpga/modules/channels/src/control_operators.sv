@@ -58,8 +58,9 @@ module control_operators
 );
     localparam PIPELINE_DELAY = 6;
     localparam MODULATION_DELAY = 1; // output of operator 0 must be ready by cycle 2 of operator 3 so it can modulate it
+    localparam DELAY_COUNTER_WIDTH = MODULATION_DELAY > 1 ? $clog2(MODULATION_DELAY) : 1;
     localparam NUM_OPERATOR_UPDATE_STATES = NUM_BANKS*NUM_OPERATORS_PER_BANK + 1; // 36 operators + idle state
-    logic [$clog2(MODULATION_DELAY)-1:0] delay_counter = 0;
+    logic [DELAY_COUNTER_WIDTH-1:0] delay_counter = 0;
 
     logic [$clog2(NUM_OPERATOR_UPDATE_STATES)-1:0] state = 0;
     logic [$clog2(NUM_OPERATOR_UPDATE_STATES)-1:0] next_state;
@@ -70,7 +71,7 @@ module control_operators
     logic [OP_NUM_WIDTH-1:0] op_num_p1 = 0;
 
     logic use_feedback_p1 = 0;
-    logic signed [OP_OUT_WIDTH-1:0] modulation_p1 = 0;
+    logic signed [OP_OUT_WIDTH-1:0] modulation_p1;
     logic signed [OP_OUT_WIDTH-1:0] out_p6;
     logic signed [OP_OUT_WIDTH-1:0] modulation_out_p1;
 
