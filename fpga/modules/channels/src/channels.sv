@@ -74,6 +74,43 @@ module channels
     logic cnt; // operator connection
     logic [REG_FB_WIDTH-1:0] fb_dummy;
 
+    enum {
+        IDLE,
+        LOAD_2_OP_SECOND_0,
+        LOAD_2_OP_SECOND_1,
+        LOAD_2_OP_FIRST_AND_ACCUMULATE,
+        LOAD_4_OP_THIRD_0,
+        LOAD_4_OP_THIRD_1,
+        LOAD_4_OP_SECOND,
+        LOAD_4_OP_FIRST_AND_ACCUMULATE,
+        DONE
+    } state = IDLE, next_state;
+
+    struct packed {
+        logic cnt_second;
+        logic signed [OP_OUT_WIDTH-1:0] operator_out_third;
+        logic signed [OP_OUT_WIDTH-1:0] operator_out_second;
+        logic bank_num;
+        logic [$clog2(NUM_OPERATORS_PER_BANK)-1:0] op_num;
+        logic [$clog2(NUM_CHANNELS_PER_BANK)-1:0] channel_num;
+        logic signed [CHANNEL_ACCUMULATOR_WIDTH-1:0] channel_l_acc_pre_clamp;
+        logic signed [CHANNEL_ACCUMULATOR_WIDTH-1:0] channel_r_acc_pre_clamp;
+    } self = 0, next_self;
+
+    // verilator lint_off UNOPTFLAT
+    struct packed {
+        logic [$clog2(NUM_OPERATORS_PER_BANK)-1:0] op_mem_op_num;
+        logic op_mem_rd;
+        logic [$clog2(NUM_CHANNELS_PER_BANK)-1:0] ch_abcd_cnt_mem_channel_num;
+        logic signed [CHANNEL_OUT_WIDTH-1:0] channel_out;
+        logic latch_channels;
+        logic add_a;
+        logic add_b;
+        logic add_c;
+        logic add_d;
+    } signals;
+    // verilator lint_on UNOPTFLAT
+
     always_ff @(posedge clk) begin
         if (opl3_reg_wr.valid) begin
             if (opl3_reg_wr.bank_num == 1 && opl3_reg_wr.address == 4)
@@ -132,41 +169,6 @@ module channels
         .dia(operator_out.op_out),
         .dob(operator_mem_out)
     );
-
-    enum {
-        IDLE,
-        LOAD_2_OP_SECOND_0,
-        LOAD_2_OP_SECOND_1,
-        LOAD_2_OP_FIRST_AND_ACCUMULATE,
-        LOAD_4_OP_THIRD_0,
-        LOAD_4_OP_THIRD_1,
-        LOAD_4_OP_SECOND,
-        LOAD_4_OP_FIRST_AND_ACCUMULATE,
-        DONE
-    } state = IDLE, next_state;
-
-    struct packed {
-        logic cnt_second;
-        logic signed [OP_OUT_WIDTH-1:0] operator_out_third;
-        logic signed [OP_OUT_WIDTH-1:0] operator_out_second;
-        logic bank_num;
-        logic [$clog2(NUM_OPERATORS_PER_BANK)-1:0] op_num;
-        logic [$clog2(NUM_CHANNELS_PER_BANK)-1:0] channel_num;
-        logic signed [CHANNEL_ACCUMULATOR_WIDTH-1:0] channel_l_acc_pre_clamp;
-        logic signed [CHANNEL_ACCUMULATOR_WIDTH-1:0] channel_r_acc_pre_clamp;
-    } self = 0, next_self;
-
-    struct packed {
-        logic [$clog2(NUM_OPERATORS_PER_BANK)-1:0] op_mem_op_num;
-        logic op_mem_rd;
-        logic [$clog2(NUM_CHANNELS_PER_BANK)-1:0] ch_abcd_cnt_mem_channel_num;
-        logic signed [CHANNEL_OUT_WIDTH-1:0] channel_out;
-        logic latch_channels;
-        logic add_a;
-        logic add_b;
-        logic add_c;
-        logic add_d;
-    } signals;
 
     always_ff @(posedge clk)
         if (sample_clk_en) begin

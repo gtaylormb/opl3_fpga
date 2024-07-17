@@ -40,6 +40,9 @@
 #   Copyright (C) 2010-2013 by carbon14 and opl3
 #
 #******************************************************************************/
+`timescale 1ns / 1ps
+`default_nettype none
+
 package opl3_pkg;
     /*
      * Original OPL3 used a 14.31818MHz master clock, divided by 288 giving a
@@ -56,7 +59,7 @@ package opl3_pkg;
     localparam INSTANTIATE_SAMPLE_SYNC_TO_DAC_CLK = 0;
 
     localparam DESIRED_SAMPLE_FREQ = 49.7159e3;
-    localparam int CLK_DIV_COUNT = $ceil(CLK_FREQ/DESIRED_SAMPLE_FREQ); // unsupported by Quartus 17, set manually
+    localparam CLK_DIV_COUNT = int'($ceil(CLK_FREQ/DESIRED_SAMPLE_FREQ)); // unsupported by Quartus 17, set manually
     localparam ACTUAL_SAMPLE_FREQ = CLK_FREQ/CLK_DIV_COUNT;
 
     localparam NUM_REG_PER_BANK = 'hF6;
@@ -118,3 +121,4 @@ package opl3_pkg;
     } operator_out_t;
 
 endpackage
+`default_nettype wire

@@ -53,7 +53,7 @@ module host_if
     input wire wr_n,
     input wire [1:0] address,
     input wire [REG_FILE_DATA_WIDTH-1:0] din,
-    output logic [REG_FILE_DATA_WIDTH-1:0] dout = 0,
+    output logic [REG_FILE_DATA_WIDTH-1:0] dout,
     output opl3_reg_wr_t opl3_reg_wr = 0,
     input wire [REG_FILE_DATA_WIDTH-1:0] status,
     output logic force_timer_overflow

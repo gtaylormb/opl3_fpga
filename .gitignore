@@ -25,3 +25,4 @@ fpga/NA/ps7_summary.html
 fpga/vsim.wlf
 fpga/modules/operator/vsim.wlf
 fpga/modules/misc/vsim.wlf
+.sv_cache/
