@@ -88,6 +88,7 @@ module channels
 
     struct packed {
         logic cnt_second;
+        logic [3:0] abcd_second; // {chd, chc, chb, cha} of the second channel of a 4-op pair
         logic signed [OP_OUT_WIDTH-1:0] operator_out_third;
         logic signed [OP_OUT_WIDTH-1:0] operator_out_second;
         logic bank_num;
@@ -215,8 +216,8 @@ module channels
                 if (self.bank_num == 0) begin
                     signals.add_a = !is_new || (cha && !connection_sel[self.channel_num]);
                     signals.add_b = !is_new || (chb && !connection_sel[self.channel_num]);
-                    signals.add_c = !is_new || (chc && !connection_sel[self.channel_num]);
-                    signals.add_d = !is_new || (chd && !connection_sel[self.channel_num]);
+                    signals.add_c = is_new && chc && !connection_sel[self.channel_num];
+                    signals.add_d = is_new && chd && !connection_sel[self.channel_num];
                 end
                 else begin
                     signals.add_a = cha && !connection_sel[self.channel_num+3];
@@ -229,8 +230,8 @@ module channels
                 if (self.bank_num == 0) begin
                     signals.add_a = !is_new || (cha && !connection_sel[self.channel_num-3]);
                     signals.add_b = !is_new || (chb && !connection_sel[self.channel_num-3]);
-                    signals.add_c = !is_new || (chc && !connection_sel[self.channel_num-3]);
-                    signals.add_d = !is_new || (chd && !connection_sel[self.channel_num-3]);
+                    signals.add_c = is_new && chc && !connection_sel[self.channel_num-3];
+                    signals.add_d = is_new && chd && !connection_sel[self.channel_num-3];
                 end
                 else begin
                     signals.add_a = cha && !connection_sel[self.channel_num];
@@ -242,8 +243,8 @@ module channels
             else begin
                 signals.add_a = (self.bank_num == 0 && !is_new) || cha;
                 signals.add_b = (self.bank_num == 0 && !is_new) || chb;
-                signals.add_c = (self.bank_num == 0 && !is_new) || chc;
-                signals.add_d = (self.bank_num == 0 && !is_new) || chd;
+                signals.add_c = is_new && chc;
+                signals.add_d = is_new && chd;
             end
 
             unique case ({signals.add_a, signals.add_c})
@@ -295,6 +296,7 @@ module channels
             next_self.operator_out_third = operator_mem_out;
             signals.ch_abcd_cnt_mem_channel_num = self.channel_num + 3;
             next_self.cnt_second = cnt;
+            next_self.abcd_second = {chd, chc, chb, cha};
         end
         LOAD_4_OP_SECOND: begin
             next_state = LOAD_4_OP_FIRST_AND_ACCUMULATE;
@@ -312,17 +314,18 @@ module channels
             'b11: signals.channel_out = operator_mem_out + self.operator_out_second + self.operator_out_third;
             endcase
 
+            // a 4-op voice is routed by the output enables of its second channel
             if (self.bank_num == 0) begin
-                signals.add_a = cha && connection_sel[self.channel_num];
-                signals.add_b = chb && connection_sel[self.channel_num];
-                signals.add_c = chc && connection_sel[self.channel_num];
-                signals.add_d = chd && connection_sel[self.channel_num];
+                signals.add_a = self.abcd_second[0] && connection_sel[self.channel_num];
+                signals.add_b = self.abcd_second[1] && connection_sel[self.channel_num];
+                signals.add_c = self.abcd_second[2] && connection_sel[self.channel_num];
+                signals.add_d = self.abcd_second[3] && connection_sel[self.channel_num];
             end
             else begin
-                signals.add_a = cha && connection_sel[self.channel_num+3];
-                signals.add_b = chb && connection_sel[self.channel_num+3];
-                signals.add_c = chc && connection_sel[self.channel_num+3];
-                signals.add_d = chd && connection_sel[self.channel_num+3];
+                signals.add_a = self.abcd_second[0] && connection_sel[self.channel_num+3];
+                signals.add_b = self.abcd_second[1] && connection_sel[self.channel_num+3];
+                signals.add_c = self.abcd_second[2] && connection_sel[self.channel_num+3];
+                signals.add_d = self.abcd_second[3] && connection_sel[self.channel_num+3];
             end
 
             /*

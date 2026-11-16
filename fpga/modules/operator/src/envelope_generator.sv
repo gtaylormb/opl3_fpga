@@ -107,6 +107,7 @@ module envelope_generator
     logic [PIPELINE_DELAY:1] [ENV_WIDTH-1:0] env_int_p;
     logic [PIPELINE_DELAY:1] key_on_p;
     logic [PIPELINE_DELAY:1] eg_reset_p;
+    logic [PIPELINE_DELAY:1] am_p;
 
     pipeline_sr #(
         .ENDING_CYCLE(PIPELINE_DELAY)
@@ -249,6 +250,15 @@ module envelope_generator
         .*
     );
 
+    // am must be aligned with am_val_p2 (same operator slot)
+    pipeline_sr #(
+        .ENDING_CYCLE(PIPELINE_DELAY)
+    ) am_sr (
+        .clk,
+        .in(am),
+        .out(am_p)
+    );
+
     always_comb begin
         pg_reset_p2 = eg_reset_p[2];
         env_int_pre_p2 = env_int_p[2];
@@ -303,6 +313,6 @@ module envelope_generator
     always_comb tl_shifted_p2 = tl_p[2] << 2;
 
     always_ff @(posedge clk)
-        env_p3 <= env_int_p[2] + tl_shifted_p2 + ksl_add_p2 + (am ? am_val_p2 : 0); // max val 1044
+        env_p3 <= env_int_p[2] + tl_shifted_p2 + ksl_add_p2 + (am_p[2] ? am_val_p2 : 0); // max val 1044
 endmodule
 `default_nettype wire

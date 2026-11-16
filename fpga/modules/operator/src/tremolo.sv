@@ -53,37 +53,28 @@ module tremolo
 );
     localparam PIPELINE_DELAY = 2;
 
-    logic [TREMOLO_INDEX_WIDTH-1:0] tremolo_index_p1 = '0;
-    logic [TREMOLO_INDEX_WIDTH-8-1:0] am_val_tmp0_p1;
-    logic [AM_VAL_WIDTH-1:0] am_val_tmp1_p1;
+    logic [5:0] sub_count = 0;
+    logic [7:0] trem_pos = 0; // 0..209
+    logic [6:0] trem_tri;     // 0..105
     logic dam_p1 = 0;
 
     /*
      * Low-Frequency Oscillator (LFO)
-     * 3.7 Hz (Sample Freq/2**14)
+     * 210 step triangle advanced every 64 samples: period 13440 samples,
+     * 3.7 Hz, as in the YMF262 (see Nuked-OPL3 tremolopos)
      */
     always_ff @(posedge clk)
-        if (sample_clk_en && bank_num == 0 && op_num == 0)
-            if (tremolo_index_p1 == TREMOLO_MAX_COUNT - 1)
-                tremolo_index_p1 <= 0;
-            else
-                tremolo_index_p1 <= tremolo_index_p1 + 1;
+        if (sample_clk_en && bank_num == 0 && op_num == 0) begin
+            sub_count <= sub_count + 1;
+            if (sub_count == 63)
+                trem_pos <= trem_pos == 209 ? 0 : trem_pos + 1;
+        end
 
-    always_comb am_val_tmp0_p1 = tremolo_index_p1 >> 8;
-
-    always_comb
-        if (am_val_tmp0_p1 > 26)
-            am_val_tmp1_p1 = 2*26 + ~am_val_tmp0_p1;
-        else
-            am_val_tmp1_p1 = am_val_tmp0_p1;
+    always_comb trem_tri = trem_pos < 105 ? 7'(trem_pos) : 7'(210 - trem_pos);
 
     always_ff @(posedge clk) begin
         dam_p1 <= dam;
-
-        if (dam_p1)
-            am_val_p2 <= am_val_tmp1_p1;
-        else
-            am_val_p2 <= am_val_tmp1_p1 >> 2;
+        am_val_p2 <= dam_p1 ? AM_VAL_WIDTH'(trem_tri >> 2) : AM_VAL_WIDTH'(trem_tri >> 4);
     end
 endmodule
 `default_nettype wire

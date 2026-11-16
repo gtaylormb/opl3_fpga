@@ -58,14 +58,19 @@ module calc_phase_inc
 );
     localparam PIPELINE_DELAY = 2;
 
-    logic signed [REG_FNUM_WIDTH+2**REG_BLOCK_WIDTH-1-1:0] pre_mult_p0;
-    logic signed [REG_FNUM_WIDTH+2**REG_BLOCK_WIDTH-1-1:0] pre_mult_p1 = 0;
+    logic signed [REG_FNUM_WIDTH+2**REG_BLOCK_WIDTH+1-1:0] pre_mult_p0;
+    logic signed [REG_FNUM_WIDTH+2**REG_BLOCK_WIDTH+1-1:0] pre_mult_p1 = 0;
     logic signed [PHASE_ACC_WIDTH-1:0] post_mult_p2 = 0;
-    logic [VIB_VAL_WIDTH-1:0] vib_val_p2;
-    logic [PIPELINE_DELAY:1] vib_p;
+    logic signed [VIB_VAL_WIDTH:0] vib_val_p0;
+    logic signed [REG_FNUM_WIDTH+1:0] fnum_vib_p0;
     logic [$clog2(30)-1:0] multiplier_p1 = 0;
 
-    always_comb pre_mult_p0 = (fnum << block) >> 1;
+    /*
+     * Vibrato modifies fnum before the block shift and multiplier
+     */
+    always_comb fnum_vib_p0 = vib ? $signed({2'b0, fnum}) + vib_val_p0 : $signed({2'b0, fnum});
+
+    always_comb pre_mult_p0 = (fnum_vib_p0 << block) >> 1;
 
     always_ff @(posedge clk)
         unique case (mult)
@@ -92,19 +97,7 @@ module calc_phase_inc
         post_mult_p2 <= (pre_mult_p1*multiplier_p1) >> 1;
     end
 
-    pipeline_sr #(
-        .ENDING_CYCLE(PIPELINE_DELAY)
-    ) vib_sr (
-        .clk,
-        .in(vib),
-        .out(vib_p)
-    );
-
-    always_comb
-        if (vib_p[2])
-            phase_inc_p2 = post_mult_p2 + vib_val_p2;
-        else
-            phase_inc_p2 = post_mult_p2;
+    always_comb phase_inc_p2 = post_mult_p2;
 
     /*
      * Calculate vib_val
