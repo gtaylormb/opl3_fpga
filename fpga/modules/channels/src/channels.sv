@@ -215,8 +215,8 @@ module channels
                 if (self.bank_num == 0) begin
                     signals.add_a = !is_new || (cha && !connection_sel[self.channel_num]);
                     signals.add_b = !is_new || (chb && !connection_sel[self.channel_num]);
-                    signals.add_c = !is_new || (chc && !connection_sel[self.channel_num]);
-                    signals.add_d = !is_new || (chd && !connection_sel[self.channel_num]);
+                    signals.add_c = is_new && chc && !connection_sel[self.channel_num];
+                    signals.add_d = is_new && chd && !connection_sel[self.channel_num];
                 end
                 else begin
                     signals.add_a = cha && !connection_sel[self.channel_num+3];
@@ -229,8 +229,8 @@ module channels
                 if (self.bank_num == 0) begin
                     signals.add_a = !is_new || (cha && !connection_sel[self.channel_num-3]);
                     signals.add_b = !is_new || (chb && !connection_sel[self.channel_num-3]);
-                    signals.add_c = !is_new || (chc && !connection_sel[self.channel_num-3]);
-                    signals.add_d = !is_new || (chd && !connection_sel[self.channel_num-3]);
+                    signals.add_c = is_new && chc && !connection_sel[self.channel_num-3];
+                    signals.add_d = is_new && chd && !connection_sel[self.channel_num-3];
                 end
                 else begin
                     signals.add_a = cha && !connection_sel[self.channel_num];
@@ -242,8 +242,8 @@ module channels
             else begin
                 signals.add_a = (self.bank_num == 0 && !is_new) || cha;
                 signals.add_b = (self.bank_num == 0 && !is_new) || chb;
-                signals.add_c = (self.bank_num == 0 && !is_new) || chc;
-                signals.add_d = (self.bank_num == 0 && !is_new) || chd;
+                signals.add_c = is_new && chc;
+                signals.add_d = is_new && chd;
             end
 
             unique case ({signals.add_a, signals.add_c})
