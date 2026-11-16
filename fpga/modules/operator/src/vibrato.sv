@@ -47,37 +47,42 @@ module vibrato
 (
     input wire clk,
     input wire sample_clk_en,
+    input wire [BANK_NUM_WIDTH-1:0] bank_num,
+    input wire [OP_NUM_WIDTH-1:0] op_num,
     input wire [REG_FNUM_WIDTH-1:0] fnum,
     input wire dvb,
-    output logic [VIB_VAL_WIDTH-1:0] vib_val_p2 = 0
+    output logic signed [VIB_VAL_WIDTH:0] vib_val_p0 // signed offset to add to fnum
 );
     localparam VIBRATO_INDEX_WIDTH = 13;
 
-    logic [VIBRATO_INDEX_WIDTH-1:0] vibrato_index_p1 = 0;
-    logic [VIB_VAL_WIDTH-1:0] delta0_p1;
-    logic [VIB_VAL_WIDTH-1:0] delta1_p1;
-    logic [VIB_VAL_WIDTH-1:0] delta2_p1;
-    logic [REG_FNUM_WIDTH-1:0] fnum_p1 = 0;
-    logic dvb_p1 = 0;
-
-    always_ff @(posedge clk) begin
-        fnum_p1 <= fnum;
-        dvb_p1 <= dvb;
-    end
+    logic [VIBRATO_INDEX_WIDTH-1:0] vibrato_index = 0;
+    logic [2:0] vibrato_pos;
+    logic [VIB_VAL_WIDTH-1:0] range;
 
     /*
      * Low-Frequency Oscillator (LFO)
-     * 6.07Hz (Sample Freq/2**13)
+     * 6.07Hz (Sample Freq/2**13), 8 steps of 1024 samples each. Advance once
+     * per sample, not once per operator slot.
      */
     always_ff @(posedge clk)
-        if (sample_clk_en)
-            vibrato_index_p1 <= vibrato_index_p1 + 1;
+        if (sample_clk_en && bank_num == 0 && op_num == 0)
+            vibrato_index <= vibrato_index + 1;
 
-    always_comb delta0_p1 = fnum_p1 >> 7;
-    always_comb delta1_p1 = ((vibrato_index_p1 >> 10) & 3) == 3 ? delta0_p1 >> 1 : delta0_p1;
-    always_comb delta2_p1 = !dvb_p1 ? delta1_p1 >> 1 : delta1_p1;
+    always_comb vibrato_pos = vibrato_index[VIBRATO_INDEX_WIDTH-1 -: 3];
 
-    always_ff @(posedge clk)
-        vib_val_p2 <= ((vibrato_index_p1 >> 10) & 4) != 0 ? ~delta2_p1 : delta2_p1;
+    /*
+     * Triangle 0, +1/2, +1, +1/2, 0, -1/2, -1, -1/2 of the upper 3 bits of
+     * fnum, halved again when the vibrato depth bit is clear
+     */
+    always_comb begin
+        range = fnum >> 7;
+        if (vibrato_pos[1:0] == 0)
+            range = 0;
+        else if (vibrato_pos[0])
+            range = range >> 1;
+        if (!dvb)
+            range = range >> 1;
+        vib_val_p0 = vibrato_pos[2] ? -$signed({1'b0, range}) : $signed({1'b0, range});
+    end
 endmodule
 `default_nettype wire
